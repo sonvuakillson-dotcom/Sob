@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ss2dev - Siêu Mã Hóa</title>
+    <style>
+        :root {
+            --primary: #00ff88;
+            --bg: #0f0f0f;
+            --card: #1a1a1a;
+            --text: #e0e0e0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 800px;
+            background: var(--card);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border: 1px solid #333;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--primary);
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            text-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
+        }
+
+        textarea {
+            width: 100%;
+            height: 200px;
+            background: #111;
+            border: 1px solid #444;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-family: 'Courier New', Courier, monospace;
+            resize: vertical;
+            margin-bottom: 15px;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 12px 25px;
+            background: var(--primary);
+            border: none;
+            border-radius: 5px;
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 255, 136, 0.4);
+            filter: brightness(1.1);
+        }
+
+        .output-label {
+            margin-bottom: 10px;
+            display: block;
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        #output {
+            height: 150px;
+            background: #0a0a0a;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>ss2dev</h1>
+    
+    <textarea id="inputCode" placeholder="Dán mã nguồn (Lua, JS, ...) của bạn vào đây..."></textarea>
+    
+    <div class="buttons">
+        <button onclick="processCode()">Mã hóa làm đẹp</button>
+        <button onclick="copyCode()" style="background: #444; color: white;">Copy kết quả</button>
+    </div>
+
+    <label class="output-label">Kết quả (Minify & Encoded):</label>
+    <textarea id="outputCode" readonly placeholder="Kết quả sẽ xuất hiện tại đây..."></textarea>
+</div>
+
+<script>
+    function processCode() {
+        const input = document.getElementById('inputCode').value;
+        if (!input.trim()) {
+            alert("Vui lòng nhập code!");
+            return;
+        }
+
+        // Bước 1: Minify cơ bản (Xóa khoảng trắng thừa và comment dòng đơn)
+        let minified = input
+            .replace(/\/\/.*|\/\*[\s\S]*?\*\//g, '') // Xóa comments JS
+            .replace(/--.*$/gm, '')                  // Xóa comments Lua
+            .replace(/\s+/g, ' ')                   // Nén khoảng trắng
+            .trim();
+
+        // Bước 2: "Mã hóa" (Sử dụng Base64 và Hex để tạo giao diện 'siêu nặng')
+        // Lưu ý: Đây là mã hóa để làm đẹp/ẩn code cơ bản. 
+        // Muốn mã hóa thực sự siêu nặng (Obfuscation), cần logic server phức tạp.
+        const encoded = btoa(unescape(encodeURIComponent(minified)));
+        
+        let hexEncoded = "";
+        for (let i = 0; i < encoded.length; i++) {
+            hexEncoded += "\\" + encoded.charCodeAt(i).toString(16);
+        }
+
+        // Tạo ra một "vỏ bọc" cho code nhìn chuyên nghiệp
+        const finalResult = `/* ss2dev_OBFUSCATOR_V7 */ \nloadstring(decode_ss2dev("${hexEncoded}"))()`;
+
+        document.getElementById('outputCode').value = finalResult;
+    }
+
+    function copyCode() {
+        const output = document.getElementById('outputCode');
+        output.select();
+        document.execCommand('copy');
+        alert("Đã sao chép mã!");
+    }
+</script>
+
+</body>
+</html>
