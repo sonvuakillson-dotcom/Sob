@@ -3,161 +3,180 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lightbot System - Protected Engine</title>
+<title>SS2DEVHUB - ULTIMATE CORE SYSTEM</title>
 <style>
   /* ==========================================
-     LIGHTBOT UI STYLES (FRONT-END CLEAN)
+     CYBERPUNK ULTRA INTERFACE (PREMIUM)
      ========================================== */
-  
-  /* Nút Chat Icon Nổi (Tia sét) */
-  #lightbot-btn {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    width: 60px;
-    height: 60px;
-    background: #1a1a1a;
-    color: #00ffcc;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    font-size: 30px;
-    box-shadow: 0 0 15px rgba(0, 255, 204, 0.5);
-    transition: 0.3s;
-    z-index: 9999;
-    border: 2px solid #00ffcc;
-    user-select: none;
-  }
-  #lightbot-btn:hover {
-    transform: scale(1.1);
-    box-shadow: 0 0 25px rgba(0, 255, 204, 0.8);
-  }
-
-  /* Khung Chatbot */
-  #lightbot-box {
-    display: none;
-    position: fixed;
-    bottom: 90px;
-    right: 20px;
-    width: 350px;
-    height: 500px;
-    background: #222;
-    border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-    flex-direction: column;
-    overflow: hidden;
+  body {
+    margin: 0; padding: 0; height: 100vh;
+    display: flex; justify-content: center; align-items: center;
+    background: #05050a;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    border: 1px solid #333;
-    z-index: 9998;
-  }
-  
-  /* Tiêu đề thanh Header */
-  #lb-header {
-    background: #111;
-    color: #00ffcc;
-    padding: 15px;
-    font-weight: bold;
-    text-align: center;
-    border-bottom: 2px solid #00ffcc;
-    font-size: 18px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    user-select: none;
-  }
-  
-  /* Khu vực nội dung tin nhắn */
-  #lb-messages {
-    flex: 1;
-    padding: 15px;
-    overflow-y: auto;
-    background: #1a1a1a;
-    display: flex;
-    flex-direction: column;
-  }
-  
-  /* Các bong bóng hội thoại */
-  .msg {
-    margin-bottom: 12px;
-    padding: 10px 14px;
-    border-radius: 15px;
-    max-width: 80%;
-    word-wrap: break-word;
-    font-size: 14px;
-    line-height: 1.4;
-  }
-  .msg.user {
-    background: #007bff;
-    color: white;
-    align-self: flex-end;
-    border-bottom-right-radius: 2px;
-  }
-  .msg.bot {
-    background: #333;
-    color: #fff;
-    align-self: flex-start;
-    border-bottom-left-radius: 2px;
-    border: 1px solid #444;
-  }
-  /* Hiệu ứng trạng thái AI đang suy nghĩ */
-  .msg.thinking {
-    color: #00ffcc;
-    font-style: italic;
-    opacity: 0.8;
-    background: rgba(0, 255, 204, 0.05);
-    border: 1px dashed #00ffcc;
+    overflow: hidden;
   }
 
-  /* Khu vực thanh nhập liệu phía dưới */
-  #lb-input-area {
-    display: flex;
-    background: #111;
-    padding: 10px;
-    border-top: 1px solid #333;
+  /* Kính mờ cao cấp kết hợp đổ bóng Neon */
+  .panel-container {
+    position: relative; z-index: 10;
+    width: 420px; padding: 45px 35px;
+    background: rgba(10, 10, 18, 0.6);
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(0, 255, 204, 0.3);
+    border-radius: 24px;
+    box-shadow: 0 0 50px rgba(0, 255, 204, 0.15), inset 0 0 30px rgba(0, 0, 0, 0.9);
+    text-align: center;
+    animation: pulseGlow 4s infinite alternate;
   }
-  #lb-input {
-    flex: 1;
-    padding: 12px;
-    border: none;
-    border-radius: 6px;
-    background: #222;
-    color: white;
-    outline: none;
-    margin-right: 10px;
+
+  @keyframes pulseGlow {
+    0% { border-color: rgba(0, 255, 204, 0.2); box-shadow: 0 0 40px rgba(0, 255, 204, 0.1); }
+    100% { border-color: rgba(0, 255, 204, 0.5); box-shadow: 0 0 60px rgba(0, 255, 204, 0.25); }
   }
-  #lb-send {
-    padding: 0 20px;
-    background: #00ffcc;
-    color: #000;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: 0.2s;
+
+  .main-title {
+    color: #ffffff; font-size: 32px; font-weight: 900; margin-bottom: 5px;
+    text-transform: uppercase; letter-spacing: 4px;
+    background: linear-gradient(45deg, #00ffcc, #0099ff);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   }
-  #lb-send:hover {
-    background: #00ccaa;
+  
+  .version-tag {
+    color: #00ffcc; font-size: 11px; text-transform: uppercase;
+    letter-spacing: 2px; margin-bottom: 35px; opacity: 0.9;
+    font-family: monospace;
+  }
+
+  /* Nút bấm hiệu ứng quét Radar */
+  .btn-secure-exec {
+    position: relative; width: 100%; padding: 16px;
+    background: linear-gradient(135deg, rgba(0,255,204,0.1), rgba(0,153,255,0.1));
+    color: #00ffcc; border: 1px solid #00ffcc; border-radius: 12px;
+    font-size: 15px; font-weight: bold; text-transform: uppercase;
+    letter-spacing: 2px; cursor: pointer; overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+
+  .btn-secure-exec:hover {
+    color: #000000; background: #00ffcc;
+    box-shadow: 0 0 35px #00ffcc; transform: scale(1.02);
+  }
+
+  #console-log-output {
+    margin-top: 30px; font-family: monospace; font-size: 13px;
+    color: #888899; min-height: 24px; transition: color 0.3s;
   }
 </style>
 </head>
 <body>
 
-<div id="lightbot-btn">⚡</div>
-<div id="lightbot-box">
-  <div id="lb-header">Lightbot System</div>
-  <div id="lb-messages">
-    <div class="msg bot">Xin chào! Mình là Lightbot. Mình có thể giúp gì cho website của bạn?</div>
-  </div>
-  <div id="lb-input-area">
-    <input type="text" id="lb-input" placeholder="Nhập câu hỏi mã hóa...">
-    <button id="lb-send">Gửi</button>
-  </div>
+<div class="panel-container">
+  <div class="main-title">SS2DEVHUB</div>
+  <div class="version-tag">Mã Hóa Tối Thượng v7.5</div>
+  <button class="btn-secure-exec" id="btn-lock">Execute Layer</button>
+  <div id="console-log-output">Hệ thống đang đóng khóa an toàn...</div>
 </div>
 
 <script>
-var _0x3b8a=['\x64\x69\x73\x70\x6c\x61\x79','\x73\x74\x79\x6c\x65','\x6e\x6f\x6e\x65','\x66\x6c\x65\x78','\x67\x65\x74\x45\x6c\x65\x6d\x65\x6e\x74\x42\x79\x49\x64','\x6c\x69\x67\x68\x74\x62\x6f\x74\x2d\x62\x74\x6e','\x6c\x69\x67\x68\x74\x62\x6f\x74\x2d\x62\x6f\x78','\x6c\x62\x2d\x6d\x65\x73\x73\x61\x67\x65\x73','\x6c\x62\x2d\x69\x6e\x70\x75\x74','\x6c\x62\x2d\x73\x65\x6e\x64','\x61\x64\x64\x45\x76\x65\x6e\x74\x4c\x69\x73\x74\x65\x6e\x65\x72','\x63\x6c\x69\x63\x6b','\x76\x61\x6c\x75\x65','\x74\x72\x69\x6d','\x69\x6e\x6e\x65\x72\x48\x54\x4d\x4c','\x3c\x64\x69\x76\x20\x63\x6c\x61\x73\x73\x3d\x22\x6d\x73\x67\x20\x75\x73\x65\x72\x22\x3e','\x3c\x2f\x64\x69\x76\x3e','\x73\x63\x72\x6f\x6c\x6c\x54\x6f\x70','\x73\x63\x72\x6f\x6c\x6c\x48\x65\x69\x67\x68\x74','\x74\x68\x69\x6e\x6b\x5f','\x6e\x6f\x77','\x3c\x64\x69\x76\x20\x69\x64\x3d\x22','\x22\x20\x63\x6c\x61\x73\x73\x3d\x22\x6d\x73\x67\x20\x62\x6f\x74\x20\x74\x68\x69\x6e\x6b\x69\x6e\x67\x22\x3e\x4c\x69\x67\x68\x74\x62\x6f\x74\x20\u0111\x61\x6e\x67\x20\x73\x75\x79\x20\x6e\x67\x68\u0129\x2e\x2e\x2e\x20\u231b\x3c\x2f\x64\x69\x76\x3e','\x72\x65\x6d\x6f\x76\x65','\x3c\x64\x69\x76\x20\x63\x6c\x61\x73\x73\x3d\x22\x6d\x73\x67\x20\x62\x6f\x74\x22\x3e\u26a1\x20\x54\x68\x6f\x6e\x67\x20\x64\x69\x65\x70\x20\x64\x61\x20\x64\x75\x6f\x63\x20\x6d\x61\x20\x68\x6f\x61\x20\x62\x6f\x69\x20\x4c\x69\x67\x68\x74\x62\x6f\x74\x2e\x20\x48\x65\x20\x74\x6f\x6e\x67\x20\x61\x6e\x20\x74\x6f\x61\x6e\x21\x3c\x2f\x64\x69\x76\x3e','\x6b\x65\x79\x70\x72\x65\x73\x73','\x45\x6e\x74\x65\x72'];(function(_0x18a666,_0x3b8a1c){var _0xc76c66=function(_0x5b399d){while(--_0x5b399d){_0x18a666['push'](_0x18a666['shift']());}};_0xc76c66(++_0x3b8a1c);}(_0x3b8a,0x1b3));var _0xc76c=function(_0x18a666,_0x3b8a1c){_0x18a666=_0x18a666-0x0;var _0xc76c66=_0x3b8a[_0x18a666];return _0xc76c66;};var b=document[_0xc76c('0x0')](_0xc76c('0x1'));var bx=document[_0xc76c('0x0')](_0xc76c('0x2'));var m=document[_0xc76c('0x0')](_0xc76c('0x3'));var i=document[_0xc76c('0x0')](_0xc76c('0x4'));var s=document[_0xc76c('0x0')](_0xc76c('0x5'));b[_0xc76c('0x6')](_0xc76c('0x7'),function(){var _0x3b8a1c={'YwKkP':function(_0x5b399d,_0x4a9d70){return _0x5b399d===_0x4a9d70;},'KwqZj':_0xc76c('0x8'),'WqDIF':_0xc76c('0x9')};if(_0x3b8a1c['YwKkP'](bx[_0xc76c('0xa')][_0xc76c('0xb')],_0x3b8a1c['KwqZj'])){bx[_0xc76c('0xa')][_0xc76c('0xb')]=_0x3b8a1c['WqDIF'];}else{bx[_0xc76c('0xa')][_0xc76c('0xb')]=_0x3b8a1c['KwqZj'];}});async function handleSend(){var _0x5b399d=i[_0xc76c('0xc')][_0xc76c('0xd')]();if(!_0x5b399d)return;m[_0xc76c('0xe')]+=_0xc76c('0xf')+_0x5b399d+_0xc76c('0x10');i[_0xc76c('0xc')]='';m[_0xc76c('0x11')]=m[_0xc76c('0x12')];var _0x4a9d70=_0xc76c('0x13')+Date[_0xc76c('0x14')]();m[_0xc76c('0xe')]+=_0xc76c('0x15')+_0x4a9d70+_0xc76c('0x16');m[_0xc76c('0x11')]=m[_0xc76c('0x12')];setTimeout(function(){document[_0xc76c('0x0')](_0x4a9d70)[_0xc76c('0x17')]();m[_0xc76c('0xe')]+=_0xc76c('0x18');m[_0xc76c('0x11')]=m[_0xc76c('0x12')];},0x7d0);}s[_0xc76c('0x6')](_0xc76c('0x7'),handleSend);i[_0xc76c('0x6')](_0xc76c('0x19'),function(_0x1b34c0){if(_0x1b34c0['key']===_0xc76c('0x1a'))handleSend();});
-</script>
+(function(){
+    // Mảng gốc chứa chuỗi hệ thống đã mã hóa dưới dạng Hex và ký tự đặc biệt
+    var _0xMtx = ['\x61\x74\x6f\x62','\x65\x76\x61\x6c','\x63\x6f\x6e\x73\x6f\x6c\x65','\x74\x65\x73\x74','\x73\x74\x72\x69\x6e\x67','\x6c\x65\x6e\x67\x74\x68','\x67\x65\x74\x45\x6c\x65\x6d\x65\x6e\x74\x42\x79\x49\x64','\x62\x74\x6e\x2d\x6c\x6f\x63\x6b','\x61\x64\x64\x45\x76\x65\x6e\x74\x4c\x69\x73\x74\x65\x6e\x65\x72','\x63\x6c\x69\x63\x6b','\x63\x6f\x6e\x73\x6f\x6c\x6e\x2d\x6c\x6f\x67\x2d\x6f\x75\x74\x70\x75\x74'];
+    (function(_0x1b2c3d, _0x4e5f6a) {
+        var _0x2a3b4c = function(_0x5d6e7f) {
+            while (--_0x5d6e7f) { _0x1b2c3d['push'](_0x1b2c3d['shift']()); }
+        };
+        _0x2a3b4c(++_0x4e5f6a);
+    }(_0xMtx, 0x1f4));
 
+    var _0xGet = function(_0xidx, _0xkey) {
+        _0xidx = _0xidx - 0x0;
+        var _0xres = _0xMtx[_0xidx];
+        return _0xres;
+    };
+
+    // --- TẦNG 1: SELF-DEFENDING (BẪY CHỐNG CHỈNH SỬA / CHỐNG FORMAT CODE) ---
+    var _0xSelfDef = function() {
+        var _0xRegexCheck = new RegExp('\x5c\x77\x2b\x20\x2a\x5c\x28\x5c\x29\x20\x2a\x7b\x5c\x77\x2b\x20\x2a\x5b\x27\x7c\x22\x5d\x2e\x2b\x5b\x27\x7c\x22\x5d\x3b\x3f\x20\x2a\x7d');
+        var _0xVerifyFn = function() {
+            return 'dev';
+        };
+        // Kiểm tra xem mã nguồn có bị thay đổi cấu trúc hoặc định dạng lại không
+        if (!_0xRegexCheck['test'](_0xVerifyFn['toString']())) {
+            // Cơ chế bẫy tự hủy: Gây tràn bộ nhớ đóng băng trình duyệt ngay lập tức
+            while (true) {
+                var _0xCrash = [];
+                for (var _0xi = 0; _0xi < 1000000; _0xi++) {
+                    _0xCrash.push(new Array(1000000));
+                }
+            }
+        }
+    };
+    _0xSelfDef();
+
+    // --- TẦNG 2: ANTI-TAMPER INTEGRITY CHECK (KIỂM TRA TÍNH TOÀN VẸN CỦA HÀM) ---
+    // Nếu hacker tìm cách hook hoặc override hàm nầy, hệ thống sẽ nhận diện và phá hủy logic
+    var _0xSafeHook = function(_0xTarget) {
+        var _0xStr = _0xTarget['toString']();
+        if (_0xStr['indexOf']('while') > -1 || _0xStr['length'] > 500) {
+            return false;
+        }
+        return true;
+    };
+
+    // --- TẦNG 3: MÁY ẢO VM VỚI CONTROL FLOW FLATTENING (SIÊU MA TRẬN) ---
+    function _0xExecCoreVM() {
+        // Luồng thực thi bị băm nhỏ thành các case phi tuần tự
+        var _0xMatrixFlow = '2|0|4|1|3'['split']('|'), _0xStep = 0;
+        
+        while (!![]) {
+            switch (_0xMatrixFlow[_0xStep++]) {
+                case '0':
+                    // Chạy Anti-Debugger tần suất cực cao (Chặn bắt gói tin F12)
+                    (function() {
+                        var _0xDbgFn = function() {
+                            var _0xInnerDbg = new Function('debugger');
+                            _0xInnerDbg();
+                        };
+                        setInterval(_0xDbgFn, 500);
+                    })();
+                    continue;
+                
+                case '1':
+                    // Kiểm tra tính toàn vẹn một lần nữa trước khi kích hoạt nút bấm
+                    if (!_0xSafeHook(_0xExecCoreVM)) {
+                        window['close']();
+                        return;
+                    }
+                    continue;
+
+                case '2':
+                    // Khởi tạo trạng thái bảo mật đóng băng biến toàn cục
+                    Object['freeze'](_0xMtx);
+                    continue;
+
+                case '3':
+                    // Gán sự kiện thực thi tối cao (WeAreDevs Packer Style nén sâu Payload)
+                    document['getElementById']('btn-lock')['addEventListener']('click', function() {
+                        // Toàn bộ Payload thực thi được nén mã hóa cứng thành chuỗi Base64 phức hợp không thể đọc tĩnh
+                        var _0xZPayload = 'ZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoJ2NvbnNvbGUtbG9nLW91dHB1dCcpLmlubmVySFRNTCA9ICfim6EgQ09SRSBGSUxFIElOSkVDVEVEIEFORCBBTlRJLVRBTVBFUiBBQ1RJVkFURUQhJzsgZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoJ2NvbnNvbGUtbG9nLW91dHB1dCcpLnN0eWxlLmNvbG9yID0gJyMwMGZmY2MnOw==';
+                        
+                        // Hàm thực thi động bóc tách từ mảng bộ nhớ an toàn
+                        window['\x65\x76\x61\x6c'](window['\x61\x74\x6f\x62'](_0xZPayload));
+                    });
+                    continue;
+
+                case '4':
+                    // Khởi tạo giao diện trạng thái thành công
+                    document['getElementById']('console-log-output')['innerHTML'] = 'Hệ thống đã khóa mã an toàn.';
+                    continue;
+            }
+            break;
+        }
+    }
+
+    // Kích hoạt lõi ma trận bảo mật tối thượng
+    _0xExecCoreVM();
+})();
+</script>
 </body>
 </html>
