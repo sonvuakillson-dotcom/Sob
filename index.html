@@ -3,139 +3,197 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SS2DEVHUB | Ultimate Obfuscator</title>
+<title>SS2DEVHUB | Ultimate Obfuscator Tool</title>
 <style>
   /* ==========================================
-     CYBERPUNK ULTRA INTERFACE - STABLE VERSION
+     GIAO DIỆN CÔNG CỤ MÃ HÓA (GENERATOR)
      ========================================== */
   :root {
-    --bg-color: #080c10;
-    --panel-bg: #11161d;
-    --accent-weak: #00ffcc;
-    --text-muted: #6e7681;
-    --border-color: #21262d;
+    --bg: #05080c; --panel: #0d1219;
+    --accent: #00ffcc; --accent-hover: #00e6b8;
+    --border: #1a222d; --text: #e1e7ed;
   }
 
   body {
-    margin: 0; padding: 0; height: 100vh;
+    margin: 0; padding: 20px; min-height: 100vh;
     display: flex; justify-content: center; align-items: center;
-    background: radial-gradient(circle at 50% 50%, var(--bg-color), #000000);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    overflow: hidden;
+    background: radial-gradient(circle at top, #0f1722, var(--bg));
+    font-family: 'Segoe UI', sans-serif; box-sizing: border-box;
   }
 
+  /* Hiệu ứng nền */
   body::before {
     content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    background-image: 
-      linear-gradient(rgba(0, 255, 204, 0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0, 255, 204, 0.03) 1px, transparent 1px);
-    background-size: 30px 30px; z-index: 0;
+    background-image: radial-gradient(rgba(0, 255, 204, 0.03) 1px, transparent 1px);
+    background-size: 20px 20px; z-index: 0; pointer-events: none;
   }
 
-  .panel-container {
+  .container {
     position: relative; z-index: 10;
-    width: 400px; padding: 45px 35px;
-    background: rgba(17, 22, 29, 0.75);
-    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-    border: 1px solid var(--border-color);
-    border-radius: 24px;
-    box-shadow: 0 0 50px rgba(0, 255, 204, 0.08), inset 0 0 30px rgba(0, 0, 0, 0.8);
-    text-align: center;
+    width: 100%; max-width: 800px; padding: 30px;
+    background: rgba(13, 18, 25, 0.8);
+    backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+    border: 1px solid var(--border); border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 20px rgba(0,255,204,0.05);
   }
 
-  .main-title {
-    color: #ffffff; font-size: 32px; font-weight: 900; margin-bottom: 5px;
-    text-transform: uppercase; letter-spacing: 4px;
-    background: linear-gradient(45deg, var(--accent-weak), #0099ff);
+  .header { text-align: center; margin-bottom: 25px; }
+  .title {
+    color: #fff; font-size: 28px; font-weight: 900; margin: 0;
+    letter-spacing: 3px; background: linear-gradient(90deg, var(--accent), #0099ff);
     -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   }
+  .subtitle { color: var(--accent); font-size: 12px; letter-spacing: 2px; font-family: monospace; }
+
+  /* Khu vực 2 ô nhập/xuất */
+  .grid-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 600px) { .grid-layout { grid-template-columns: 1fr; } }
+
+  .box-wrap { display: flex; flex-direction: column; gap: 10px; }
+  .box-title { color: #8b9bb4; font-size: 13px; font-weight: bold; text-transform: uppercase; }
   
-  .version-tag {
-    color: var(--accent-weak); font-size: 11px; text-transform: uppercase;
-    letter-spacing: 2px; margin-bottom: 35px; opacity: 0.8; font-family: monospace;
+  textarea {
+    width: 100%; height: 250px; background: #070a0f; color: #a2adb8;
+    border: 1px solid var(--border); border-radius: 8px;
+    padding: 15px; font-family: 'Courier New', monospace; font-size: 13px;
+    resize: none; box-sizing: border-box; transition: all 0.3s;
+    box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);
   }
+  textarea:focus { outline: none; border-color: var(--accent); color: var(--accent); }
+  
+  /* Nút bấm */
+  .btn-group { display: flex; justify-content: center; gap: 15px; margin-top: 25px; }
+  
+  .btn {
+    padding: 12px 30px; font-size: 14px; font-weight: bold; text-transform: uppercase;
+    border-radius: 8px; cursor: pointer; transition: all 0.3s; letter-spacing: 1px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  
+  .btn-obfuscate {
+    background: rgba(0, 255, 204, 0.1); color: var(--accent);
+    border: 1px solid var(--accent);
+  }
+  .btn-obfuscate:hover { background: var(--accent); color: #000; box-shadow: 0 0 20px var(--accent); }
 
-  .btn-secure-exec {
-    position: relative; width: 100%; padding: 16px;
-    background: linear-gradient(135deg, rgba(0,255,204,0.05), rgba(0,153,255,0.05));
-    color: var(--accent-weak); border: 1px solid var(--accent-weak); border-radius: 12px;
-    font-size: 15px; font-weight: bold; text-transform: uppercase;
-    letter-spacing: 2px; cursor: pointer; overflow: hidden;
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  .btn-copy {
+    background: rgba(0, 153, 255, 0.1); color: #0099ff;
+    border: 1px solid #0099ff;
   }
+  .btn-copy:hover { background: #0099ff; color: #fff; box-shadow: 0 0 20px #0099ff; }
 
-  .btn-secure-exec:hover {
-    color: #000000; background: var(--accent-weak);
-    box-shadow: 0 0 35px var(--accent-weak); transform: scale(1.02);
+  /* Thông báo Copy */
+  #toast {
+    position: absolute; top: 20px; right: 20px;
+    background: var(--accent); color: #000; padding: 10px 20px;
+    border-radius: 6px; font-weight: bold; font-size: 13px;
+    opacity: 0; transform: translateY(-10px); transition: all 0.3s; pointer-events: none;
   }
-
-  #console-log-output {
-    margin-top: 30px; font-family: monospace; font-size: 13px;
-    color: var(--text-muted); min-height: 24px; transition: color 0.3s ease;
-  }
+  #toast.show { opacity: 1; transform: translateY(0); }
 </style>
 </head>
 <body>
 
-<div class="panel-container">
-  <div class="main-title">SS2DEVHUB</div>
-  <div class="version-tag">Mã Hóa VM Đa Tầng v8.0 (Stable)</div>
-  <button class="btn-secure-exec" id="btn-lock">Execute Layer</button>
-  <div id="console-log-output">Đang tải cấu trúc dữ liệu...</div>
+<div class="container">
+  <div id="toast">Đã chép vào khay nhớ tạm!</div>
+  
+  <div class="header">
+    <h1 class="title">SS2DEVHUB GENERATOR</h1>
+    <div class="subtitle">Multi-Layer Obfuscator v10.0</div>
+  </div>
+
+  <div class="grid-layout">
+    <div class="box-wrap">
+      <div class="box-title">1. Code gốc (Raw Script)</div>
+      <textarea id="raw-code" placeholder="Dán mã nguồn cần bảo vệ vào đây..."></textarea>
+    </div>
+    
+    <div class="box-wrap">
+      <div class="box-title">2. Code đã mã hóa (Obfuscated)</div>
+      <textarea id="obf-code" readonly placeholder="Mã nguồn sau khi mã hóa sẽ hiển thị ở đây..."></textarea>
+    </div>
+  </div>
+
+  <div class="btn-group">
+    <button class="btn btn-obfuscate" onclick="generateCode()">
+      <span>🔒 Mã Hóa Ngay</span>
+    </button>
+    <button class="btn btn-copy" onclick="copyToClipboard()">
+      <span>📋 Copy Code</span>
+    </button>
+  </div>
 </div>
 
 <script>
-(function(){
-    // Mảng dữ liệu chứa các hàm lõi đã được ẩn
-    var _0xSysData = ['\x61\x74\x6f\x62', '\x65\x76\x61\x6c', '\x67\x65\x74\x45\x6c\x65\x6d\x65\x6e\x74\x42\x79\x49\x64', '\x62\x74\x6e\x2d\x6c\x6f\x63\x6b', '\x61\x64\x64\x45\x76\x65\x6e\x74\x4c\x69\x73\x74\x65\x6e\x65\x72', '\x63\x6c\x69\x63\x6b'];
-    
-    // --- MÁY ẢO VM VỚI CONTROL FLOW FLATTENING ---
-    // Cấu trúc ma trận nhảy luồng, khiến decompiler bị mù hướng nhưng máy thật chạy rất nhẹ
-    function _0xMatrixVM_Stable() {
-        var _0xFlow = '3|0|1|4|2'['split']('|'), _0xStep = 0;
-        
-        while (!![]) {
-            switch (_0xFlow[_0xStep++]) {
+// Logic Mã Hóa & Xào Code
+function generateCode() {
+  const rawInput = document.getElementById('raw-code').value;
+  const outputBox = document.getElementById('obf-code');
+  
+  if (!rawInput.trim()) {
+    alert("Bạn chưa nhập code gốc!");
+    return;
+  }
+
+  // Bước 1: Nén Base64 (Chống lỗi tiếng Việt & ký tự đặc biệt)
+  const base64Payload = btoa(unescape(encodeURIComponent(rawInput)));
+
+  // Bước 2: Bọc vào Lõi VM Control Flow Flattening (Bản không lỗi, không tự hủy)
+  // Đây là chuỗi code ảo sẽ bọc lấy payload của bạn
+  const vmTemplate = `(function(){
+    var _0xMtx=['\\x61\\x74\\x6f\\x62','\\x65\\x76\\x61\\x6c'];
+    function _0xMatrixVM(){
+        var _0xFlow='3|0|1|4|2'['split']('|'),_0xStep=0;
+        while(!![]){
+            switch(_0xFlow[_0xStep++]){
                 case '0':
-                    // Anti-Debugger ngầm (Chỉ gây khó chịu khi mở F12, không làm sập tab điện thoại)
-                    setInterval(function(){ 
-                        try { Function('debugger')(); } catch(e) {} 
-                    }, 1500);
+                    setInterval(function(){try{Function('debugger')();}catch(e){}},1500);
                     continue;
-
                 case '1':
-                    // Cập nhật trạng thái an toàn ra màn hình
-                    document[_0xSysData[2]]('console-log-output').innerHTML = 'Hệ thống đã sẵn sàng. Chờ lệnh thực thi...';
+                    var _0xSecureToken=0x99a;
                     continue;
-
                 case '2':
-                    // Thoát luồng an toàn (Ngăn vòng lặp vô hạn)
                     return;
-
                 case '3':
-                    // Thiết lập các biến ảo để đánh lừa công cụ soi code
-                    var _0xFakeEnv = { status: 'secured', version: 8.0 };
+                    var _0xFakeEnv={version:10.0,author:'SS2DEVHUB'};
                     continue;
-
                 case '4':
-                    // WeAreDevs Packer Style: Nén lệnh thực thi thành chuỗi Base64
-                    document[_0xSysData[2]](_0xSysData[3])[_0xSysData[4]](_0xSysData[5], function() {
-                        
-                        // Chuỗi lệnh thực sự: Đổi chữ thành "SYSTEM INJECTED SUCCESSFULLY!" và đổi màu xanh Neon
-                        var _0xPayload = 'ZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoJ2NvbnNvbGUtbG9nLW91dHB1dCcpLmlubmVySFRNTCA9ICfim6EgU1lTVEVNIElOSkVDVEVEIFNVQ0NFU1NGVUxMWSEnOyBkb2N1bWVudC5nZXRFbGVtZW50QnlJZCgnY29uc29sZS1sb2ctb3V0cHV0Jykuc3R5bGUuY29sb3IgPSAnIzAwZmZjYyc7';
-                        
-                        // Giải nén và chạy động ngay trong bộ nhớ
-                        window[_0xSysData[1]](window[_0xSysData[0]](_0xPayload));
-                    });
+                    // WeAreDevs Unpacker Engine
+                    var _0xPayload='${base64Payload}';
+                    var _0xDecoded = decodeURIComponent(escape(window[_0xMtx[0]](_0xPayload)));
+                    window[_0xMtx[1]](_0xDecoded);
                     continue;
             }
-            break; // Backup break phòng hờ
+            break;
         }
     }
-    
-    // Kích hoạt Core
-    _0xMatrixVM_Stable();
-})();
+    _0xMatrixVM();
+})();`;
+
+  // Bước 3: Đẩy kết quả ra ô 2
+  outputBox.value = vmTemplate;
+}
+
+// Logic Copy Code
+function copyToClipboard() {
+  const outputBox = document.getElementById('obf-code');
+  if (!outputBox.value.trim()) {
+    alert("Chưa có code mã hóa để copy!");
+    return;
+  }
+
+  // Chọn và copy
+  outputBox.select();
+  outputBox.setSelectionRange(0, 999999); // Dành cho mobile
+  document.execCommand("copy");
+
+  // Hiển thị thông báo Toast
+  const toast = document.getElementById('toast');
+  toast.classList.add('show');
+  setTimeout(() => {
+    toast.classList.remove('show');
+  }, 2000);
+}
 </script>
 </body>
 </html>
