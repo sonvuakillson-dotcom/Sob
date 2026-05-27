@@ -1,249 +1,103 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SS2DEVHUB | Max Edition Obfuscator</title>
-<style>
-  /* ==========================================
-     GIAO DIỆN V14.0 - MAX EDITION
-     ========================================== */
-  :root {
-    --bg-color: #030508;
-    --card-bg: #0a0d14;
-    --neon-green: #00ffcc;
-    --neon-red: #ff3366;
-    --neon-blue: #0099ff;
-    --border: #1a202c;
-  }
-
-  body {
-    margin: 0; padding: 10px; min-height: 100vh;
-    background: radial-gradient(circle at top, #0f1522, var(--bg-color));
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    display: flex; justify-content: center; align-items: center;
-    box-sizing: border-box;
-  }
-
-  .main-box {
-    width: 100%; max-width: 500px;
-    background: var(--card-bg);
-    border: 1px solid var(--border); border-radius: 16px;
-    padding: 22px 18px;
-    box-shadow: 0 10px 50px rgba(0,0,0,0.8), inset 0 0 20px rgba(0,255,204,0.02);
-    box-sizing: border-box;
-  }
-
-  .brand-title {
-    text-align: center; color: #fff; font-size: 26px; font-weight: 900;
-    margin: 0 0 5px 0; letter-spacing: 2px;
-    background: linear-gradient(90deg, var(--neon-red), var(--neon-green), var(--neon-blue));
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  }
-  
-  .brand-sub {
-    text-align: center; color: var(--neon-red); font-size: 11px;
-    font-family: monospace; text-transform: uppercase; margin-bottom: 25px;
-    letter-spacing: 2px;
-  }
-
-  .step-container {
-    display: flex; flex-direction: column; gap: 8px; margin-bottom: 18px;
-  }
-
-  .step-label {
-    color: #8b9bb4; font-size: 11px; font-weight: bold; text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-
-  /* MENU CHỌN XỊN XÒ */
-  .select-style {
-    width: 100%; padding: 12px; background: #05070a; color: #fff;
-    border: 1px solid var(--border); border-radius: 10px;
-    font-size: 13px; font-weight: bold; outline: none; cursor: pointer;
-    transition: all 0.3s; box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
-  }
-  .select-style:focus { border-color: var(--neon-red); }
-  .select-style option { background: #0a0d14; color: #fff; }
-
-  textarea {
-    width: 100%; height: 110px; background: #05070a; color: #a2adb8;
-    border: 1px solid var(--border); border-radius: 10px;
-    padding: 12px; font-family: monospace; font-size: 12px;
-    resize: none; box-sizing: border-box; transition: all 0.3s;
-    box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
-  }
-  textarea:focus { outline: none; border-color: var(--neon-green); color: #fff; }
-
-  .action-btn {
-    width: 100%; padding: 14px; font-size: 14px; font-weight: bold;
-    text-transform: uppercase; border-radius: 10px; cursor: pointer;
-    transition: all 0.3s; letter-spacing: 1px; box-sizing: border-box;
-    margin-bottom: 15px; display: flex; justify-content: center; align-items: center; gap: 8px;
-  }
-
-  .btn-lock {
-    background: rgba(255, 51, 102, 0.1); color: var(--neon-red);
-    border: 1px solid var(--neon-red);
-  }
-  .btn-lock:hover, .btn-lock:active {
-    background: var(--neon-red); color: #000; box-shadow: 0 0 20px var(--neon-red);
-  }
-
-  .btn-copy {
-    background: rgba(0, 255, 204, 0.1); color: var(--neon-green);
-    border: 1px solid var(--neon-green); margin-bottom: 0;
-  }
-  .btn-copy:hover, .btn-copy:active {
-    background: var(--neon-green); color: #000; box-shadow: 0 0 20px var(--neon-green);
-  }
-
-  #alert-toast {
-    position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
-    background: #fff; color: #000; padding: 10px 20px;
-    border-radius: 8px; font-size: 12px; font-weight: bold;
-    opacity: 0; transition: opacity 0.3s, top 0.3s; pointer-events: none; z-index: 99;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-  }
-  #alert-toast.visible { opacity: 1; top: 30px; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SS2DevHub - Get Key</title>
+    <style>
+        body { 
+            background-color: #121212; 
+            color: #ffffff; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            margin: 0; 
+        }
+        .container { 
+            background-color: #1e1e1e; 
+            padding: 30px; 
+            border-radius: 12px; 
+            text-align: center; 
+            box-shadow: 0 8px 16px rgba(0,0,0,0.5); 
+            width: 350px;
+        }
+        h2 { margin-top: 0; color: #00ff88; }
+        button { 
+            background-color: #007bff; 
+            color: white; 
+            border: none; 
+            padding: 12px 24px; 
+            margin: 15px 0; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            font-size: 16px; 
+            width: 100%;
+            transition: 0.3s;
+        }
+        button:hover { background-color: #0056b3; }
+        button:disabled { background-color: #555555; cursor: not-allowed; color: #999; }
+        #keyDisplay { 
+            margin-top: 20px; 
+            font-size: 22px; 
+            font-weight: bold; 
+            color: #00ff88; 
+            background: #2a2a2a;
+            padding: 10px;
+            border-radius: 6px;
+            display: none;
+            word-break: break-all;
+        }
+    </style>
 </head>
 <body>
 
-<div id="alert-toast">Đã copy mã hóa vào khay nhớ tạm!</div>
+    <div class="container">
+        <h2>SS2DevHub Key</h2>
+        <p>Bước 1: Sao chép đoạn text dưới đây để mở khóa hệ thống</p>
+        <button id="copyBtn" onclick="copyText()">Sao chép @ss2dev</button>
 
-<div class="main-box">
-  <h1 class="brand-title">SS2DEVHUB</h1>
-  <div class="brand-sub">Max Protection Engine v14.0</div>
+        <p>Bước 2: Lấy Key Script</p>
+        <button id="getKeyBtn" onclick="generateKey()" disabled>Tạo Key Random</button>
 
-  <div class="step-container">
-    <div class="step-label">1. Code Gốc Của Bạn (Raw JS):</div>
-    <textarea id="input-raw" placeholder="Dán mã nguồn vào đây..."></textarea>
-  </div>
+        <div id="keyDisplay"></div>
+    </div>
 
-  <div class="step-container">
-    <div class="step-label">2. Chọn Độ Khó Mã Hóa (Security Level):</div>
-    <select id="obf-method" class="select-style">
-      <option value="wrds">WeAreDevs Style (Nhanh, nhẹ, bọc VM)</option>
-      <option value="luaphr">LuaPHR Equivalent (Giấu toàn bộ chuỗi Hex)</option>
-      <option value="dict">Array Dictionary Obfuscator (Gói từ điển số)</option>
-      <option value="b34">Base34 Custom Alphabet (Mã hóa ẩn danh)</option>
-      <option value="tamper" style="color: #00ffcc;">Self-Defending (Chống chỉnh sửa, tự Crash)</option>
-      <option value="heavy" style="color: #ff3366;">MAX HEAVY UNBREAKABLE (Siêu Nặng Khó Giải)</option>
-    </select>
-  </div>
+    <script>
+        // Hàm sao chép và mở khóa nút lấy key
+        function copyText() {
+            navigator.clipboard.writeText("@ss2dev").then(() => {
+                alert("Đã sao chép: @ss2dev thành công! Bạn có thể tạo Key ngay bây giờ.");
+                
+                // Mở khóa nút Tạo Key
+                document.getElementById("getKeyBtn").disabled = false;
+                document.getElementById("getKeyBtn").style.backgroundColor = "#28a745"; // Đổi màu xanh lá
+                
+                // Thay đổi trạng thái nút Copy
+                document.getElementById("copyBtn").innerText = "Đã sao chép ✔️";
+                document.getElementById("copyBtn").disabled = true; // Không cho bấm lại
+            }).catch(err => {
+                alert("Lỗi sao chép, vui lòng thử lại!");
+            });
+        }
 
-  <button class="action-btn btn-lock" onclick="runObfuscate()">🔒 Tiến Hành Khóa Code</button>
+        // Hàm tạo key ngẫu nhiên
+        function generateKey() {
+            // Tạo một số ngẫu nhiên từ 10000 đến 99999
+            let randomNum = Math.floor(Math.random() * 90000) + 10000; 
+            let finalKey = "ss2dev-" + randomNum;
+            
+            // Hiển thị Key ra màn hình
+            let displayBlock = document.getElementById("keyDisplay");
+            displayBlock.style.display = "block";
+            displayBlock.innerText = finalKey;
+            
+            // Tự động sao chép key luôn cho người dùng tiện dán vào Roblox
+            navigator.clipboard.writeText(finalKey);
+            alert("Đã tạo và tự động sao chép Key: " + finalKey);
+        }
+    </script>
 
-  <div class="step-container">
-    <div class="step-label">3. Code Sau Khi Mã Hóa:</div>
-    <textarea id="output-obf" readonly placeholder="Mã bất tử sẽ hiện ở đây..."></textarea>
-  </div>
-
-  <button class="action-btn btn-copy" onclick="runCopy()">📋 Copy Mã Này</button>
-</div>
-
-<script>
-// ==========================================
-// THUẬT TOÁN MÃ HÓA
-// ==========================================
-
-function convertToHexArray(str) {
-    let arr = [];
-    for (let i = 0; i < str.length; i++) {
-        arr.push('\\x' + str.charCodeAt(i).toString(16).padStart(2, '0'));
-    }
-    return arr.join('');
-}
-
-const B34_ALPHABET = "0123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
-function encodeBase34(input) {
-    let bytes = new TextEncoder().encode(input);
-    let num = BigInt(0);
-    for (let b of bytes) { num = (num << 8n) + BigInt(b); }
-    let result = "";
-    while (num > 0n) {
-        let rem = num % 34n;
-        num = num / 34n;
-        result = B34_ALPHABET[Number(rem)] + result;
-    }
-    return result || "0";
-}
-
-function runObfuscate() {
-  const codeGoc = document.getElementById('input-raw').value;
-  const oKetQua = document.getElementById('output-obf');
-  const phuongThuc = document.getElementById('obf-method').value;
-  
-  if (!codeGoc.trim()) {
-    alert("Dán code vào ô 1 trước ông giáo ơi!");
-    return;
-  }
-
-  try {
-    let outputCode = "";
-    const b64Data = btoa(unescape(encodeURIComponent(codeGoc)));
-
-    switch(phuongThuc) {
-      case "wrds":
-        outputCode = `(function(){var _0xWrd=['\\x61\\x74\\x6f\\x62','\\x65\\x76\\x61\\x6c'];function _0xWrdVM(){var _0xMatrix='1|3|0|4|2'['split']('|'),_0xP=0;while(!![]){switch(_0xMatrix[_0xP++]){case '0':setInterval(function(){try{Function('debugger')();}catch(e){}},2000);continue;case '1':var _0xData='${b64Data}';continue;case '2':return;case '3':var _0xDec=decodeURIComponent(escape(window[_0xWrd[0]](_0xData)));window[_0xWrd[1]](_0xDec);continue;case '4':Object.freeze(_0xWrd);continue;}break;}}_0xWrdVM();})();`;
-        break;
-
-      case "luaphr":
-        const hexData = convertToHexArray(codeGoc);
-        outputCode = `(function(){var _0xPhrPool=['${hexData}'];eval(_0xPhrPool[0]);})();`;
-        break;
-        
-      case "dict":
-        // Gom code thành mảng từ điển (Dictionary)
-        let dictArr = [];
-        for(let i=0; i<b64Data.length; i++){ dictArr.push(`'${b64Data[i]}'`); }
-        outputCode = `(function(){var _0xDict=[${dictArr.join(',')}];var _0xS="";for(var i=0;i<_0xDict.length;i++){_0xS+=_0xDict[i];}window.eval(window.atob(_0xS));})();`;
-        break;
-
-      case "b34":
-        const b34String = encodeBase34(codeGoc);
-        outputCode = `(function(){var _0xAlpha="${B34_ALPHABET}";var _0xRaw="${b34String}";var _0xNum=0n;for(var i=0;i<_0xRaw.length;i++){_0xNum=_0xNum*34n+BigInt(_0xAlpha.indexOf(_0xRaw[i]));}var _0xBytes=[];while(_0xNum>0n){_0xBytes.unshift(Number(_0xNum & 255n));_0xNum=_0xNum>>8n;}var _0xDec=new TextDecoder().decode(new Uint8Array(_0xBytes));eval(_0xDec);})();`;
-        break;
-
-      case "tamper":
-        // SELF-DEFENDING (Chống sửa code) - Được nén thành 1 dòng (Minified)
-        outputCode = `(function(_0xEnv){var _0xCheck=function(){var _0xStr=_0xCheck['toString']();if(/\\n|\\r/.test(_0xStr)){while(true){}}};try{_0xCheck();}catch(e){}var _0xP='${b64Data}';_0xEnv['eval'](_0xEnv['atob'](_0xP));})(typeof window!=='undefined'?window:globalThis);`;
-        break;
-
-      case "heavy":
-        // HEAVY MAX: Chia nhỏ + Hex + Tamper + Anti-Debug + VM lồng nhau
-        const hexHeavy = convertToHexArray(b64Data);
-        let part1 = hexHeavy.substring(0, Math.floor(hexHeavy.length/3));
-        let part2 = hexHeavy.substring(Math.floor(hexHeavy.length/3), Math.floor(hexHeavy.length*2/3));
-        let part3 = hexHeavy.substring(Math.floor(hexHeavy.length*2/3));
-        
-        outputCode = `(function(_0xX){var _0xM=['${part1}','${part2}','${part3}'];var _0xDef=function(){var _0xF=_0xDef['toString']();if(/\\n|\\r|\\s{4}/.test(_0xF)){while(!![]){}}};try{_0xDef();}catch(_0xErr){};setInterval(function(){debugger;},50);var _0xC=_0xM[0]+_0xM[1]+_0xM[2];var _0xDec=decodeURIComponent(escape(_0xX['atob'](_0xC)));_0xX['eval'](_0xDec);})(typeof window!=='undefined'?window:globalThis);`;
-        break;
-    }
-
-    oKetQua.value = outputCode;
-
-  } catch(err) {
-    alert("Lỗi quá trình mã hóa: " + err.message);
-  }
-}
-
-function runCopy() {
-  const oKetQua = document.getElementById('output-obf');
-  if (!oKetQua.value.trim()) {
-    alert("Không có mã để copy đâu bác!");
-    return;
-  }
-  oKetQua.select();
-  oKetQua.setSelectionRange(0, 99999);
-  document.execCommand("copy");
-
-  const toast = document.getElementById('alert-toast');
-  toast.classList.add('visible');
-  setTimeout(() => { toast.classList.remove('visible'); }, 2000);
-}
-</script>
 </body>
 </html>
-
