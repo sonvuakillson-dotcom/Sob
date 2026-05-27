@@ -3,197 +3,247 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SS2DEVHUB | Ultimate Obfuscator Tool</title>
+<title>SS2DEVHUB | Max Edition Obfuscator</title>
 <style>
   /* ==========================================
-     GIAO DIỆN CÔNG CỤ MÃ HÓA (GENERATOR)
+     GIAO DIỆN V14.0 - MAX EDITION
      ========================================== */
   :root {
-    --bg: #05080c; --panel: #0d1219;
-    --accent: #00ffcc; --accent-hover: #00e6b8;
-    --border: #1a222d; --text: #e1e7ed;
+    --bg-color: #030508;
+    --card-bg: #0a0d14;
+    --neon-green: #00ffcc;
+    --neon-red: #ff3366;
+    --neon-blue: #0099ff;
+    --border: #1a202c;
   }
 
   body {
-    margin: 0; padding: 20px; min-height: 100vh;
+    margin: 0; padding: 10px; min-height: 100vh;
+    background: radial-gradient(circle at top, #0f1522, var(--bg-color));
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     display: flex; justify-content: center; align-items: center;
-    background: radial-gradient(circle at top, #0f1722, var(--bg));
-    font-family: 'Segoe UI', sans-serif; box-sizing: border-box;
+    box-sizing: border-box;
   }
 
-  /* Hiệu ứng nền */
-  body::before {
-    content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    background-image: radial-gradient(rgba(0, 255, 204, 0.03) 1px, transparent 1px);
-    background-size: 20px 20px; z-index: 0; pointer-events: none;
-  }
-
-  .container {
-    position: relative; z-index: 10;
-    width: 100%; max-width: 800px; padding: 30px;
-    background: rgba(13, 18, 25, 0.8);
-    backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+  .main-box {
+    width: 100%; max-width: 500px;
+    background: var(--card-bg);
     border: 1px solid var(--border); border-radius: 16px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 20px rgba(0,255,204,0.05);
+    padding: 22px 18px;
+    box-shadow: 0 10px 50px rgba(0,0,0,0.8), inset 0 0 20px rgba(0,255,204,0.02);
+    box-sizing: border-box;
   }
 
-  .header { text-align: center; margin-bottom: 25px; }
-  .title {
-    color: #fff; font-size: 28px; font-weight: 900; margin: 0;
-    letter-spacing: 3px; background: linear-gradient(90deg, var(--accent), #0099ff);
+  .brand-title {
+    text-align: center; color: #fff; font-size: 26px; font-weight: 900;
+    margin: 0 0 5px 0; letter-spacing: 2px;
+    background: linear-gradient(90deg, var(--neon-red), var(--neon-green), var(--neon-blue));
     -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   }
-  .subtitle { color: var(--accent); font-size: 12px; letter-spacing: 2px; font-family: monospace; }
-
-  /* Khu vực 2 ô nhập/xuất */
-  .grid-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-  @media (max-width: 600px) { .grid-layout { grid-template-columns: 1fr; } }
-
-  .box-wrap { display: flex; flex-direction: column; gap: 10px; }
-  .box-title { color: #8b9bb4; font-size: 13px; font-weight: bold; text-transform: uppercase; }
   
+  .brand-sub {
+    text-align: center; color: var(--neon-red); font-size: 11px;
+    font-family: monospace; text-transform: uppercase; margin-bottom: 25px;
+    letter-spacing: 2px;
+  }
+
+  .step-container {
+    display: flex; flex-direction: column; gap: 8px; margin-bottom: 18px;
+  }
+
+  .step-label {
+    color: #8b9bb4; font-size: 11px; font-weight: bold; text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  /* MENU CHỌN XỊN XÒ */
+  .select-style {
+    width: 100%; padding: 12px; background: #05070a; color: #fff;
+    border: 1px solid var(--border); border-radius: 10px;
+    font-size: 13px; font-weight: bold; outline: none; cursor: pointer;
+    transition: all 0.3s; box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+  }
+  .select-style:focus { border-color: var(--neon-red); }
+  .select-style option { background: #0a0d14; color: #fff; }
+
   textarea {
-    width: 100%; height: 250px; background: #070a0f; color: #a2adb8;
-    border: 1px solid var(--border); border-radius: 8px;
-    padding: 15px; font-family: 'Courier New', monospace; font-size: 13px;
+    width: 100%; height: 110px; background: #05070a; color: #a2adb8;
+    border: 1px solid var(--border); border-radius: 10px;
+    padding: 12px; font-family: monospace; font-size: 12px;
     resize: none; box-sizing: border-box; transition: all 0.3s;
-    box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
   }
-  textarea:focus { outline: none; border-color: var(--accent); color: var(--accent); }
-  
-  /* Nút bấm */
-  .btn-group { display: flex; justify-content: center; gap: 15px; margin-top: 25px; }
-  
-  .btn {
-    padding: 12px 30px; font-size: 14px; font-weight: bold; text-transform: uppercase;
-    border-radius: 8px; cursor: pointer; transition: all 0.3s; letter-spacing: 1px;
-    display: flex; align-items: center; gap: 8px;
+  textarea:focus { outline: none; border-color: var(--neon-green); color: #fff; }
+
+  .action-btn {
+    width: 100%; padding: 14px; font-size: 14px; font-weight: bold;
+    text-transform: uppercase; border-radius: 10px; cursor: pointer;
+    transition: all 0.3s; letter-spacing: 1px; box-sizing: border-box;
+    margin-bottom: 15px; display: flex; justify-content: center; align-items: center; gap: 8px;
   }
-  
-  .btn-obfuscate {
-    background: rgba(0, 255, 204, 0.1); color: var(--accent);
-    border: 1px solid var(--accent);
+
+  .btn-lock {
+    background: rgba(255, 51, 102, 0.1); color: var(--neon-red);
+    border: 1px solid var(--neon-red);
   }
-  .btn-obfuscate:hover { background: var(--accent); color: #000; box-shadow: 0 0 20px var(--accent); }
+  .btn-lock:hover, .btn-lock:active {
+    background: var(--neon-red); color: #000; box-shadow: 0 0 20px var(--neon-red);
+  }
 
   .btn-copy {
-    background: rgba(0, 153, 255, 0.1); color: #0099ff;
-    border: 1px solid #0099ff;
+    background: rgba(0, 255, 204, 0.1); color: var(--neon-green);
+    border: 1px solid var(--neon-green); margin-bottom: 0;
   }
-  .btn-copy:hover { background: #0099ff; color: #fff; box-shadow: 0 0 20px #0099ff; }
+  .btn-copy:hover, .btn-copy:active {
+    background: var(--neon-green); color: #000; box-shadow: 0 0 20px var(--neon-green);
+  }
 
-  /* Thông báo Copy */
-  #toast {
-    position: absolute; top: 20px; right: 20px;
-    background: var(--accent); color: #000; padding: 10px 20px;
-    border-radius: 6px; font-weight: bold; font-size: 13px;
-    opacity: 0; transform: translateY(-10px); transition: all 0.3s; pointer-events: none;
+  #alert-toast {
+    position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+    background: #fff; color: #000; padding: 10px 20px;
+    border-radius: 8px; font-size: 12px; font-weight: bold;
+    opacity: 0; transition: opacity 0.3s, top 0.3s; pointer-events: none; z-index: 99;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
   }
-  #toast.show { opacity: 1; transform: translateY(0); }
+  #alert-toast.visible { opacity: 1; top: 30px; }
 </style>
 </head>
 <body>
 
-<div class="container">
-  <div id="toast">Đã chép vào khay nhớ tạm!</div>
-  
-  <div class="header">
-    <h1 class="title">SS2DEVHUB GENERATOR</h1>
-    <div class="subtitle">Multi-Layer Obfuscator v10.0</div>
+<div id="alert-toast">Đã copy mã hóa vào khay nhớ tạm!</div>
+
+<div class="main-box">
+  <h1 class="brand-title">SS2DEVHUB</h1>
+  <div class="brand-sub">Max Protection Engine v14.0</div>
+
+  <div class="step-container">
+    <div class="step-label">1. Code Gốc Của Bạn (Raw JS):</div>
+    <textarea id="input-raw" placeholder="Dán mã nguồn vào đây..."></textarea>
   </div>
 
-  <div class="grid-layout">
-    <div class="box-wrap">
-      <div class="box-title">1. Code gốc (Raw Script)</div>
-      <textarea id="raw-code" placeholder="Dán mã nguồn cần bảo vệ vào đây..."></textarea>
-    </div>
-    
-    <div class="box-wrap">
-      <div class="box-title">2. Code đã mã hóa (Obfuscated)</div>
-      <textarea id="obf-code" readonly placeholder="Mã nguồn sau khi mã hóa sẽ hiển thị ở đây..."></textarea>
-    </div>
+  <div class="step-container">
+    <div class="step-label">2. Chọn Độ Khó Mã Hóa (Security Level):</div>
+    <select id="obf-method" class="select-style">
+      <option value="wrds">WeAreDevs Style (Nhanh, nhẹ, bọc VM)</option>
+      <option value="luaphr">LuaPHR Equivalent (Giấu toàn bộ chuỗi Hex)</option>
+      <option value="dict">Array Dictionary Obfuscator (Gói từ điển số)</option>
+      <option value="b34">Base34 Custom Alphabet (Mã hóa ẩn danh)</option>
+      <option value="tamper" style="color: #00ffcc;">Self-Defending (Chống chỉnh sửa, tự Crash)</option>
+      <option value="heavy" style="color: #ff3366;">MAX HEAVY UNBREAKABLE (Siêu Nặng Khó Giải)</option>
+    </select>
   </div>
 
-  <div class="btn-group">
-    <button class="btn btn-obfuscate" onclick="generateCode()">
-      <span>🔒 Mã Hóa Ngay</span>
-    </button>
-    <button class="btn btn-copy" onclick="copyToClipboard()">
-      <span>📋 Copy Code</span>
-    </button>
+  <button class="action-btn btn-lock" onclick="runObfuscate()">🔒 Tiến Hành Khóa Code</button>
+
+  <div class="step-container">
+    <div class="step-label">3. Code Sau Khi Mã Hóa:</div>
+    <textarea id="output-obf" readonly placeholder="Mã bất tử sẽ hiện ở đây..."></textarea>
   </div>
+
+  <button class="action-btn btn-copy" onclick="runCopy()">📋 Copy Mã Này</button>
 </div>
 
 <script>
-// Logic Mã Hóa & Xào Code
-function generateCode() {
-  const rawInput = document.getElementById('raw-code').value;
-  const outputBox = document.getElementById('obf-code');
-  
-  if (!rawInput.trim()) {
-    alert("Bạn chưa nhập code gốc!");
-    return;
-  }
+// ==========================================
+// THUẬT TOÁN MÃ HÓA
+// ==========================================
 
-  // Bước 1: Nén Base64 (Chống lỗi tiếng Việt & ký tự đặc biệt)
-  const base64Payload = btoa(unescape(encodeURIComponent(rawInput)));
-
-  // Bước 2: Bọc vào Lõi VM Control Flow Flattening (Bản không lỗi, không tự hủy)
-  // Đây là chuỗi code ảo sẽ bọc lấy payload của bạn
-  const vmTemplate = `(function(){
-    var _0xMtx=['\\x61\\x74\\x6f\\x62','\\x65\\x76\\x61\\x6c'];
-    function _0xMatrixVM(){
-        var _0xFlow='3|0|1|4|2'['split']('|'),_0xStep=0;
-        while(!![]){
-            switch(_0xFlow[_0xStep++]){
-                case '0':
-                    setInterval(function(){try{Function('debugger')();}catch(e){}},1500);
-                    continue;
-                case '1':
-                    var _0xSecureToken=0x99a;
-                    continue;
-                case '2':
-                    return;
-                case '3':
-                    var _0xFakeEnv={version:10.0,author:'SS2DEVHUB'};
-                    continue;
-                case '4':
-                    // WeAreDevs Unpacker Engine
-                    var _0xPayload='${base64Payload}';
-                    var _0xDecoded = decodeURIComponent(escape(window[_0xMtx[0]](_0xPayload)));
-                    window[_0xMtx[1]](_0xDecoded);
-                    continue;
-            }
-            break;
-        }
+function convertToHexArray(str) {
+    let arr = [];
+    for (let i = 0; i < str.length; i++) {
+        arr.push('\\x' + str.charCodeAt(i).toString(16).padStart(2, '0'));
     }
-    _0xMatrixVM();
-})();`;
-
-  // Bước 3: Đẩy kết quả ra ô 2
-  outputBox.value = vmTemplate;
+    return arr.join('');
 }
 
-// Logic Copy Code
-function copyToClipboard() {
-  const outputBox = document.getElementById('obf-code');
-  if (!outputBox.value.trim()) {
-    alert("Chưa có code mã hóa để copy!");
+const B34_ALPHABET = "0123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+function encodeBase34(input) {
+    let bytes = new TextEncoder().encode(input);
+    let num = BigInt(0);
+    for (let b of bytes) { num = (num << 8n) + BigInt(b); }
+    let result = "";
+    while (num > 0n) {
+        let rem = num % 34n;
+        num = num / 34n;
+        result = B34_ALPHABET[Number(rem)] + result;
+    }
+    return result || "0";
+}
+
+function runObfuscate() {
+  const codeGoc = document.getElementById('input-raw').value;
+  const oKetQua = document.getElementById('output-obf');
+  const phuongThuc = document.getElementById('obf-method').value;
+  
+  if (!codeGoc.trim()) {
+    alert("Dán code vào ô 1 trước ông giáo ơi!");
     return;
   }
 
-  // Chọn và copy
-  outputBox.select();
-  outputBox.setSelectionRange(0, 999999); // Dành cho mobile
+  try {
+    let outputCode = "";
+    const b64Data = btoa(unescape(encodeURIComponent(codeGoc)));
+
+    switch(phuongThuc) {
+      case "wrds":
+        outputCode = `(function(){var _0xWrd=['\\x61\\x74\\x6f\\x62','\\x65\\x76\\x61\\x6c'];function _0xWrdVM(){var _0xMatrix='1|3|0|4|2'['split']('|'),_0xP=0;while(!![]){switch(_0xMatrix[_0xP++]){case '0':setInterval(function(){try{Function('debugger')();}catch(e){}},2000);continue;case '1':var _0xData='${b64Data}';continue;case '2':return;case '3':var _0xDec=decodeURIComponent(escape(window[_0xWrd[0]](_0xData)));window[_0xWrd[1]](_0xDec);continue;case '4':Object.freeze(_0xWrd);continue;}break;}}_0xWrdVM();})();`;
+        break;
+
+      case "luaphr":
+        const hexData = convertToHexArray(codeGoc);
+        outputCode = `(function(){var _0xPhrPool=['${hexData}'];eval(_0xPhrPool[0]);})();`;
+        break;
+        
+      case "dict":
+        // Gom code thành mảng từ điển (Dictionary)
+        let dictArr = [];
+        for(let i=0; i<b64Data.length; i++){ dictArr.push(`'${b64Data[i]}'`); }
+        outputCode = `(function(){var _0xDict=[${dictArr.join(',')}];var _0xS="";for(var i=0;i<_0xDict.length;i++){_0xS+=_0xDict[i];}window.eval(window.atob(_0xS));})();`;
+        break;
+
+      case "b34":
+        const b34String = encodeBase34(codeGoc);
+        outputCode = `(function(){var _0xAlpha="${B34_ALPHABET}";var _0xRaw="${b34String}";var _0xNum=0n;for(var i=0;i<_0xRaw.length;i++){_0xNum=_0xNum*34n+BigInt(_0xAlpha.indexOf(_0xRaw[i]));}var _0xBytes=[];while(_0xNum>0n){_0xBytes.unshift(Number(_0xNum & 255n));_0xNum=_0xNum>>8n;}var _0xDec=new TextDecoder().decode(new Uint8Array(_0xBytes));eval(_0xDec);})();`;
+        break;
+
+      case "tamper":
+        // SELF-DEFENDING (Chống sửa code) - Được nén thành 1 dòng (Minified)
+        outputCode = `(function(_0xEnv){var _0xCheck=function(){var _0xStr=_0xCheck['toString']();if(/\\n|\\r/.test(_0xStr)){while(true){}}};try{_0xCheck();}catch(e){}var _0xP='${b64Data}';_0xEnv['eval'](_0xEnv['atob'](_0xP));})(typeof window!=='undefined'?window:globalThis);`;
+        break;
+
+      case "heavy":
+        // HEAVY MAX: Chia nhỏ + Hex + Tamper + Anti-Debug + VM lồng nhau
+        const hexHeavy = convertToHexArray(b64Data);
+        let part1 = hexHeavy.substring(0, Math.floor(hexHeavy.length/3));
+        let part2 = hexHeavy.substring(Math.floor(hexHeavy.length/3), Math.floor(hexHeavy.length*2/3));
+        let part3 = hexHeavy.substring(Math.floor(hexHeavy.length*2/3));
+        
+        outputCode = `(function(_0xX){var _0xM=['${part1}','${part2}','${part3}'];var _0xDef=function(){var _0xF=_0xDef['toString']();if(/\\n|\\r|\\s{4}/.test(_0xF)){while(!![]){}}};try{_0xDef();}catch(_0xErr){};setInterval(function(){debugger;},50);var _0xC=_0xM[0]+_0xM[1]+_0xM[2];var _0xDec=decodeURIComponent(escape(_0xX['atob'](_0xC)));_0xX['eval'](_0xDec);})(typeof window!=='undefined'?window:globalThis);`;
+        break;
+    }
+
+    oKetQua.value = outputCode;
+
+  } catch(err) {
+    alert("Lỗi quá trình mã hóa: " + err.message);
+  }
+}
+
+function runCopy() {
+  const oKetQua = document.getElementById('output-obf');
+  if (!oKetQua.value.trim()) {
+    alert("Không có mã để copy đâu bác!");
+    return;
+  }
+  oKetQua.select();
+  oKetQua.setSelectionRange(0, 99999);
   document.execCommand("copy");
 
-  // Hiển thị thông báo Toast
-  const toast = document.getElementById('toast');
-  toast.classList.add('show');
-  setTimeout(() => {
-    toast.classList.remove('show');
-  }, 2000);
+  const toast = document.getElementById('alert-toast');
+  toast.classList.add('visible');
+  setTimeout(() => { toast.classList.remove('visible'); }, 2000);
 }
 </script>
 </body>
 </html>
+
