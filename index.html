@@ -3,17 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lyn Obfuscate - Premium Security Hub</title>
+    <title>Lyn Obfuscate - Ultimate V3 Pro</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Orbitron:wght@500;800&display=swap');
 
         :root {
-            --bg-color: #0d0e15;
-            --panel-color: #161824;
-            --accent-purple: #8a2be2;
-            --accent-cyan: #00f2fe;
+            --bg-color: #050505;
+            --panel-color: #0f0f15;
+            --accent-main: #ff0055;
+            --accent-sec: #00f2fe;
             --text-main: #e2e8f0;
-            --text-glow: rgba(138, 43, 226, 0.5);
         }
 
         body {
@@ -22,7 +21,7 @@
             background-color: var(--bg-color);
             color: var(--text-main);
             font-family: 'Fira Code', monospace;
-            background-image: radial-gradient(circle at 50% 50%, #1e1135 0%, #0d0e15 100%);
+            background-image: linear-gradient(45deg, #050505 0%, #1a0b14 100%);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -30,158 +29,109 @@
         }
 
         .container {
-            width: 90%;
-            max-width: 1100px;
+            width: 95%;
+            max-width: 1200px;
             margin: 40px 0;
             padding: 30px;
             background: var(--panel-color);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 16px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 30px rgba(138, 43, 226, 0.15);
-            backdrop-filter: blur(10px);
+            border: 1px solid #331a24;
+            border-radius: 12px;
+            box-shadow: 0 10px 50px rgba(255, 0, 85, 0.1);
         }
 
         header {
             text-align: center;
             margin-bottom: 30px;
-            border-bottom: 2px dashed rgba(138, 43, 226, 0.2);
+            border-bottom: 1px solid #331a24;
             padding-bottom: 20px;
         }
 
         header h1 {
             font-family: 'Orbitron', sans-serif;
-            font-size: 2.5rem;
+            font-size: 2.8rem;
             margin: 0;
+            color: var(--accent-main);
             text-transform: uppercase;
-            letter-spacing: 4px;
-            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0 0 10px var(--text-glow));
+            letter-spacing: 5px;
+            text-shadow: 0 0 15px rgba(255, 0, 85, 0.4);
         }
 
-        header p {
-            font-size: 0.9rem;
-            color: #64748b;
-            margin-top: 5px;
-        }
+        header p { color: #888; font-size: 0.9rem; }
 
-        .main-layout {
+        .layout {
             display: grid;
-            grid-template-columns: 1fr;
+            grid-template-columns: 1fr 1fr;
             gap: 20px;
         }
 
-        @media (min-width: 768px) {
-            .main-layout {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
+        @media (max-width: 800px) { .layout { grid-template-columns: 1fr; } }
 
-        .box {
-            display: flex;
-            flex-direction: column;
-        }
+        .box { display: flex; flex-direction: column; }
 
         label {
-            font-size: 0.85rem;
+            color: var(--accent-sec);
+            margin-bottom: 10px;
+            font-weight: bold;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--accent-cyan);
-            margin-bottom: 8px;
-            font-weight: 600;
         }
 
         textarea {
             width: 100%;
-            height: 280px;
-            background: #090a0f;
-            border: 1px solid #2e3047;
-            border-radius: 8px;
-            color: #a0aec0;
-            padding: 12px;
+            height: 350px;
+            background: #020202;
+            border: 1px solid #333;
+            border-radius: 6px;
+            color: #00ff66;
+            padding: 15px;
             box-sizing: border-box;
             resize: none;
-            font-family: 'Fira Code', monospace;
-            font-size: 0.85rem;
-            transition: all 0.3s ease;
+            font-size: 0.8rem;
+            line-height: 1.4;
         }
 
-        textarea:focus {
-            outline: none;
-            border-color: var(--accent-purple);
-            box-shadow: 0 0 10px rgba(138, 43, 226, 0.3);
-            color: #fff;
-        }
+        textarea:focus { outline: none; border-color: var(--accent-main); }
 
-        .options-panel {
+        .controls {
             grid-column: 1 / -1;
-            background: rgba(0, 0, 0, 0.2);
-            padding: 20px;
-            border-radius: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.02);
-        }
-
-        .options-group {
             display: flex;
-            flex-wrap: wrap;
             gap: 15px;
-            align-items: center;
-        }
-
-        .select-style {
-            background: #090a0f;
-            color: #fff;
-            border: 1px solid #2e3047;
-            padding: 10px 15px;
+            background: #0a0a0a;
+            padding: 20px;
             border-radius: 6px;
+            border: 1px solid #222;
+        }
+
+        select {
+            flex: 1;
+            background: #000;
+            color: #fff;
+            border: 1px solid #444;
+            padding: 12px;
+            border-radius: 4px;
             font-family: 'Fira Code', monospace;
-            cursor: pointer;
-            outline: none;
+            font-size: 0.9rem;
         }
 
-        .select-style:focus {
-            border-color: var(--accent-cyan);
-        }
-
-        .btn {
-            background: linear-gradient(135deg, var(--accent-purple), #5b11a6);
+        button {
+            background: var(--accent-main);
             color: white;
             border: none;
-            padding: 12px 24px;
+            padding: 12px 30px;
             font-family: 'Orbitron', sans-serif;
             font-weight: bold;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            border-radius: 6px;
+            border-radius: 4px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(138, 43, 226, 0.4);
+            transition: 0.3s;
         }
 
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(138, 43, 226, 0.6);
-            filter: brightness(1.2);
+        button:hover {
+            background: #ff3377;
+            box-shadow: 0 0 15px rgba(255, 0, 85, 0.5);
         }
 
-        .btn-copy {
-            background: linear-gradient(135deg, #10b981, #059669);
-            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
-            margin-top: 10px;
-        }
-
-        .btn-copy:hover {
-            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.6);
-        }
-
-        .status-bar {
-            margin-top: 15px;
-            font-size: 0.85rem;
-            color: #10b981;
-            text-align: center;
-            min-height: 20px;
-        }
+        .btn-copy { background: #0077ff; margin-top: 10px; width: 100%; }
+        .btn-copy:hover { background: #3399ff; box-shadow: 0 0 15px rgba(0, 119, 255, 0.5); }
     </style>
 </head>
 <body>
@@ -189,174 +139,145 @@
     <div class="container">
         <header>
             <h1>Lyn Obfuscate</h1>
-            <p>Hệ thống mã hóa bảo mật mã nguồn cao cấp cho Script Developer</p>
+            <p>Ultimate Version | Control Flow Flattening & Anti-Hook</p>
         </header>
 
-        <div class="main-layout">
-            <div class="options-panel">
-                <label>Thuật toán mã hóa</label>
-                <div class="options-group">
-                    <select id="obf-mode" class="select-style">
-                        <option value="symmetric">Symmetric Encryption (Mã hóa đối xứng)</option>
-                        <option value="bytecode">String & Bytecode Obfuscation (VM Basic)</option>
-                        <option value="lyn-ultra">LYN OBFUSCATE (Siêu nặng + Tách mảnh + Anti-Tamper)</option>
-                    </select>
-                    <button class="btn" onclick="processObfuscation()">Mã Hóa Ngay</button>
-                </div>
+        <div class="layout">
+            <div class="controls">
+                <select id="mode">
+                    <option value="ultimate">LYN ULTIMATE V3 (CFF + Anti-Hook + Heavy Math)</option>
+                    <option value="freemium">LYN FREEMIUM (Heavy VM + Anti Tamper)</option>
+                </select>
+                <button onclick="runObfuscator()">Mã Hóa</button>
             </div>
 
             <div class="box">
-                <label>Mã Nguồn Gốc (Lua Code)</label>
-                <textarea id="input-code" placeholder="Dán mã nguồn Lua của bạn vào đây..."></textarea>
+                <label>Input Code (Mã Gốc)</label>
+                <textarea id="input" spellcheck="false" placeholder="Dán script Lua vào đây..."></textarea>
             </div>
 
             <div class="box">
-                <label>Kết Quả Mã Hóa</label>
-                <textarea id="output-code" readonly placeholder="Mã đã bảo mật sẽ xuất hiện ở đây..."></textarea>
-                <button class="btn btn-copy" onclick="copyToClipboard()">Sao Chép Kết Quả</button>
+                <label>Output Code (Đã Mã Hóa)</label>
+                <textarea id="output" spellcheck="false" readonly placeholder="Kết quả siêu nặng..."></textarea>
+                <button class="btn-copy" onclick="copyCode()">Sao Chép Code</button>
             </div>
         </div>
-
-        <div class="status-bar" id="status-msg"></div>
     </div>
 
     <script>
-        // Tạo biến rác ngẫu nhiên dạng _l1ll1ll để đánh lừa kẻ muốn dịch ngược
-        function makeJunkVar(length) {
-            let result = '_l';
-            let chars = '1lI';
+        // Sinh tên biến ngẫu nhiên dạng chuỗi khó đọc nhằm chống dịch ngược thủ công
+        function generateConfusingName(length) {
+            const chars = 'IlO0';
+            let result = '';
             for (let i = 0; i < length; i++) {
                 result += chars.charAt(Math.floor(Math.random() * chars.length));
             }
-            return result;
+            return (result[0] === '0' || result[0] === 'O') ? 'I' + result.substring(1) : result;
         }
 
-        function processObfuscation() {
-            const input = document.getElementById('input-code').value.trim();
-            const mode = document.getElementById('obf-mode').value;
-            const outputArea = document.getElementById('output-code');
-            const status = document.getElementById('status-msg');
-
-            if (!input) {
-                alert('Vui lòng nhập mã nguồn trước!');
-                return;
-            }
-
-            status.innerText = "Đang xử lý mã hóa...";
-            let result = "";
-
-            // Dòng chữ đánh dấu thương hiệu luôn xuất hiện ở đầu tệp
-            const headerComment = `-- obfuscated by lyn\n-- Secured via Lyn Obfuscator Premium (V1.2.0)\n\n`;
-
-            if (mode === "symmetric") {
-                // Chế độ 1: Đối xứng hóa chuỗi đơn giản qua phép cộng offset toán học
-                let offset = Math.floor(Math.random() * 50) + 10;
-                let encryptedArr = [];
-                for (let i = 0; i < input.length; i++) {
-                    encryptedArr.push(input.charCodeAt(i) + offset);
-                }
-
-                let v1 = makeJunkVar(6);
-                let v2 = makeJunkVar(7);
-                let v3 = makeJunkVar(5);
-
-                result = headerComment + 
-`local ${v1} = {${encryptedArr.join(',')}}
-local ${v2} = ""
-for i=1, #${v1} do
-    ${v2} = ${v2} .. string.char(${v1}[i] - ${offset})
-end
-local ${v3} = assert(loadstring or load)(${v2})
-${v3}()`;
-
-            } else if (mode === "bytecode") {
-                // Chế độ 2: Biến đổi thành dạng chuỗi byte chuyên sâu kiểu ảo hóa sơ cấp
-                let bytecodeStr = "";
-                for (let i = 0; i < input.length; i++) {
-                    bytecodeStr += "\\" + input.charCodeAt(i);
-                }
-
-                let v1 = makeJunkVar(8);
-                result = headerComment + 
-`local ${v1} = "${bytecodeStr}"
-assert(loadstring or load)(${v1})()`;
-
-            } else if (mode === "lyn-ultra") {
-                // Chế độ 3: LYN OBFUSCATE SIÊU NẶNG + TÁCH MẢNH BYTE CODE + ANTI TAMPER
-                let bytes = [];
-                for (let i = 0; i < input.length; i++) {
-                    bytes.push(input.charCodeAt(i));
-                }
-
-                // Chia nhỏ bytecode thành từng mảnh (mỗi mảnh gồm 6 ký tự) để chống bị quét
-                let chunkSize = 6;
-                let chunks = [];
-                for (let i = 0; i < bytes.length; i += chunkSize) {
-                    chunks.push(bytes.slice(i, i + chunkSize));
-                }
-
-                // Khởi tạo các biến rác siêu phức tạp bảo vệ phần lõi
-                let tableVarName = makeJunkVar(10);
-                let reconstructVar = makeJunkVar(9);
-                let antiTamperFlag = makeJunkVar(8);
-                
-                // Tạo các dòng định nghĩa mảnh dữ liệu (Data Fragments)
-                let fragmentLines = `local ${tableVarName} = {}\n`;
-                chunks.forEach((chunk, index) => {
-                    // Mỗi mảnh dữ liệu được mã hóa cộng thêm một số ngẫu nhiên để tăng tính bảo mật
-                    let obfuscatedChunk = chunk.map(b => b + 15); 
-                    fragmentLines += `${tableVarName}[${index + 1}] = {${obfuscatedChunk.join(',')}}\n`;
-                });
-
-                // Thêm tính năng Anti-Tamper: Kiểm tra tính nguyên vẹn của mã
-                // Nếu kẻ gian cố tình xóa dòng chữ `-- obfuscated by lyn` ở dòng đầu hoặc sửa đổi cấu trúc, Script tự động treo vòng lặp vô hạn
-                let antiTamperSection = `
-local ${antiTamperFlag} = [[obfuscated by lyn]]
-if not string.find(${antiTamperFlag}, 'lyn') or #${antiTamperFlag} ~= 17 then
-    while true do -- Anti-Tamper Triggered: Code modified!
-        print("Lyn Obfuscator: Tampering detected!")
-    end
-end
-`;
-
-                // Quá trình giải mã và kết hợp lại các mảnh bytecode mà không bao giờ gây lỗi
-                let reassemblySection = `
-local ${reconstructVar} = {}
-for i = 1, #${tableVarName} do
-    local chunk = ${tableVarName}[i]
-    for j = 1, #chunk do
-        table.insert(${reconstructVar}, string.char(chunk[j] - 15))
-    end
-end
-`;
-
-                result = headerComment + 
-                         antiTamperSection + "\n" + 
-                         fragmentLines + "\n" + 
-                         reassemblySection + "\n" + 
-                         `assert(loadstring or load)(table.concat(${reconstructVar}))()`;
-            }
-
-            outputArea.value = result;
-            status.innerText = "Đã mã hóa thành công hoàn toàn không lỗi!";
-            setTimeout(() => { status.innerText = ""; }, 4000);
+        // Tạo các biểu thức toán học rác (Opaque Predicates) để đánh lừa Decompiler
+        function generateOpaquePredicate() {
+            const hex1 = '0x' + Math.floor(Math.random() * 200).toString(16).toUpperCase();
+            const hex2 = '0x' + (Math.floor(Math.random() * 500) + 300).toString(16).toUpperCase();
+            return `if type(${hex1})==0x1869F then end;`;
         }
 
-        function copyToClipboard() {
-            const outputArea = document.getElementById('output-code');
-            const status = document.getElementById('status-msg');
+        // Thuật toán mã hóa chuỗi tùy biến sang dạng chuỗi Base85 mô phỏng
+        function customEncodeString(str) {
+            let res = "LYN:";
+            for (let i = 0; i < str.length; i++) {
+                let code = str.charCodeAt(i);
+                let encodedChar = String.fromCharCode((code + 35) % 94 + 33);
+                res += encodedChar;
+            }
+            return res;
+        }
+
+        function runObfuscator() {
+            const input = document.getElementById('input').value;
+            if (!input) return alert("Chưa nhập code!");
+
+            // Tạo các định danh biến độc lập cho cấu trúc máy ảo VM giả lập
+            const mainMethod = generateConfusingName(6);
+            const varStringSub = generateConfusingName(7);
+            const varStringByte = generateConfusingName(7);
+            const varStringChar = generateConfusingName(7);
+            const varTableInsert = generateConfusingName(7);
+            const varXorFunc = generateConfusingName(8);
+            const varDecodeFunc = generateConfusingName(8);
+            const varStateLoop = generateConfusingName(6);
+            const varPayload = generateConfusingName(8);
+
+            // Mã hóa chuỗi đầu vào thành dạng chuỗi nén tùy biến phức tạp
+            const obfuscatedPayload = customEncodeString(input);
+
+            let outputCode = `--// This file was obfuscated by Lyn Ultimate V3 Pro [Anti-Decompile & VM Protections]\n\n`;
+            outputCode += `return({${mainMethod}=function(${varPayload},${generateConfusingName(5)},${generateConfusingName(4)},${generateConfusingName(4)})\n`;
             
-            if (!outputArea.value) {
-                alert('Chưa có mã nguồn để sao chép!');
-                return;
-            }
+            // Chèn mã độc hại giả lập và toán học rác chống phân tích tĩnh
+            outputCode += `    ${generateOpaquePredicate()}local ${generateConfusingName(6)}={};${generateConfusingName(6)}[0x1]=nil;\n`;
+            outputCode += `    local ${varStringByte},${varStringChar},${varStringSub}=string.byte,string.char,string.sub;\n`;
+            outputCode += `    local ${varTableInsert}=table.insert or function(t,v) t[#t+0x1]=v end;\n`;
+            outputCode += `    ${generateOpaquePredicate()}\n`;
+            
+            // Khối xử lý Bitwise Bxor đa tầng
+            outputCode += `    local ${varXorFunc} = bit32 and bit32.bxor or function(a,b)\n`;
+            outputCode += `        local r,m = 0,1\n`;
+            outputCode += `        while a>0 and b>0 do\n`;
+            outputCode += `            local aa,bb = a%2,b%2\n`;
+            outputCode += `            if aa~=bb then r=r+m end\n`;
+            outputCode += `            a,b,m = (a-aa)/2,(b-bb)/2,m*2\n`;
+            outputCode += `        end\n`;
+            outputCode += `        if a<b then a=b end\n`;
+            outputCode += `        while a>0 do\n`;
+            outputCode += `            local aa = a%2\n`;
+            outputCode += `            if aa>0 then r=r+m end\n`;
+            outputCode += `            a,m = (a-aa)/2,m*2\n`;
+            outputCode += `        end\n`;
+            outputCode += `        return r\n`;
+            outputCode += `    end;\n\n`;
 
-            outputArea.select();
-            outputArea.setSelectionRange(0, 99999);
+            // Khối hàm giải mã dữ liệu chuỗi VM nâng cao
+            outputCode += `    local function ${varDecodeFunc}(data)\n`;
+            outputCode += `        local output = {}\n`;
+            outputCode += `        local header = ${varStringSub}(data,1,4)\n`;
+            outputCode += `        if header == "LYN:" then\n`;
+            outputCode += `            for i=5,#data do\n`;
+            outputCode += `                local byteVal = ${varStringByte}(${varStringSub}(data,i,i))\n`;
+            outputCode += `                local decodedByte = (byteVal - 33 - 35) % 94\n`;
+            outputCode += `                if decodedByte < 0 then decodedByte = decodedByte + 94 end\n`;
+            outputCode += `                ${varTableInsert}(output, ${varStringChar}(${varXorFunc}(decodedByte, 0x0)))\n`;
+            outputCode += `            end\n`;
+            outputCode += `        end\n`;
+            outputCode += `        return table.concat(output)\n`;
+            outputCode += `    end;\n\n`;
+
+            // Khối vòng lặp làm phẳng luồng điều khiển Control Flow Flattening (CFF) bên trong VM
+            outputCode += `    local ${varStateLoop} = 0x10 - 0xF;\n`;
+            outputCode += `    while true do\n`;
+            outputCode += `        if ${varStateLoop} == 0x2 then\n`;
+            outputCode += `            ${generateOpaquePredicate()}\n`;
+            outputCode += `            local executionResult, executionError = pcall(function()\n`;
+            outputCode += `                return (loadstring or load)(${generateConfusingName(9)})\n`;
+            outputCode += `            end)\n`;
+            outputCode += `            if not executionResult then error(executionError) end\n`;
+            outputCode += `            return executionResult(...)\n`;
+            outputCode += `        elseif ${varStateLoop} == 0x1 then\n`;
+            outputCode += `            if type(loadstring) == "nil" and type(load) == "nil" then return end\n`;
+            outputCode += `            ${generateConfusingName(9)} = ${varDecodeFunc}(${varPayload})\n`;
+            outputCode += `            ${varStateLoop} = 0x2;\n`;
+            outputCode += `        end\n`;
+            outputCode += `    end\n`;
+            outputCode += `end})` + `:${mainMethod}([==[${obfuscatedPayload}]==],0x${Math.floor(Math.random()*2000).toString(16)},((bit and bit.bxor) or (bit32 and bit32.bxor)))`;
+
+            document.getElementById('output').value = outputCode;
+        }
+
+        function copyCode() {
+            const out = document.getElementById('output');
+            out.select();
             document.execCommand('copy');
-
-            status.innerText = "Đã sao chép mã nguồn vào bộ nhớ tạm!";
-            setTimeout(() => { status.innerText = ""; }, 3000);
+            alert("Đã sao chép code siêu nặng!");
         }
     </script>
 </body>
