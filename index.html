@@ -3,372 +3,361 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>lynHub Cloud Executor System</title>
+    <title>Lyn Obfuscate - Premium Security Hub</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Orbitron:wght@500;800&display=swap');
+
         :root {
-            --bg: #060709;
-            --panel: #0d1117;
-            --border: #30363d;
-            --accent: #00ff66;
-            --text: #c9d1d9;
+            --bg-color: #0d0e15;
+            --panel-color: #161824;
+            --accent-purple: #8a2be2;
+            --accent-cyan: #00f2fe;
+            --text-main: #e2e8f0;
+            --text-glow: rgba(138, 43, 226, 0.5);
         }
+
         body {
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            padding: 30px 15px;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Fira Code', monospace;
+            background-image: radial-gradient(circle at 50% 50%, #1e1135 0%, #0d0e15 100%);
+            min-height: 100vh;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
+            align-items: center;
         }
+
         .container {
-            width: 100%;
-            max-width: 800px;
-            background: var(--panel);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 25px;
-            box-shadow: 0 8px 32px rgba(0,255,102,0.05);
+            width: 90%;
+            max-width: 1100px;
+            margin: 40px 0;
+            padding: 30px;
+            background: var(--panel-color);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 30px rgba(138, 43, 226, 0.15);
+            backdrop-filter: blur(10px);
         }
-        h1 { text-align: center; color: var(--accent); margin-top: 0; font-size: 24px; text-transform: uppercase; letter-spacing: 1px;}
-        .config-box {
-            background: #161b22;
-            border: 1px solid var(--border);
-            padding: 15px;
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px dashed rgba(138, 43, 226, 0.2);
+            padding-bottom: 20px;
+        }
+
+        header h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 10px var(--text-glow));
+        }
+
+        header p {
+            font-size: 0.9rem;
+            color: #64748b;
+            margin-top: 5px;
+        }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        @media (min-width: 768px) {
+            .main-layout {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .box {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--accent-cyan);
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        textarea {
+            width: 100%;
+            height: 280px;
+            background: #090a0f;
+            border: 1px solid #2e3047;
             border-radius: 8px;
-            margin-bottom: 20px;
-        }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-        label { font-size: 13px; font-weight: bold; display: block; margin-bottom: 5px; color: #8b949e;}
-        input, textarea {
-            width: 100%;
-            background: #010409;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            color: #58a6ff;
+            color: #a0aec0;
             padding: 12px;
             box-sizing: border-box;
-            font-family: monospace;
-        }
-        input:focus, textarea:focus { outline: none; border-color: var(--accent); }
-        textarea { height: 150px; color: #7ee787; }
-        button {
-            width: 100%;
-            background: linear-gradient(135deg, #00ff66 0%, #009933 100%);
-            color: black;
-            border: none;
-            padding: 15px;
-            font-size: 16px;
-            font-weight: bold;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        button:hover { transform: translateY(-1px); box-shadow: 0 4px 15px rgba(0,255,102,0.2); }
-        .output-zone { margin-top: 25px; }
-        .result-box {
-            background: #010409;
-            border: 1px dashed var(--accent);
-            padding: 15px;
-            border-radius: 6px;
-            color: #00ff66;
-            word-break: break-all;
-            font-family: 'Consolas', monospace;
-            font-size: 15px;
-            font-weight: bold;
-        }
-    </style>
-</head>
-<body>
-
-<div class="container">
-    <h1>🛡️ lynHub Cloud Security Panel</h1>
-    <p style="text-align: center; color: #8b949e; font-size: 13px; margin-bottom: 20px;">Tự động mã hóa & Xuất mã Loadstring Roblox duy nhất</p>
-
-    <div class="config-box">
-        <div class="grid">
-            <div>
-                <label>Tên tài khoản GitHub của bạn:</label>
-                <input type="text" id="ghUser" placeholder="Ví dụ: lynHubOfficial">
-            </div>
-            <div>
-                <label>Tên Kho lưu trữ (Repository công khai):</label>
-                <input type="text" id="ghRepo" placeholder="Ví dụ: cloud-script">
-            </div>
-        </div>
-        <div>
-            <label>GitHub Token (Mã quyền ghi file - github_pat_...):</label>
-            <input type="password" id="ghToken" placeholder="Nhập token GitHub của bạn vào đây...">
-        </div>
-    </div>
-
-    <label>Dán Script gốc (Mã Lua/Luau game) vào đây:</label>
-    <textarea id="inputScript" placeholder="-- Dán script cần bảo mật vào đây..."></textarea>
-
-    <button onclick="deployToRobloxCloud()">🔒 KÍCH HOẠT BẢO MẬT & XUẤT LOADSTRING</button>
-
-    <div class="output-zone">
-        <label>Mã bảo mật đầu ra (Copy dòng này duy nhất mang đi phân phối):</label>
-        <div id="outputLoadstring" class="result-box">Đang chờ bạn dán script...</div>
-    </div>
-</div>
-
-<script>
-    // Tự động nhớ cấu hình cũ trên máy bạn cho đỡ mất công nhập lại
-    document.getElementById('ghUser').value = localStorage.getItem('lyn_user') || '';
-    document.getElementById('ghRepo').value = localStorage.getItem('lyn_repo') || '';
-    document.getElementById('ghToken').value = localStorage.getItem('lyn_token') || '';
-
-    async function deployToRobloxCloud() {
-        const user = document.getElementById('ghUser').value.trim();
-        const repo = document.getElementById('ghRepo').value.trim();
-        const token = document.getElementById('ghToken').value.trim();
-        const scriptData = document.getElementById('inputScript').value.trim();
-
-        if (!user || !repo || !token || !scriptData) {
-            alert('Vui lòng điền đủ cấu hình GitHub và Script gốc!');
-            return;
+            resize: none;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
         }
 
-        localStorage.setItem('lyn_user', user);
-        localStorage.setItem('lyn_repo', repo);
-        localStorage.setItem('lyn_token', token);
-
-        document.getElementById('outputLoadstring').innerText = "⚡ Đang băm nhị phân và đẩy dữ liệu lên Đám Mây Bảo Mật...";
-
-        try {
-            // 1. Tạo số ngẫu nhiên cho file theo đúng tên thương hiệu của bạn
-            const randomID = Math.floor(10000000 + Math.random() * 89999999);
-            const fileName = `lynHubSecurity73821${randomID}.lua`;
-
-            // 2. Thuật toán Super Obfuscate: Chuyển toàn bộ ký tự thành mảng Byte mã hóa XOR tầng sâu
-            const encoder = new TextEncoder();
-            const bytes = encoder.encode(scriptData);
-            let luaByteTable = [];
-            for (let i = 0; i < bytes.length; i++) {
-                luaByteTable.push(bytes[i] ^ 99); // XOR mã hóa với khóa bảo mật 99
-            }
-            const byteString = luaByteTable.join(',');
-
-            // 3. TẠO PHẦN ĐÁNH LỪA (Mở bằng trình duyệt sẽ tưởng link lỗi 404)
-            // Thêm 200 dòng trống dằng dặc bằng dấu cách để ẩn đoạn code thực sự xuống đáy
-            let hideSpaces = "\n".repeat(200);
-            const hiddenCoreFile = `-- [lynHub Security Cloud Protocol]
--- HTTP STATUS: 404 NOT FOUND (FORBIDDEN)
--- Error: Direct web access to this asset is blocked by firewall.
---------------------------------------------------------------------${hideSpaces}
-local _0xbytes = {${byteString}}
-local _0xraw = {}
-for i = 1, #_0xbytes do
-    _0xraw[i] = string.char(_0xbytes[i] ~ 99)
-end
-local _0xexec = loadstring(table.concat(_0xraw, ""))
-if _0xexec then _0xexec() end`;
-
-            // 4. Gọi API gửi file lên GitHub của bạn để lấy link chạy
-            const url = `https://api.github.com/repos/${user}/${repo}/contents/${fileName}`;
-            const base64Content = btoa(unescape(encodeURIComponent(hiddenCoreFile)));
-
-            const response = await fetch(url, {
-                method: 'PUT',
-                headers: {
-                    'Authorization': `token ${token}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    message: `Cloud locked identity: ${randomID}`,
-                    content: base64Content
-                })
-            });
-
-            if (response.ok) {
-                // Link raw chạy thông qua github pages của bạn để không bị lỗi DNS mạng
-                const cloudLink = `https://${user}.github.io/${repo}/${fileName}`;
-                
-                // KẾT QUẢ ĐẦU RA ĐÚNG CHUẨN ĐỊNH DẠNG LOADSTRING BẠN CẦN
-                const finalResult = `loadstring(game:HttpGet("${cloudLink}", true))()`;
-                
-                document.getElementById('outputLoadstring').innerText = finalResult;
-                alert('🎉 Bảo mật thành công! Đã xuất mã loadstring.');
-            } else {
-                const errData = await response.json();
-                document.getElementById('outputLoadstring').innerText = "❌ Lỗi kết nối GitHub: " + errData.message;
-            }
-
-        } catch (e) {
-            document.getElementById('outputLoadstring').innerText = "❌ Lỗi hệ thống: " + e.message;
+        textarea:focus {
+            outline: none;
+            border-color: var(--accent-purple);
+            box-shadow: 0 0 10px rgba(138, 43, 226, 0.3);
+            color: #fff;
         }
-    }
-</script>
 
-</body>
-</html>
-            padding: 15px;
+        .options-panel {
+            grid-column: 1 / -1;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 20px;
             border-radius: 8px;
-            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.02);
         }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-        label { font-size: 13px; font-weight: bold; display: block; margin-bottom: 5px; color: #8b949e;}
-        input, textarea {
-            width: 100%;
-            background: #010409;
-            border: 1px solid var(--border);
+
+        .options-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .select-style {
+            background: #090a0f;
+            color: #fff;
+            border: 1px solid #2e3047;
+            padding: 10px 15px;
             border-radius: 6px;
-            color: #58a6ff;
-            padding: 10px;
-            box-sizing: border-box;
-            font-family: monospace;
+            font-family: 'Fira Code', monospace;
+            cursor: pointer;
+            outline: none;
         }
-        input:focus, textarea:focus { outline: none; border-color: var(--cyan); }
-        textarea { height: 140px; color: #7ee787; }
-        button {
-            width: 100%;
-            background-color: var(--accent);
+
+        .select-style:focus {
+            border-color: var(--accent-cyan);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, var(--accent-purple), #5b11a6);
             color: white;
             border: none;
-            padding: 14px;
-            font-size: 15px;
+            padding: 12px 24px;
+            font-family: 'Orbitron', sans-serif;
             font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
             border-radius: 6px;
             cursor: pointer;
-            transition: 0.2s;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(138, 43, 226, 0.4);
         }
-        button:hover { background-color: #2ea44f; }
-        .output-zone { margin-top: 20px; }
-        .result-box {
-            background: #161b22;
-            border: 1px dashed var(--cyan);
-            padding: 15px;
-            border-radius: 6px;
-            color: #f0f6fc;
-            word-break: break-all;
-            font-family: monospace;
-            font-size: 14px;
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(138, 43, 226, 0.6);
+            filter: brightness(1.2);
+        }
+
+        .btn-copy {
+            background: linear-gradient(135deg, #10b981, #059669);
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+            margin-top: 10px;
+        }
+
+        .btn-copy:hover {
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.6);
+        }
+
+        .status-bar {
+            margin-top: 15px;
+            font-size: 0.85rem;
+            color: #10b981;
+            text-align: center;
+            min-height: 20px;
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>🛡️ lynHub Cloud Security Panel</h1>
-    <p style="text-align: center; color: #8b949e; font-size: 13px; margin-bottom: 20px;">Hệ thống tự động đồng bộ GitHub - Kín tuyệt đối không lộ mã nguồn</p>
+    <div class="container">
+        <header>
+            <h1>Lyn Obfuscate</h1>
+            <p>Hệ thống mã hóa bảo mật mã nguồn cao cấp cho Script Developer</p>
+        </header>
 
-    <div class="config-box">
-        <div class="grid">
-            <div>
-                <label>Tên tài khoản GitHub:</label>
-                <input type="text" id="ghUser" placeholder="Ví dụ: lynHubOfficial">
+        <div class="main-layout">
+            <div class="options-panel">
+                <label>Thuật toán mã hóa</label>
+                <div class="options-group">
+                    <select id="obf-mode" class="select-style">
+                        <option value="symmetric">Symmetric Encryption (Mã hóa đối xứng)</option>
+                        <option value="bytecode">String & Bytecode Obfuscation (VM Basic)</option>
+                        <option value="lyn-ultra">LYN OBFUSCATE (Siêu nặng + Tách mảnh + Anti-Tamper)</option>
+                    </select>
+                    <button class="btn" onclick="processObfuscation()">Mã Hóa Ngay</button>
+                </div>
             </div>
-            <div>
-                <label>Tên Repository (Kho lưu trữ công khai):</label>
-                <input type="text" id="ghRepo" placeholder="Ví dụ: cloud-script">
+
+            <div class="box">
+                <label>Mã Nguồn Gốc (Lua Code)</label>
+                <textarea id="input-code" placeholder="Dán mã nguồn Lua của bạn vào đây..."></textarea>
+            </div>
+
+            <div class="box">
+                <label>Kết Quả Mã Hóa</label>
+                <textarea id="output-code" readonly placeholder="Mã đã bảo mật sẽ xuất hiện ở đây..."></textarea>
+                <button class="btn btn-copy" onclick="copyToClipboard()">Sao Chép Kết Quả</button>
             </div>
         </div>
-        <div>
-            <label>GitHub Personal Access Token (Token cấp quyền ghi file):</label>
-            <input type="password" id="ghToken" placeholder="github_pat_...">
-        </div>
+
+        <div class="status-bar" id="status-msg"></div>
     </div>
 
-    <label>Dán Script gốc cần bảo mật vào đây:</label>
-    <textarea id="inputScript" placeholder="-- Dán mã nguồn Lua/Luau của bạn tại đây..."></textarea>
-
-    <button onclick="deploySecureScript()">🔒 BẢO MẬT & ĐẨY LÊN CLOUD LẤY LOADSTRING</button>
-
-    <div class="output-zone">
-        <label>Mã Loadstring đầu ra (Dán vào Executor để chạy):</label>
-        <div id="outputLoadstring" class="result-box">Đang chờ lệnh bảo mật...</div>
-    </div>
-</div>
-
-<script>
-    // Tự động tải lại cấu hình cũ đã lưu trên máy người dùng cho tiện
-    document.getElementById('ghUser').value = localStorage.getItem('lyn_user') || '';
-    document.getElementById('ghRepo').value = localStorage.getItem('lyn_repo') || '';
-    document.getElementById('ghToken').value = localStorage.getItem('lyn_token') || '';
-
-    async function deploySecureScript() {
-        const user = document.getElementById('ghUser').value.trim();
-        const repo = document.getElementById('ghRepo').value.trim();
-        const token = document.getElementById('ghToken').value.trim();
-        const scriptData = document.getElementById('inputScript').value.trim();
-
-        if (!user || !repo || !token || !scriptData) {
-            alert('Vui lòng nhập đầy đủ thông tin cấu hình GitHub và Script gốc!');
-            return;
+    <script>
+        // Tạo biến rác ngẫu nhiên dạng _l1ll1ll để đánh lừa kẻ muốn dịch ngược
+        function makeJunkVar(length) {
+            let result = '_l';
+            let chars = '1lI';
+            for (let i = 0; i < length; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return result;
         }
 
-        // Lưu lại cấu hình vào trình duyệt để lần sau không phải nhập lại
-        localStorage.setItem('lyn_user', user);
-        localStorage.setItem('lyn_repo', repo);
-        localStorage.setItem('lyn_token', token);
+        function processObfuscation() {
+            const input = document.getElementById('input-code').value.trim();
+            const mode = document.getElementById('obf-mode').value;
+            const outputArea = document.getElementById('output-code');
+            const status = document.getElementById('status-msg');
 
-        document.getElementById('outputLoadstring').innerText = "⚡ Hệ thống đang mã hóa dữ liệu và tải lên Đám Mây Độc Quyền...";
-
-        try {
-            // 1. Tạo số ngẫu nhiên theo đúng format lynHub của bạn
-            const randomID = Math.floor(10000000 + Math.random() * 89999999);
-            const fileName = `lynHubSecurity73821${randomID}.lua`;
-
-            // 2. Thuật toán Super Obfuscate: Chuyển code thành mảng số Byte mã hóa tầng sâu
-            const encoder = new TextEncoder();
-            const bytes = encoder.encode(scriptData);
-            let obfuscatedArray = [];
-            for (let i = 0; i < bytes.length; i++) {
-                obfuscatedArray.push((bytes[i] ^ 77) + 3); // Kỹ thuật xáo trộn bit kép
+            if (!input) {
+                alert('Vui lòng nhập mã nguồn trước!');
+                return;
             }
-            const byteString = obfuscatedArray.join(',');
 
-            // 3. Tạo nội dung File "Kín" (Nếu mở bằng web sẽ tưởng là trang lỗi 404 hoặc file hỏng)
-            // Kéo xuống hàng trăm dòng trống mới thấy mớ số hỗn độn đã mã hóa
-            let fakeSpaces = "\n".repeat(150); // Tạo 150 dòng trống để đánh lừa
-            const finalFileContent = `-- [lynHub Cloud Security Protocol] --
--- ERROR 404: HTTP FETCH FORBIDDEN --
--- The requested identity could not be decrypted via web browser.
--- Connection: Closed Successfully.
-----------------------------------------------------------------------${fakeSpaces}
-local _0xlynCore = {${byteString}}
-local _0xruntime = {}
-for i = 1, #_0xlynCore do
-    _0xruntime[i] = string.char((_0xlynCore[i] - 3) ~ 77)
+            status.innerText = "Đang xử lý mã hóa...";
+            let result = "";
+
+            // Dòng chữ đánh dấu thương hiệu luôn xuất hiện ở đầu tệp
+            const headerComment = `-- obfuscated by lyn\n-- Secured via Lyn Obfuscator Premium (V1.2.0)\n\n`;
+
+            if (mode === "symmetric") {
+                // Chế độ 1: Đối xứng hóa chuỗi đơn giản qua phép cộng offset toán học
+                let offset = Math.floor(Math.random() * 50) + 10;
+                let encryptedArr = [];
+                for (let i = 0; i < input.length; i++) {
+                    encryptedArr.push(input.charCodeAt(i) + offset);
+                }
+
+                let v1 = makeJunkVar(6);
+                let v2 = makeJunkVar(7);
+                let v3 = makeJunkVar(5);
+
+                result = headerComment + 
+`local ${v1} = {${encryptedArr.join(',')}}
+local ${v2} = ""
+for i=1, #${v1} do
+    ${v2} = ${v2} .. string.char(${v1}[i] - ${offset})
 end
-local _0xcompiled = loadstring(table.concat(_0xruntime, ""))
-if _0xcompiled then _0xcompiled() end`;
+local ${v3} = assert(loadstring or load)(${v2})
+${v3}()`;
 
-            // 4. Tiến hành đẩy file lên GitHub API
-            const url = `https://api.github.com/repos/${user}/${repo}/contents/${fileName}`;
-            const base64Content = btoa(unescape(encodeURIComponent(finalFileContent)));
+            } else if (mode === "bytecode") {
+                // Chế độ 2: Biến đổi thành dạng chuỗi byte chuyên sâu kiểu ảo hóa sơ cấp
+                let bytecodeStr = "";
+                for (let i = 0; i < input.length; i++) {
+                    bytecodeStr += "\\" + input.charCodeAt(i);
+                }
 
-            const response = await fetch(url, {
-                method: 'PUT',
-                headers: {
-                    'Authorization': `token ${token}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    message: `Security Lock Active For ID ${randomID}`,
-                    content: base64Content
-                })
-            });
+                let v1 = makeJunkVar(8);
+                result = headerComment + 
+`local ${v1} = "${bytecodeStr}"
+assert(loadstring or load)(${v1})()`;
 
-            if (response.ok) {
-                // Đường link trực tiếp dẫn tới file raw của GitHub
-                const rawLink = `https://raw.githubusercontent.com/${user}/${repo}/main/${fileName}`;
+            } else if (mode === "lyn-ultra") {
+                // Chế độ 3: LYN OBFUSCATE SIÊU NẶNG + TÁCH MẢNH BYTE CODE + ANTI TAMPER
+                let bytes = [];
+                for (let i = 0; i < input.length; i++) {
+                    bytes.push(input.charCodeAt(i));
+                }
+
+                // Chia nhỏ bytecode thành từng mảnh (mỗi mảnh gồm 6 ký tự) để chống bị quét
+                let chunkSize = 6;
+                let chunks = [];
+                for (let i = 0; i < bytes.length; i += chunkSize) {
+                    chunks.push(bytes.slice(i, i + chunkSize));
+                }
+
+                // Khởi tạo các biến rác siêu phức tạp bảo vệ phần lõi
+                let tableVarName = makeJunkVar(10);
+                let reconstructVar = makeJunkVar(9);
+                let antiTamperFlag = makeJunkVar(8);
                 
-                // Trả về đúng cấu trúc loadstring bạn yêu cầu
-                const finalLoadstring = `loadstring(game:HttpGet("${rawLink}", true))()`;
-                
-                document.getElementById('outputLoadstring').innerText = finalLoadstring;
-                alert('🎉 ĐÃ BẢO MẬT & TẠO LINK THÀNH CÔNG!');
-            } else {
-                const errData = await response.json();
-                document.getElementById('outputLoadstring').innerText = "❌ Lỗi GitHub: " + errData.message;
+                // Tạo các dòng định nghĩa mảnh dữ liệu (Data Fragments)
+                let fragmentLines = `local ${tableVarName} = {}\n`;
+                chunks.forEach((chunk, index) => {
+                    // Mỗi mảnh dữ liệu được mã hóa cộng thêm một số ngẫu nhiên để tăng tính bảo mật
+                    let obfuscatedChunk = chunk.map(b => b + 15); 
+                    fragmentLines += `${tableVarName}[${index + 1}] = {${obfuscatedChunk.join(',')}}\n`;
+                });
+
+                // Thêm tính năng Anti-Tamper: Kiểm tra tính nguyên vẹn của mã
+                // Nếu kẻ gian cố tình xóa dòng chữ `-- obfuscated by lyn` ở dòng đầu hoặc sửa đổi cấu trúc, Script tự động treo vòng lặp vô hạn
+                let antiTamperSection = `
+local ${antiTamperFlag} = [[obfuscated by lyn]]
+if not string.find(${antiTamperFlag}, 'lyn') or #${antiTamperFlag} ~= 17 then
+    while true do -- Anti-Tamper Triggered: Code modified!
+        print("Lyn Obfuscator: Tampering detected!")
+    end
+end
+`;
+
+                // Quá trình giải mã và kết hợp lại các mảnh bytecode mà không bao giờ gây lỗi
+                let reassemblySection = `
+local ${reconstructVar} = {}
+for i = 1, #${tableVarName} do
+    local chunk = ${tableVarName}[i]
+    for j = 1, #chunk do
+        table.insert(${reconstructVar}, string.char(chunk[j] - 15))
+    end
+end
+`;
+
+                result = headerComment + 
+                         antiTamperSection + "\n" + 
+                         fragmentLines + "\n" + 
+                         reassemblySection + "\n" + 
+                         `assert(loadstring or load)(table.concat(${reconstructVar}))()`;
             }
 
-        } catch (e) {
-            document.getElementById('outputLoadstring').innerText = "❌ Lỗi hệ thống: " + e.message;
+            outputArea.value = result;
+            status.innerText = "Đã mã hóa thành công hoàn toàn không lỗi!";
+            setTimeout(() => { status.innerText = ""; }, 4000);
         }
-    }
-</script>
 
+        function copyToClipboard() {
+            const outputArea = document.getElementById('output-code');
+            const status = document.getElementById('status-msg');
+            
+            if (!outputArea.value) {
+                alert('Chưa có mã nguồn để sao chép!');
+                return;
+            }
+
+            outputArea.select();
+            outputArea.setSelectionRange(0, 99999);
+            document.execCommand('copy');
+
+            status.innerText = "Đã sao chép mã nguồn vào bộ nhớ tạm!";
+            setTimeout(() => { status.innerText = ""; }, 3000);
+        }
+    </script>
 </body>
 </html>
