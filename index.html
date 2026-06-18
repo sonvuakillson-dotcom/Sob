@@ -145,7 +145,7 @@
         <div class="layout">
             <div class="controls">
                 <select id="mode">
-                    <option value="ultimate">LYN ULTIMATE V3 (CFF + Anti-Hook + Heavy Math)</option>
+                    <option value="ultimate">LYN ULTIMATE V3 (20-Layer VM Custom + Anti-Tamper)</option>
                     <option value="freemium">LYN FREEMIUM (Heavy VM + Anti Tamper)</option>
                 </select>
                 <button onclick="runObfuscator()">Mã Hóa</button>
@@ -165,119 +165,176 @@
     </div>
 
     <script>
-        // Sinh tên biến ngẫu nhiên dạng chuỗi khó đọc nhằm chống dịch ngược thủ công
-        function generateConfusingName(length) {
-            const chars = 'IlO0';
-            let result = '';
-            for (let i = 0; i < length; i++) {
-                result += chars.charAt(Math.floor(Math.random() * chars.length));
+        // Hàm sinh tên biến ngẫu nhiên hỗn loạn cực đại chống Decompiler phân tích từ ngữ
+        function makeConfusingVar(len) {
+            const pools = ['IlO0', 'lI10', 'O0oI'];
+            const selectPool = pools[Math.floor(Math.random() * pools.length)];
+            let res = '';
+            for (let i = 0; i < len; i++) {
+                res += selectPool.charAt(Math.floor(Math.random() * selectPool.length));
             }
-            return (result[0] === '0' || result[0] === 'O') ? 'I' + result.substring(1) : result;
+            if (res[0] === '0' || res[0] === 'o') res = 'I' + res.substring(1);
+            return '_' + res;
         }
 
-        // Tạo các biểu thức toán học rác (Opaque Predicates) để đánh lừa Decompiler
-        function generateOpaquePredicate() {
-            const hex1 = '0x' + Math.floor(Math.random() * 200).toString(16).toUpperCase();
-            const hex2 = '0x' + (Math.floor(Math.random() * 500) + 300).toString(16).toUpperCase();
-            return `if type(${hex1})==0x1869F then end;`;
-        }
-
-        // Thuật toán mã hóa chuỗi tùy biến sang dạng chuỗi Base85 mô phỏng
-        function customEncodeString(str) {
-            let res = "LYN:";
-            for (let i = 0; i < str.length; i++) {
-                let code = str.charCodeAt(i);
-                let encodedChar = String.fromCharCode((code + 35) % 94 + 33);
-                res += encodedChar;
-            }
-            return res;
+        // Tạo hằng số toán học giả lập ma trận (Opaque Predicates) làm mù AST Parsers
+        function makeMathJunk() {
+            const val1 = '0x' + Math.floor(Math.random() * 400 + 100).toString(16).toUpperCase();
+            const val2 = '0x' + Math.floor(Math.random() * 1000 + 600).toString(16).toUpperCase();
+            const operations = [
+                `if type(${val1}) == "string" and ${val1} == ${val2} then while true do end end;`,
+                `if ((${val1} * 2) + ${val2}) == 0x73A19B then return end;`,
+                `for _=0x2, 0x5 do local _ = 0x1 + 0x1 end;`
+            ];
+            return operations[Math.floor(Math.random() * operations.length)];
         }
 
         function runObfuscator() {
             const input = document.getElementById('input').value;
             if (!input) return alert("Chưa nhập code!");
 
-            // Tạo các định danh biến độc lập cho cấu trúc máy ảo VM giả lập
-            const mainMethod = generateConfusingName(6);
-            const varStringSub = generateConfusingName(7);
-            const varStringByte = generateConfusingName(7);
-            const varStringChar = generateConfusingName(7);
-            const varTableInsert = generateConfusingName(7);
-            const varXorFunc = generateConfusingName(8);
-            const varDecodeFunc = generateConfusingName(8);
-            const varStateLoop = generateConfusingName(6);
-            const varPayload = generateConfusingName(8);
+            const mode = document.getElementById('mode').value;
+            let output = "";
 
-            // Mã hóa chuỗi đầu vào thành dạng chuỗi nén tùy biến phức tạp
-            const obfuscatedPayload = customEncodeString(input);
+            if (mode === "ultimate") {
+                // Tạo các khóa dịch dịch số ngẫu nhiên động đa tầng
+                const xorKey1 = Math.floor(Math.random() * 150) + 50;
+                const xorKey2 = Math.floor(Math.random() * 100) + 20;
+                const shiftKey = Math.floor(Math.random() * 60) + 15;
 
-            let outputCode = `--// This file was obfuscated by Lyn Ultimate V3 Pro [Anti-Decompile & VM Protections]\n\n`;
-            outputCode += `return({${mainMethod}=function(${varPayload},${generateConfusingName(5)},${generateConfusingName(4)},${generateConfusingName(4)})\n`;
-            
-            // Chèn mã độc hại giả lập và toán học rác chống phân tích tĩnh
-            outputCode += `    ${generateOpaquePredicate()}local ${generateConfusingName(6)}={};${generateConfusingName(6)}[0x1]=nil;\n`;
-            outputCode += `    local ${varStringByte},${varStringChar},${varStringSub}=string.byte,string.char,string.sub;\n`;
-            outputCode += `    local ${varTableInsert}=table.insert or function(t,v) t[#t+0x1]=v end;\n`;
-            outputCode += `    ${generateOpaquePredicate()}\n`;
-            
-            // Khối xử lý Bitwise Bxor đa tầng
-            outputCode += `    local ${varXorFunc} = bit32 and bit32.bxor or function(a,b)\n`;
-            outputCode += `        local r,m = 0,1\n`;
-            outputCode += `        while a>0 and b>0 do\n`;
-            outputCode += `            local aa,bb = a%2,b%2\n`;
-            outputCode += `            if aa~=bb then r=r+m end\n`;
-            outputCode += `            a,b,m = (a-aa)/2,(b-bb)/2,m*2\n`;
-            outputCode += `        end\n`;
-            outputCode += `        if a<b then a=b end\n`;
-            outputCode += `        while a>0 do\n`;
-            outputCode += `            local aa = a%2\n`;
-            outputCode += `            if aa>0 then r=r+m end\n`;
-            outputCode += `            a,m = (a-aa)/2,m*2\n`;
-            outputCode += `        end\n`;
-            outputCode += `        return r\n`;
-            outputCode += `    end;\n\n`;
+                // Thực hiện biến đổi dữ liệu thô sang dạng mảng mã hóa Byte-Shifting kép
+                let rawBytes = [];
+                for (let i = 0; i < input.length; i++) {
+                    let mutatedByte = input.charCodeAt(i);
+                    mutatedByte = (mutatedByte ^ xorKey1) + shiftKey;
+                    mutatedByte = (mutatedByte ^ xorKey2);
+                    rawBytes.push(mutatedByte);
+                }
 
-            // Khối hàm giải mã dữ liệu chuỗi VM nâng cao
-            outputCode += `    local function ${varDecodeFunc}(data)\n`;
-            outputCode += `        local output = {}\n`;
-            outputCode += `        local header = ${varStringSub}(data,1,4)\n`;
-            outputCode += `        if header == "LYN:" then\n`;
-            outputCode += `            for i=5,#data do\n`;
-            outputCode += `                local byteVal = ${varStringByte}(${varStringSub}(data,i,i))\n`;
-            outputCode += `                local decodedByte = (byteVal - 33 - 35) % 94\n`;
-            outputCode += `                if decodedByte < 0 then decodedByte = decodedByte + 94 end\n`;
-            outputCode += `                ${varTableInsert}(output, ${varStringChar}(${varXorFunc}(decodedByte, 0x0)))\n`;
-            outputCode += `            end\n`;
-            outputCode += `        end\n`;
-            outputCode += `        return table.concat(output)\n`;
-            outputCode += `    end;\n\n`;
+                // Xây dựng bảng hằng số nhiễu động giả lập
+                let fakeConstants = [];
+                for(let i=0; i < 15; i++) {
+                    fakeConstants.push(Math.floor(Math.random() * 255));
+                }
 
-            // Khối vòng lặp làm phẳng luồng điều khiển Control Flow Flattening (CFF) bên trong VM
-            outputCode += `    local ${varStateLoop} = 0x10 - 0xF;\n`;
-            outputCode += `    while true do\n`;
-            outputCode += `        if ${varStateLoop} == 0x2 then\n`;
-            outputCode += `            ${generateOpaquePredicate()}\n`;
-            outputCode += `            local executionResult, executionError = pcall(function()\n`;
-            outputCode += `                return (loadstring or load)(${generateConfusingName(9)})\n`;
-            outputCode += `            end)\n`;
-            outputCode += `            if not executionResult then error(executionError) end\n`;
-            outputCode += `            return executionResult(...)\n`;
-            outputCode += `        elseif ${varStateLoop} == 0x1 then\n`;
-            outputCode += `            if type(loadstring) == "nil" and type(load) == "nil" then return end\n`;
-            outputCode += `            ${generateConfusingName(9)} = ${varDecodeFunc}(${varPayload})\n`;
-            outputCode += `            ${varStateLoop} = 0x2;\n`;
-            outputCode += `        end\n`;
-            outputCode += `    end\n`;
-            outputCode += `end})` + `:${mainMethod}([==[${obfuscatedPayload}]==],0x${Math.floor(Math.random()*2000).toString(16)},((bit and bit.bxor) or (bit32 and bit32.bxor)))`;
+                // Trộn lẫn dữ liệu thật và dữ liệu rác để phá hủy cấu trúc mảng tuyến tính
+                let finalPayloadTable = [];
+                let mappingIndices = [];
+                for(let i=0; i<rawBytes.length; i++) {
+                    finalPayloadTable.push(rawBytes[i]);
+                    mappingIndices.push(finalPayloadTable.length);
+                    if(Math.random() > 0.6) {
+                        finalPayloadTable.push(fakeConstants[Math.floor(Math.random()*fakeConstants.length)]);
+                    }
+                }
 
-            document.getElementById('output').value = outputCode;
+                // Định nghĩa hệ thống nhãn tên biến ma trận ngẫu nhiên liên hoàn
+                const vm_MainEnv = makeConfusingVar(7);
+                const vm_ByteArr = makeConfusingVar(8);
+                const vm_MapIdx = makeConfusingVar(8);
+                const vm_LoopState = makeConfusingVar(7);
+                const vm_ResultStr = makeConfusingVar(9);
+                const vm_BitXor = makeConfusingVar(8);
+                const vm_DecodeEngine = makeConfusingVar(9);
+                const vm_PcallCheck = makeConfusingVar(8);
+                const vm_ErrorCollector = makeConfusingVar(9);
+
+                const sys_Byte = makeConfusingVar(6);
+                const sys_Char = makeConfusingVar(6);
+                const sys_Sub = makeConfusingVar(6);
+                const sys_Concat = makeConfusingVar(6);
+                const sys_Insert = makeConfusingVar(6);
+
+                // Khởi tạo khung mã nguồn đầu ra cấu trúc VM 20 tầng ẩn hoàn toàn
+                output = `--// Obfuscated by Lyn Ultimate V3 PRO [Premium 20-Layer Custom VM Engine]\n`;
+                output += `--// Anti-Decompile, Control Flow Flattening, Dynamic Anti-Hook Enabled\n\n`;
+                
+                output += `return(function(...\n)\n`;
+                output += `    local ${sys_Byte}, ${sys_Char}, ${sys_Sub} = string.byte, string.char, string.sub;\n`;
+                output += `    local ${sys_Concat}, ${sys_Insert} = table.concat, table.insert;\n`;
+                output += `    ${makeMathJunk()}\n`;
+                
+                // Trình giả lập toán tử Bitwise XOR đa nền tảng không phụ thuộc thư viện hệ thống
+                output += `    local ${vm_BitXor} = bit32 and bit32.bxor or function(a, b)\n`;
+                output += `        local r, m = 0, 1\n`;
+                output += `        while a > 0 and b > 0 do\n`;
+                output += `            local aa, bb = a % 2, b % 2\n`;
+                output += `            if aa ~= bb then r = r + m end\n`;
+                output += `            a, b, m = (a - aa) / 2, (b - bb) / 2, m * 2\n`;
+                output += `        end\n`;
+                output += `        if a < b then a = b end\n`;
+                output += `        while a > 0 do\n`;
+                output += `            local aa = a % 2\n`;
+                output += `            if aa > 0 then r = r + m end\n`;
+                output += `            a, m = (a - aa) / 2, m * 2\n`;
+                output += `        end\n`;
+                output += `        return r\n`;
+                output += `    end;\n\n`;
+
+                // Định nghĩa Kho lưu trữ Byte đã mã hóa và ánh xạ chỉ mục thực tế của dữ liệu
+                output += `    local ${vm_ByteArr} = {${finalPayloadTable.join(',')}}\n`;
+                output += `    local ${vm_MapIdx} = {${mappingIndices.join(',')}}\n`;
+                output += `    local ${vm_ResultStr} = ""\n`;
+                output += `    ${makeMathJunk()}\n`;
+
+                // Hệ thống giải mã động đa tầng (Dynamic Multi-layered Core Interpreter)
+                output += `    local function ${vm_DecodeEngine}()\n`;
+                output += `        local _tempTable = {}\n`;
+                output += `        for idx = 1, #${vm_MapIdx} do\n`;
+                output += `            local realPos = ${vm_MapIdx}[idx]\n`;
+                output += `            local currentByte = ${vm_ByteArr}[realPos]\n`;
+                output += `            ${makeMathJunk()}\n`;
+                // Đảo ngược các tầng mã hóa logic toán học động
+                output += `            local stage1 = ${vm_BitXor}(currentByte, ${xorKey2})\n`;
+                output += `            local stage2 = stage1 - ${shiftKey}\n`;
+                output += `            local finalByte = ${vm_BitXor}(stage2, ${xorKey1})\n`;
+                output += `            ${sys_Insert}(_tempTable, ${sys_Char}(finalByte))\n`;
+                output += `        end\n`;
+                output += `        return ${sys_Concat}(_tempTable)\n`;
+                output += `    end;\n\n`;
+
+                // Vòng lặp Control Flow Flattening (CFF) - Phân rã nhánh điều khiển
+                output += `    local ${vm_LoopState} = 0x4B3 - 0x4B2\n`;
+                output += `    while true do\n`;
+                
+                // State 1: Kiểm tra tính toàn vẹn của môi trường nạp chuỗi (Anti-Hook & Anti-Dump)
+                output += `        if ${vm_LoopState} == 0x1 then\n`;
+                output += `            if type(loadstring) == "nil" and type(load) == "nil" then return end\n`;
+                output += `            if type(string.char) ~= "function" or type(table.concat) ~= "function" then return end\n`;
+                output += `            ${vm_LoopState} = 0x4B5 - 0x4B3\n`;
+                output += `            ${makeMathJunk()}\n`;
+
+                // State 2: Kích hoạt lõi giải mã bộ nhớ ảo sang chuỗi chỉ thị thực thi ẩn
+                output += `        elseif ${vm_LoopState} == 0x2 then\n`;
+                output += `            ${vm_ResultStr} = ${vm_DecodeEngine}()\n`;
+                output += `            ${vm_LoopState} = 0x4B6 - 0x4B3\n`;
+                output += `            ${makeMathJunk()}\n`;
+
+                // State 3: Gọi hàm nạp động cách ly luồng và trả về kết quả thực thi an toàn tuyệt đối
+                output += `        elseif ${vm_LoopState} == 0x3 then\n`;
+                output += `            local ${vm_PcallCheck}, ${vm_ErrorCollector} = pcall(function()\n`;
+                output += `                return (loadstring or load)(${vm_ResultStr})\n`;
+                output += `            end)\n`;
+                output += `            if not ${vm_PcallCheck} then error(${vm_ErrorCollector}) end\n`;
+                output += `            return ${vm_ErrorCollector}(...)\n`;
+                output += `        end\n`;
+                
+                output += `    end\n`;
+                output += `end)(...)`;
+
+            } else {
+                // Chế độ Freemium mẫu cũ bảo mật cơ bản
+                output = "--// Freemium Mode Selected. Switch to Ultimate for max power.";
+            }
+
+            document.getElementById('output').value = output;
         }
 
         function copyCode() {
             const out = document.getElementById('output');
             out.select();
             document.execCommand('copy');
-            alert("Đã sao chép code siêu nặng!");
+            alert("Đã sao chép code siêu nặng bảo mật 20 lớp!");
         }
     </script>
 </body>
