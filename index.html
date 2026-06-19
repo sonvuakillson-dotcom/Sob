@@ -3,339 +3,290 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lyn Obfuscate - Ultimate V3 Pro</title>
+    <title>Lyn Hub - Get Script</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Orbitron:wght@500;800&display=swap');
-
         :root {
-            --bg-color: #050505;
-            --panel-color: #0f0f15;
-            --accent-main: #ff0055;
-            --accent-sec: #00f2fe;
-            --text-main: #e2e8f0;
+            --bg-color: #0f0c1b;
+            --card-bg: #1a162b;
+            --accent-color: #bb86fc;
+            --tiktok-color: #fe2c55;
+            --youtube-color: #ff0000;
+            --text-color: #ffffff;
+            --text-muted: #a0a0a0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         body {
-            margin: 0;
-            padding: 0;
             background-color: var(--bg-color);
-            color: var(--text-main);
-            font-family: 'Fira Code', monospace;
-            background-image: linear-gradient(45deg, #050505 0%, #1a0b14 100%);
-            min-height: 100vh;
+            color: var(--text-color);
             display: flex;
-            flex-direction: column;
+            justify-content: center;
             align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            user-select: none; /* Chống bôi đen copy bậy */
         }
 
         .container {
-            width: 95%;
-            max-width: 1200px;
-            margin: 40px 0;
+            background-color: var(--card-bg);
             padding: 30px;
-            background: var(--panel-color);
-            border: 1px solid #331a24;
-            border-radius: 12px;
-            box-shadow: 0 10px 50px rgba(255, 0, 85, 0.1);
-        }
-
-        header {
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 480px;
             text-align: center;
-            margin-bottom: 30px;
-            border-bottom: 1px solid #331a24;
-            padding-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        header h1 {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 2.8rem;
-            margin: 0;
-            color: var(--accent-main);
-            text-transform: uppercase;
-            letter-spacing: 5px;
-            text-shadow: 0 0 15px rgba(255, 0, 85, 0.4);
-        }
-
-        header p { color: #888; font-size: 0.9rem; }
-
-        .layout {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-
-        @media (max-width: 800px) { .layout { grid-template-columns: 1fr; } }
-
-        .box { display: flex; flex-direction: column; }
-
-        label {
-            color: var(--accent-sec);
+        h1 {
+            font-size: 2.5rem;
             margin-bottom: 10px;
-            font-weight: bold;
+            background: linear-gradient(45deg, #fe2c55, #ff0000, #bb86fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
             text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 25px;
+        }
+
+        .btn-zone {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .btn-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 14px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: white;
+            font-weight: bold;
+            font-size: 1.1rem;
+            transition: transform 0.2s, filter 0.2s;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-link:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.2);
+        }
+
+        .btn-tiktok { background-color: var(--tiktok-color); }
+        .btn-youtube { background-color: var(--youtube-color); }
+
+        .btn-verify {
+            background-color: #31a24c;
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .countdown-text {
+            font-size: 1.2rem;
+            color: var(--accent-color);
+            margin: 15px 0;
+            display: none;
+        }
+
+        .script-box {
+            display: none;
+            text-align: left;
+            margin-top: 10px;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .script-title {
+            font-size: 1.3rem;
+            color: #4cd137;
+            text-align: center;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .script-sub {
+            font-size: 1rem;
+            color: var(--text-muted);
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .code-container {
+            position: relative;
+            background-color: #0b0914;
+            border-radius: 8px;
+            padding: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         textarea {
             width: 100%;
-            height: 350px;
-            background: #020202;
-            border: 1px solid #333;
-            border-radius: 6px;
-            color: #00ff66;
-            padding: 15px;
-            box-sizing: border-box;
-            resize: none;
-            font-size: 0.8rem;
-            line-height: 1.4;
-        }
-
-        textarea:focus { outline: none; border-color: var(--accent-main); }
-
-        .controls {
-            grid-column: 1 / -1;
-            display: flex;
-            gap: 15px;
-            background: #0a0a0a;
-            padding: 20px;
-            border-radius: 6px;
-            border: 1px solid #222;
-        }
-
-        select {
-            flex: 1;
-            background: #000;
-            color: #fff;
-            border: 1px solid #444;
-            padding: 12px;
-            border-radius: 4px;
-            font-family: 'Fira Code', monospace;
-            font-size: 0.9rem;
-        }
-
-        button {
-            background: var(--accent-main);
-            color: white;
+            height: 100px;
+            background: transparent;
             border: none;
-            padding: 12px 30px;
-            font-family: 'Orbitron', sans-serif;
+            color: #00ff00;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9rem;
+            resize: none;
+            outline: none;
+            user-select: text; /* Cho phép copy ở ô này */
+        }
+
+        .btn-copy {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            background-color: var(--accent-color);
+            color: #000;
+            border: none;
+            padding: 12px;
+            margin-top: 15px;
+            border-radius: 8px;
             font-weight: bold;
-            text-transform: uppercase;
-            border-radius: 4px;
+            font-size: 1rem;
             cursor: pointer;
-            transition: 0.3s;
+            transition: background 0.2s;
         }
 
-        button:hover {
-            background: #ff3377;
-            box-shadow: 0 0 15px rgba(255, 0, 85, 0.5);
-        }
+        .btn-copy:hover { background-color: #d2b4ff; }
 
-        .btn-copy { background: #0077ff; margin-top: 10px; width: 100%; }
-        .btn-copy:hover { background: #3399ff; box-shadow: 0 0 15px rgba(0, 119, 255, 0.5); }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <header>
-            <h1>Lyn Obfuscate</h1>
-            <p>Ultimate Version | Control Flow Flattening & Anti-Hook</p>
-        </header>
-
-        <div class="layout">
-            <div class="controls">
-                <select id="mode">
-                    <option value="ultimate">LYN ULTIMATE V3 (20-Layer VM Custom + Anti-Tamper)</option>
-                    <option value="freemium">LYN FREEMIUM (Heavy VM + Anti Tamper)</option>
-                </select>
-                <button onclick="runObfuscator()">Mã Hóa</button>
+        <div id="gate-zone">
+            <h1>Lyn Hub</h1>
+            <p class="subtitle">Vui lòng hoàn thành nhiệm vụ để mở khóa Script</p>
+            
+            <div class="btn-zone">
+                <button class="btn-link btn-tiktok" id="tk-btn">
+                    <i class="fab fa-tiktok"></i> Follow TikTok
+                </button>
+                <button class="btn-link btn-youtube" id="yt-btn">
+                    <i class="fab fa-youtube"></i> Đăng ký YouTube
+                </button>
             </div>
 
-            <div class="box">
-                <label>Input Code (Mã Gốc)</label>
-                <textarea id="input" spellcheck="false" placeholder="Dán script Lua vào đây..."></textarea>
+            <button class="btn-verify" id="verify-btn">XÁC NHẬN ĐÃ HOÀN THÀNH</button>
+            <div class="countdown-text" id="countdown-zone">Đang kiểm tra... Vui lòng đợi <span id="timer">5</span> giây</div>
+        </div>
+
+        <div class="script-box" id="script-zone">
+            <p class="script-title"><i class="fas fa-check-circle"></i> Script của bạn đây</p>
+            <p class="script-sub">Lyn Hub Kick a Lucky Blox</p>
+            
+            <div class="code-container">
+                <textarea id="script-code" readonly placeholder="Đang tải cấu trúc script..."></textarea>
             </div>
 
-            <div class="box">
-                <label>Output Code (Đã Mã Hóa)</label>
-                <textarea id="output" spellcheck="false" readonly placeholder="Kết quả siêu nặng..."></textarea>
-                <button class="btn-copy" onclick="copyCode()">Sao Chép Code</button>
-            </div>
+            <button class="btn-copy" id="copy-btn">
+                <i class="fas fa-copy"></i> Sao chép Script
+            </button>
         </div>
     </div>
 
     <script>
-        // Hàm sinh tên biến ngẫu nhiên hỗn loạn cực đại chống Decompiler phân tích từ ngữ
-        function makeConfusingVar(len) {
-            const pools = ['IlO0', 'lI10', 'O0oI'];
-            const selectPool = pools[Math.floor(Math.random() * pools.length)];
-            let res = '';
-            for (let i = 0; i < len; i++) {
-                res += selectPool.charAt(Math.floor(Math.random() * selectPool.length));
+        // Các chuỗi dữ liệu đã được mã hóa thành Base64 để ẩn giấu hoàn toàn
+        const _d1 = "aHR0cHM6Ly93d3cudGlrdG9rLmNvbS9AdGFfdGhpZXVfbmFuZ19kb19sYV9ubz9fcj0xJl90PVpTLTk3TEU1Z2RMVG12"; // TikTok URL
+        const _d2 = "aHR0cHM6Ly95b3V0dWJlLmNvbS9AbHluX2dhbWluZ2dhbWVyP3NpPWpKeUJINDBmWUR4SVAxd0I="; // YouTube URL
+        const _d3 = "bG9hZHN0cmluZyhnYW1lOkh0dHBHZXQoImh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9zb252dWFraWxsc29uLWRvdGNvbS9Tb2IvbWFpbi9TY3JpcHQlMjBraWNrJTIwYSUyMGx1Y2t5JTIwYmxveCUyMGJ5JTIwTHluJTIwbm8lMjBrZXklMjBiZXN0IikpKCk="; // Script URL
+
+        const tkBtn = document.getElementById('tk-btn');
+        const ytBtn = document.getElementById('yt-btn');
+        const verifyBtn = document.getElementById('verify-btn');
+        const countdownZone = document.getElementById('countdown-zone');
+        const timerText = document.getElementById('timer');
+        const gateZone = document.getElementById('gate-zone');
+        const scriptZone = document.getElementById('script-zone');
+        const copyBtn = document.getElementById('copy-btn');
+        const scriptCode = document.getElementById('script-code');
+
+        let clickTK = false;
+        let clickYT = false;
+
+        // Kích hoạt link khi bấm (không hiện góc màn hình khi di chuột qua)
+        tkBtn.addEventListener('click', () => {
+            window.open(atob(_d1), '_blank');
+            clickTK = true;
+            checkStatus();
+        });
+
+        ytBtn.addEventListener('click', () => {
+            window.open(atob(_d2), '_blank');
+            clickYT = true;
+            checkStatus();
+        });
+
+        function checkStatus() {
+            if (clickTK && clickYT) {
+                verifyBtn.style.display = 'block';
             }
-            if (res[0] === '0' || res[0] === 'o') res = 'I' + res.substring(1);
-            return '_' + res;
         }
 
-        // Tạo hằng số toán học giả lập ma trận (Opaque Predicates) làm mù AST Parsers
-        function makeMathJunk() {
-            const val1 = '0x' + Math.floor(Math.random() * 400 + 100).toString(16).toUpperCase();
-            const val2 = '0x' + Math.floor(Math.random() * 1000 + 600).toString(16).toUpperCase();
-            const operations = [
-                `if type(${val1}) == "string" and ${val1} == ${val2} then while true do end end;`,
-                `if ((${val1} * 2) + ${val2}) == 0x73A19B then return end;`,
-                `for _=0x2, 0x5 do local _ = 0x1 + 0x1 end;`
-            ];
-            return operations[Math.floor(Math.random() * operations.length)];
-        }
-
-        function runObfuscator() {
-            const input = document.getElementById('input').value;
-            if (!input) return alert("Chưa nhập code!");
-
-            const mode = document.getElementById('mode').value;
-            let output = "";
-
-            if (mode === "ultimate") {
-                // Tạo các khóa dịch dịch số ngẫu nhiên động đa tầng
-                const xorKey1 = Math.floor(Math.random() * 150) + 50;
-                const xorKey2 = Math.floor(Math.random() * 100) + 20;
-                const shiftKey = Math.floor(Math.random() * 60) + 15;
-
-                // Thực hiện biến đổi dữ liệu thô sang dạng mảng mã hóa Byte-Shifting kép
-                let rawBytes = [];
-                for (let i = 0; i < input.length; i++) {
-                    let mutatedByte = input.charCodeAt(i);
-                    mutatedByte = (mutatedByte ^ xorKey1) + shiftKey;
-                    mutatedByte = (mutatedByte ^ xorKey2);
-                    rawBytes.push(mutatedByte);
+        verifyBtn.addEventListener('click', () => {
+            verifyBtn.style.display = 'none';
+            countdownZone.style.display = 'block';
+            
+            let time = 5;
+            const timer = setInterval(() => {
+                time--;
+                timerText.textContent = time;
+                if (time <= 0) {
+                    clearInterval(timer);
+                    gateZone.style.display = 'none';
+                    scriptZone.style.display = 'block';
+                    // Lúc này mới tiến hành giải mã đoạn code đưa vào giao diện công khai
+                    scriptCode.value = atob(_d3);
                 }
+            }, 1000);
+        });
 
-                // Xây dựng bảng hằng số nhiễu động giả lập
-                let fakeConstants = [];
-                for(let i=0; i < 15; i++) {
-                    fakeConstants.push(Math.floor(Math.random() * 255));
-                }
+        copyBtn.addEventListener('click', () => {
+            scriptCode.select();
+            scriptCode.setSelectionRange(0, 99999);
+            navigator.clipboard.writeText(scriptCode.value).then(() => {
+                copyBtn.innerHTML = '<i class="fas fa-check"></i> Đã sao chép!';
+                copyBtn.style.backgroundColor = '#4cd137';
+                setTimeout(() => {
+                    copyBtn.innerHTML = '<i class="fas fa-copy"></i> Sao chép Script';
+                    copyBtn.style.backgroundColor = 'var(--accent-color)';
+                }, 2000);
+            });
+        });
 
-                // Trộn lẫn dữ liệu thật và dữ liệu rác để phá hủy cấu trúc mảng tuyến tính
-                let finalPayloadTable = [];
-                let mappingIndices = [];
-                for(let i=0; i<rawBytes.length; i++) {
-                    finalPayloadTable.push(rawBytes[i]);
-                    mappingIndices.push(finalPayloadTable.length);
-                    if(Math.random() > 0.6) {
-                        finalPayloadTable.push(fakeConstants[Math.floor(Math.random()*fakeConstants.length)]);
-                    }
-                }
-
-                // Định nghĩa hệ thống nhãn tên biến ma trận ngẫu nhiên liên hoàn
-                const vm_MainEnv = makeConfusingVar(7);
-                const vm_ByteArr = makeConfusingVar(8);
-                const vm_MapIdx = makeConfusingVar(8);
-                const vm_LoopState = makeConfusingVar(7);
-                const vm_ResultStr = makeConfusingVar(9);
-                const vm_BitXor = makeConfusingVar(8);
-                const vm_DecodeEngine = makeConfusingVar(9);
-                const vm_PcallCheck = makeConfusingVar(8);
-                const vm_ErrorCollector = makeConfusingVar(9);
-
-                const sys_Byte = makeConfusingVar(6);
-                const sys_Char = makeConfusingVar(6);
-                const sys_Sub = makeConfusingVar(6);
-                const sys_Concat = makeConfusingVar(6);
-                const sys_Insert = makeConfusingVar(6);
-
-                // Khởi tạo khung mã nguồn đầu ra cấu trúc VM 20 tầng ẩn hoàn toàn
-                output = `--// Obfuscated by Lyn Ultimate V3 PRO [Premium 20-Layer Custom VM Engine]\n`;
-                output += `--// Anti-Decompile, Control Flow Flattening, Dynamic Anti-Hook Enabled\n\n`;
-                
-                output += `return(function(...\n)\n`;
-                output += `    local ${sys_Byte}, ${sys_Char}, ${sys_Sub} = string.byte, string.char, string.sub;\n`;
-                output += `    local ${sys_Concat}, ${sys_Insert} = table.concat, table.insert;\n`;
-                output += `    ${makeMathJunk()}\n`;
-                
-                // Trình giả lập toán tử Bitwise XOR đa nền tảng không phụ thuộc thư viện hệ thống
-                output += `    local ${vm_BitXor} = bit32 and bit32.bxor or function(a, b)\n`;
-                output += `        local r, m = 0, 1\n`;
-                output += `        while a > 0 and b > 0 do\n`;
-                output += `            local aa, bb = a % 2, b % 2\n`;
-                output += `            if aa ~= bb then r = r + m end\n`;
-                output += `            a, b, m = (a - aa) / 2, (b - bb) / 2, m * 2\n`;
-                output += `        end\n`;
-                output += `        if a < b then a = b end\n`;
-                output += `        while a > 0 do\n`;
-                output += `            local aa = a % 2\n`;
-                output += `            if aa > 0 then r = r + m end\n`;
-                output += `            a, m = (a - aa) / 2, m * 2\n`;
-                output += `        end\n`;
-                output += `        return r\n`;
-                output += `    end;\n\n`;
-
-                // Định nghĩa Kho lưu trữ Byte đã mã hóa và ánh xạ chỉ mục thực tế của dữ liệu
-                output += `    local ${vm_ByteArr} = {${finalPayloadTable.join(',')}}\n`;
-                output += `    local ${vm_MapIdx} = {${mappingIndices.join(',')}}\n`;
-                output += `    local ${vm_ResultStr} = ""\n`;
-                output += `    ${makeMathJunk()}\n`;
-
-                // Hệ thống giải mã động đa tầng (Dynamic Multi-layered Core Interpreter)
-                output += `    local function ${vm_DecodeEngine}()\n`;
-                output += `        local _tempTable = {}\n`;
-                output += `        for idx = 1, #${vm_MapIdx} do\n`;
-                output += `            local realPos = ${vm_MapIdx}[idx]\n`;
-                output += `            local currentByte = ${vm_ByteArr}[realPos]\n`;
-                output += `            ${makeMathJunk()}\n`;
-                // Đảo ngược các tầng mã hóa logic toán học động
-                output += `            local stage1 = ${vm_BitXor}(currentByte, ${xorKey2})\n`;
-                output += `            local stage2 = stage1 - ${shiftKey}\n`;
-                output += `            local finalByte = ${vm_BitXor}(stage2, ${xorKey1})\n`;
-                output += `            ${sys_Insert}(_tempTable, ${sys_Char}(finalByte))\n`;
-                output += `        end\n`;
-                output += `        return ${sys_Concat}(_tempTable)\n`;
-                output += `    end;\n\n`;
-
-                // Vòng lặp Control Flow Flattening (CFF) - Phân rã nhánh điều khiển
-                output += `    local ${vm_LoopState} = 0x4B3 - 0x4B2\n`;
-                output += `    while true do\n`;
-                
-                // State 1: Kiểm tra tính toàn vẹn của môi trường nạp chuỗi (Anti-Hook & Anti-Dump)
-                output += `        if ${vm_LoopState} == 0x1 then\n`;
-                output += `            if type(loadstring) == "nil" and type(load) == "nil" then return end\n`;
-                output += `            if type(string.char) ~= "function" or type(table.concat) ~= "function" then return end\n`;
-                output += `            ${vm_LoopState} = 0x4B5 - 0x4B3\n`;
-                output += `            ${makeMathJunk()}\n`;
-
-                // State 2: Kích hoạt lõi giải mã bộ nhớ ảo sang chuỗi chỉ thị thực thi ẩn
-                output += `        elseif ${vm_LoopState} == 0x2 then\n`;
-                output += `            ${vm_ResultStr} = ${vm_DecodeEngine}()\n`;
-                output += `            ${vm_LoopState} = 0x4B6 - 0x4B3\n`;
-                output += `            ${makeMathJunk()}\n`;
-
-                // State 3: Gọi hàm nạp động cách ly luồng và trả về kết quả thực thi an toàn tuyệt đối
-                output += `        elseif ${vm_LoopState} == 0x3 then\n`;
-                output += `            local ${vm_PcallCheck}, ${vm_ErrorCollector} = pcall(function()\n`;
-                output += `                return (loadstring or load)(${vm_ResultStr})\n`;
-                output += `            end)\n`;
-                output += `            if not ${vm_PcallCheck} then error(${vm_ErrorCollector}) end\n`;
-                output += `            return ${vm_ErrorCollector}(...)\n`;
-                output += `        end\n`;
-                
-                output += `    end\n`;
-                output += `end)(...)`;
-
-            } else {
-                // Chế độ Freemium mẫu cũ bảo mật cơ bản
-                output = "--// Freemium Mode Selected. Switch to Ultimate for max power.";
-            }
-
-            document.getElementById('output').value = output;
-        }
-
-        function copyCode() {
-            const out = document.getElementById('output');
-            out.select();
-            document.execCommand('copy');
-            alert("Đã sao chép code siêu nặng bảo mật 20 lớp!");
-        }
+        // Chống bấm chuột phải để xem nhanh phần tử (F12 vẫn vào được nhưng code đã bị rối)
+        document.addEventListener('contextmenu', event => event.preventDefault());
     </script>
 </body>
 </html>
