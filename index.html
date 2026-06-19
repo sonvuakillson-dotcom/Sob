@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lyn Hub - Get Script</title>
+    <!-- Nhúng FontAwesome để lấy icon TikTok, YouTube và Copy -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -31,7 +32,6 @@
             align-items: center;
             min-height: 100vh;
             padding: 20px;
-            user-select: none; /* Chống bôi đen copy bậy */
         }
 
         .container {
@@ -89,8 +89,13 @@
             filter: brightness(1.2);
         }
 
-        .btn-tiktok { background-color: var(--tiktok-color); }
-        .btn-youtube { background-color: var(--youtube-color); }
+        .btn-tiktok {
+            background-color: var(--tiktok-color);
+        }
+
+        .btn-youtube {
+            background-color: var(--youtube-color);
+        }
 
         .btn-verify {
             background-color: #31a24c;
@@ -103,7 +108,7 @@
             font-size: 1rem;
             cursor: pointer;
             margin-top: 10px;
-            display: none;
+            display: none; /* Ẩn đi, hiện khi bấm đủ 2 link */
         }
 
         .countdown-text {
@@ -113,8 +118,9 @@
             display: none;
         }
 
+        /* Khối hiển thị Script khi unlock thành công */
         .script-box {
-            display: none;
+            display: none; /* Ẩn mặc định */
             text-align: left;
             margin-top: 10px;
             animation: fadeIn 0.5s ease-in-out;
@@ -153,7 +159,6 @@
             font-size: 0.9rem;
             resize: none;
             outline: none;
-            user-select: text; /* Cho phép copy ở ô này */
         }
 
         .btn-copy {
@@ -174,7 +179,9 @@
             transition: background 0.2s;
         }
 
-        .btn-copy:hover { background-color: #d2b4ff; }
+        .btn-copy:hover {
+            background-color: #d2b4ff;
+        }
 
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
@@ -185,29 +192,31 @@
 <body>
 
     <div class="container">
+        <!-- KHỐI LÀM NHIỆM VỤ (GET SCRIPT) -->
         <div id="gate-zone">
             <h1>Lyn Hub</h1>
             <p class="subtitle">Vui lòng hoàn thành nhiệm vụ để mở khóa Script</p>
             
             <div class="btn-zone">
-                <button class="btn-link btn-tiktok" id="tk-btn">
+                <a href="https://www.tiktok.com/@ta_thieu_nang_do_la_no?_r=1&_t=ZS-97LE5gdLTmv" target="_blank" class="btn-link btn-tiktok" id="tiktok-btn">
                     <i class="fab fa-tiktok"></i> Follow TikTok
-                </button>
-                <button class="btn-link btn-youtube" id="yt-btn">
+                </a>
+                <a href="https://youtube.com/@lyn_gaminggamer?si=jJyBH40fYDxIP1wB" target="_blank" class="btn-link btn-youtube" id="youtube-btn">
                     <i class="fab fa-youtube"></i> Đăng ký YouTube
-                </button>
+                </a>
             </div>
 
             <button class="btn-verify" id="verify-btn">XÁC NHẬN ĐÃ HOÀN THÀNH</button>
             <div class="countdown-text" id="countdown-zone">Đang kiểm tra... Vui lòng đợi <span id="timer">5</span> giây</div>
         </div>
 
+        <!-- KHỐI HIỂN THỊ SCRIPT ĐÃ MỞ KHÓA -->
         <div class="script-box" id="script-zone">
             <p class="script-title"><i class="fas fa-check-circle"></i> Script của bạn đây</p>
             <p class="script-sub">Lyn Hub Kick a Lucky Blox</p>
             
             <div class="code-container">
-                <textarea id="script-code" readonly placeholder="Đang tải cấu trúc script..."></textarea>
+                <textarea id="script-code" readonly>loadstring(game:HttpGet("https://raw.githubusercontent.com/sonvuakillson-dotcom/Sob/main/Script%20kick%20a%20lucky%20blox%20by%20Lyn%20no%20key%20best"))()</textarea>
             </div>
 
             <button class="btn-copy" id="copy-btn">
@@ -217,13 +226,8 @@
     </div>
 
     <script>
-        // Các chuỗi dữ liệu đã được mã hóa thành Base64 để ẩn giấu hoàn toàn
-        const _d1 = "aHR0cHM6Ly93d3cudGlrdG9rLmNvbS9AdGFfdGhpZXVfbmFuZ19kb19sYV9ubz9fcj0xJl90PVpTLTk3TEU1Z2RMVG12"; // TikTok URL
-        const _d2 = "aHR0cHM6Ly95b3V0dWJlLmNvbS9AbHluX2dhbWluZ2dhbWVyP3NpPWpKeUJINDBmWUR4SVAxd0I="; // YouTube URL
-        const _d3 = "bG9hZHN0cmluZyhnYW1lOkh0dHBHZXQoImh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9zb252dWFraWxsc29uLWRvdGNvbS9Tb2IvbWFpbi9TY3JpcHQlMjBraWNrJTIwYSUyMGx1Y2t5JTIwYmxveCUyMGJ5JTIwTHluJTIwbm8lMjBrZXklMjBiZXN0IikpKCk="; // Script URL
-
-        const tkBtn = document.getElementById('tk-btn');
-        const ytBtn = document.getElementById('yt-btn');
+        const tiktokBtn = document.getElementById('tiktok-btn');
+        const youtubeBtn = document.getElementById('youtube-btn');
         const verifyBtn = document.getElementById('verify-btn');
         const countdownZone = document.getElementById('countdown-zone');
         const timerText = document.getElementById('timer');
@@ -232,61 +236,64 @@
         const copyBtn = document.getElementById('copy-btn');
         const scriptCode = document.getElementById('script-code');
 
-        let clickTK = false;
-        let clickYT = false;
+        let clickedTiktok = false;
+        let clickedYoutube = false;
 
-        // Kích hoạt link khi bấm (không hiện góc màn hình khi di chuột qua)
-        tkBtn.addEventListener('click', () => {
-            window.open(atob(_d1), '_blank');
-            clickTK = true;
-            checkStatus();
+        // Bắt sự kiện click nút TikTok
+        tiktokBtn.addEventListener('click', () => {
+            clickedTiktok = true;
+            checkButtons();
         });
 
-        ytBtn.addEventListener('click', () => {
-            window.open(atob(_d2), '_blank');
-            clickYT = true;
-            checkStatus();
+        // Bắt sự kiện click nút YouTube
+        youtubeBtn.addEventListener('click', () => {
+            clickedYoutube = true;
+            checkButtons();
         });
 
-        function checkStatus() {
-            if (clickTK && clickYT) {
+        // Kiểm tra xem người dùng đã bấm vào cả 2 link chưa
+        function checkButtons() {
+            if (clickedTiktok && clickedYoutube) {
                 verifyBtn.style.display = 'block';
             }
         }
 
+        // Bắt sự kiện bấm nút Xác nhận
         verifyBtn.addEventListener('click', () => {
             verifyBtn.style.display = 'none';
             countdownZone.style.display = 'block';
             
-            let time = 5;
-            const timer = setInterval(() => {
-                time--;
-                timerText.textContent = time;
-                if (time <= 0) {
-                    clearInterval(timer);
+            let timeLeft = 5;
+            const interval = setInterval(() => {
+                timeLeft--;
+                timerText.textContent = timeLeft;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(interval);
+                    // Ẩn khu vực nhiệm vụ và hiện Script
                     gateZone.style.display = 'none';
                     scriptZone.style.display = 'block';
-                    // Lúc này mới tiến hành giải mã đoạn code đưa vào giao diện công khai
-                    scriptCode.value = atob(_d3);
                 }
             }, 1000);
         });
 
+        // Bắt sự kiện nút Copy
         copyBtn.addEventListener('click', () => {
             scriptCode.select();
-            scriptCode.setSelectionRange(0, 99999);
+            scriptCode.setSelectionRange(0, 99999); // Dành cho thiết bị di động
+
             navigator.clipboard.writeText(scriptCode.value).then(() => {
-                copyBtn.innerHTML = '<i class="fas fa-check"></i> Đã sao chép!';
+                copyBtn.innerHTML = '<i class="fas fa-check"></i> Đã sao chép thành công!';
                 copyBtn.style.backgroundColor = '#4cd137';
+                
                 setTimeout(() => {
                     copyBtn.innerHTML = '<i class="fas fa-copy"></i> Sao chép Script';
                     copyBtn.style.backgroundColor = 'var(--accent-color)';
                 }, 2000);
+            }).catch(err => {
+                alert('Có lỗi xảy ra khi copy, hãy tự bôi đen để copy nhé!');
             });
         });
-
-        // Chống bấm chuột phải để xem nhanh phần tử (F12 vẫn vào được nhưng code đã bị rối)
-        document.addEventListener('contextmenu', event => event.preventDefault());
     </script>
 </body>
 </html>
