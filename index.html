@@ -3,297 +3,414 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lyn Hub - Get Script</title>
-    <!-- Nhúng FontAwesome để lấy icon TikTok, YouTube và Copy -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>lynvietsub ai - Hệ thống dịch thuật & Lồng tiếng AI</title>
     <style>
         :root {
-            --bg-color: #0f0c1b;
-            --card-bg: #1a162b;
-            --accent-color: #bb86fc;
-            --tiktok-color: #fe2c55;
-            --youtube-color: #ff0000;
-            --text-color: #ffffff;
-            --text-muted: #a0a0a0;
+            --bg-color: #0b0f19;
+            --card-bg: #171e2e;
+            --border-color: #1e293b;
+            --accent-primary: #06b6d4;
+            --accent-secondary: #8b5cf6;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --success: #10b981;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
         }
 
         body {
             background-color: var(--bg-color);
-            color: var(--text-color);
+            color: var(--text-main);
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
+            justify-content: center;
             min-height: 100vh;
             padding: 20px;
         }
 
-        .container {
-            background-color: var(--card-bg);
-            padding: 30px;
-            border-radius: 16px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-            width: 100%;
-            max-width: 480px;
+        header {
             text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            margin-bottom: 30px;
         }
 
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            background: linear-gradient(45deg, #fe2c55, #ff0000, #bb86fc);
+        header h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            text-transform: uppercase;
-            letter-spacing: 2px;
+            margin-bottom: 10px;
+            letter-spacing: -1px;
         }
 
-        .subtitle {
+        header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            width: 100%;
+            max-width: 650px;
+            padding: 30px;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--border-color);
+        }
+
+        /* Ô vietsub ai kéo thả và chọn file */
+        .tool-box {
+            border: 2px dashed #334155;
+            border-radius: 16px;
+            padding: 50px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background-color: rgba(30, 41, 59, 0.2);
+        }
+
+        .tool-box.dragover {
+            border-color: var(--accent-primary);
+            background-color: rgba(6, 182, 212, 0.1);
+            transform: scale(1.02);
+        }
+
+        .tool-box:hover {
+            border-color: var(--accent-primary);
+            background-color: rgba(30, 41, 59, 0.5);
+        }
+
+        .tool-box .icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            display: inline-block;
+        }
+
+        .tool-box h2 {
+            font-size: 1.6rem;
+            color: var(--accent-primary);
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .tool-box p {
             color: var(--text-muted);
             font-size: 0.95rem;
-            margin-bottom: 25px;
         }
 
-        .btn-zone {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .btn-link {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            padding: 14px;
-            border-radius: 8px;
-            text-decoration: none;
-            color: white;
-            font-weight: bold;
-            font-size: 1.1rem;
-            transition: transform 0.2s, filter 0.2s;
-            cursor: pointer;
-            border: none;
-        }
-
-        .btn-link:hover {
-            transform: translateY(-2px);
-            filter: brightness(1.2);
-        }
-
-        .btn-tiktok {
-            background-color: var(--tiktok-color);
-        }
-
-        .btn-youtube {
-            background-color: var(--youtube-color);
-        }
-
-        .btn-verify {
-            background-color: #31a24c;
-            width: 100%;
-            padding: 12px;
-            border: none;
-            border-radius: 8px;
-            color: white;
-            font-weight: bold;
-            font-size: 1rem;
-            cursor: pointer;
-            margin-top: 10px;
-            display: none; /* Ẩn đi, hiện khi bấm đủ 2 link */
-        }
-
-        .countdown-text {
-            font-size: 1.2rem;
-            color: var(--accent-color);
-            margin: 15px 0;
+        #file-input {
             display: none;
         }
 
-        /* Khối hiển thị Script khi unlock thành công */
-        .script-box {
-            display: none; /* Ẩn mặc định */
-            text-align: left;
-            margin-top: 10px;
-            animation: fadeIn 0.5s ease-in-out;
+        /* Thông tin file */
+        .file-info {
+            margin-top: 15px;
+            display: none;
+            background: rgba(30, 41, 59, 0.6);
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            word-break: break-all;
+            border-left: 4px solid var(--accent-primary);
+            border-top: 1px solid var(--border-color);
+            border-right: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
         }
 
-        .script-title {
-            font-size: 1.3rem;
-            color: #4cd137;
+        /* Nút điều khiển */
+        .btn {
+            display: block;
+            width: 100%;
+            border: none;
+            padding: 15px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            border-radius: 12px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.2s ease;
             text-align: center;
-            margin-bottom: 5px;
-            font-weight: bold;
+            text-decoration: none;
         }
 
-        .script-sub {
-            font-size: 1rem;
+        .btn-start {
+            display: none;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(6, 182, 212, 0.3);
+        }
+
+        .btn-start:hover {
+            opacity: 0.95;
+            transform: translateY(-1px);
+        }
+
+        .btn-download {
+            background-color: var(--success);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-download:hover {
+            opacity: 0.95;
+            transform: translateY(-1px);
+        }
+
+        /* Tiến trình chạy AI */
+        .process-container {
+            display: none;
+            margin-top: 25px;
+        }
+
+        .progress-bar-bg {
+            background-color: #1e293b;
+            width: 100%;
+            height: 10px;
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: 15px;
+            border: 1px solid var(--border-color);
+        }
+
+        .progress-bar {
+            background: linear-gradient(to right, var(--accent-primary), var(--success));
+            width: 0%;
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+
+        .status-text {
+            font-size: 0.95rem;
             color: var(--text-muted);
             text-align: center;
+            font-style: italic;
+        }
+
+        /* Khu vực hiển thị kết quả hoàn chỉnh */
+        .result-container {
+            display: none;
+            margin-top: 30px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 25px;
+        }
+
+        .result-container h3 {
+            color: var(--success);
             margin-bottom: 15px;
-        }
-
-        .code-container {
-            position: relative;
-            background-color: #0b0914;
-            border-radius: 8px;
-            padding: 15px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        textarea {
-            width: 100%;
-            height: 100px;
-            background: transparent;
-            border: none;
-            color: #00ff00;
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 0.9rem;
-            resize: none;
-            outline: none;
-        }
-
-        .btn-copy {
+            text-align: center;
+            font-size: 1.3rem;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
+        }
+
+        /* Khung chứa video và phụ đề mẫu giả lập */
+        .video-wrapper {
+            position: relative;
             width: 100%;
-            background-color: var(--accent-color);
-            color: #000;
-            border: none;
-            padding: 12px;
-            margin-top: 15px;
-            border-radius: 8px;
-            font-weight: bold;
+            border-radius: 14px;
+            overflow: hidden;
+            background-color: #000;
+            border: 1px solid var(--border-color);
+            margin-bottom: 15px;
+            aspect-ratio: 16/9;
+        }
+
+        #result-video {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        /* Phụ đề vietsub giả lập đè lên video tạo cảm giác chân thực */
+        .subtitles-overlay {
+            position: absolute;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.75);
+            color: #fff;
+            padding: 6px 16px;
+            border-radius: 6px;
             font-size: 1rem;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .btn-copy:hover {
-            background-color: #d2b4ff;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            font-weight: bold;
+            text-align: center;
+            pointer-events: none;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            max-width: 80%;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <!-- KHỐI LÀM NHIỆM VỤ (GET SCRIPT) -->
-        <div id="gate-zone">
-            <h1>Lyn Hub</h1>
-            <p class="subtitle">Vui lòng hoàn thành nhiệm vụ để mở khóa Script</p>
-            
-            <div class="btn-zone">
-                <a href="https://www.tiktok.com/@ta_thieu_nang_do_la_no?_r=1&_t=ZS-97LE5gdLTmv" target="_blank" class="btn-link btn-tiktok" id="tiktok-btn">
-                    <i class="fab fa-tiktok"></i> Follow TikTok
-                </a>
-                <a href="https://youtube.com/@lyn_gaminggamer?si=jJyBH40fYDxIP1wB" target="_blank" class="btn-link btn-youtube" id="youtube-btn">
-                    <i class="fab fa-youtube"></i> Đăng ký YouTube
-                </a>
-            </div>
+    <header>
+        <h1>lynvietsub ai</h1>
+        <p>Dịch thuật video Trung - Việt & Lồng tiếng tự động bằng AI siêu hay</p>
+    </header>
 
-            <button class="btn-verify" id="verify-btn">XÁC NHẬN ĐÃ HOÀN THÀNH</button>
-            <div class="countdown-text" id="countdown-zone">Đang kiểm tra... Vui lòng đợi <span id="timer">5</span> giây</div>
+    <div class="container">
+        <div class="tool-box" id="upload-box">
+            <span class="icon">🎬</span>
+            <h2>vietsub ai</h2>
+            <p>Nhấp vào đây hoặc kéo thả file Video của bạn vào đây</p>
+            <input type="file" id="file-input" accept="video/*">
         </div>
 
-        <!-- KHỐI HIỂN THỊ SCRIPT ĐÃ MỞ KHÓA -->
-        <div class="script-box" id="script-zone">
-            <p class="script-title"><i class="fas fa-check-circle"></i> Script của bạn đây</p>
-            <p class="script-sub">Lyn Hub Kick a Lucky Blox</p>
+        <div class="file-info" id="file-info"></div>
+
+        <button class="btn btn-start" id="btn-start">🚀 Bắt Đầu Dịch & Lồng Tiếng</button>
+
+        <div class="process-container" id="process-container">
+            <div class="progress-bar-bg">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            <div class="status-text" id="status-text">Đang chuẩn bị tệp tin...</div>
+        </div>
+
+        <div class="result-container" id="result-container">
+            <h3>✅ Xử Lý Hoàn Tất - Video Đã Được Vietsub!</h3>
             
-            <div class="code-container">
-                <textarea id="script-code" readonly>loadstring(game:HttpGet("https://raw.githubusercontent.com/sonvuakillson-dotcom/Sob/main/Script%20kick%20a%20lucky%20blox%20by%20Lyn%20no%20key%20best"))()</textarea>
+            <div class="video-wrapper">
+                <video id="result-video" controls></video>
+                <div class="subtitles-overlay" id="subtitles-overlay">[lynvietsub ai] Phụ đề Tiếng Việt đã được đồng bộ...</div>
             </div>
 
-            <button class="btn-copy" id="copy-btn">
-                <i class="fas fa-copy"></i> Sao chép Script
-            </button>
+            <a href="#" class="btn btn-download" id="btn-download">📥 Tải Video Kết Quả Về Máy</a>
         </div>
     </div>
 
     <script>
-        const tiktokBtn = document.getElementById('tiktok-btn');
-        const youtubeBtn = document.getElementById('youtube-btn');
-        const verifyBtn = document.getElementById('verify-btn');
-        const countdownZone = document.getElementById('countdown-zone');
-        const timerText = document.getElementById('timer');
-        const gateZone = document.getElementById('gate-zone');
-        const scriptZone = document.getElementById('script-zone');
-        const copyBtn = document.getElementById('copy-btn');
-        const scriptCode = document.getElementById('script-code');
+        const uploadBox = document.getElementById('upload-box');
+        const fileInput = document.getElementById('file-input');
+        const fileInfo = document.getElementById('file-info');
+        const btnStart = document.getElementById('btn-start');
+        const processContainer = document.getElementById('process-container');
+        const progressBar = document.getElementById('progress-bar');
+        const statusText = document.getElementById('status-text');
+        const resultContainer = document.getElementById('result-container');
+        const resultVideo = document.getElementById('result-video');
+        const btnDownload = document.getElementById('btn-download');
+        const subtitlesOverlay = document.getElementById('subtitles-overlay');
 
-        let clickedTiktok = false;
-        let clickedYoutube = false;
+        let currentVideoURL = null;
 
-        // Bắt sự kiện click nút TikTok
-        tiktokBtn.addEventListener('click', () => {
-            clickedTiktok = true;
-            checkButtons();
+        // Kích hoạt chọn file khi click vào ô vietsub ai
+        uploadBox.addEventListener('click', () => fileInput.click());
+
+        // Hiệu ứng kéo thả file vào ô
+        uploadBox.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadBox.classList.add('dragover');
         });
 
-        // Bắt sự kiện click nút YouTube
-        youtubeBtn.addEventListener('click', () => {
-            clickedYoutube = true;
-            checkButtons();
+        uploadBox.addEventListener('dragleave', () => {
+            uploadBox.classList.remove('dragover');
         });
 
-        // Kiểm tra xem người dùng đã bấm vào cả 2 link chưa
-        function checkButtons() {
-            if (clickedTiktok && clickedYoutube) {
-                verifyBtn.style.display = 'block';
+        uploadBox.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadBox.classList.remove('dragover');
+            if (e.dataTransfer.files.length > 0) {
+                fileInput.files = e.dataTransfer.files;
+                handleFileSelect();
+            }
+        });
+
+        // Xử lý khi chọn file từ máy tính
+        fileInput.addEventListener('change', handleFileSelect);
+
+        function handleFileSelect() {
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                
+                // Hiển thị thông tin file
+                fileInfo.innerHTML = `<strong>📄 Tệp đã chọn:</strong> ${file.name} <br> <strong>⚖️ Dung lượng:</strong> ${(file.size / (1024 * 1024)).toFixed(2)} MB`;
+                fileInfo.style.display = 'block';
+                
+                // Hiện nút Bắt đầu xử lý
+                btnStart.style.display = 'block';
+                
+                // Ẩn các phần kết quả cũ nếu có để tránh xung đột
+                resultContainer.style.display = 'none';
+                processContainer.style.display = 'none';
+                progressBar.style.width = '0%';
+                resultVideo.pause();
+                
+                // Giải phóng bộ nhớ URL cũ nếu có
+                if (currentVideoURL) {
+                    URL.revokeObjectURL(currentVideoURL);
+                }
+                // Tạo một đường dẫn ảo tạm thời cho chính video vừa tải lên
+                currentVideoURL = URL.createObjectURL(file);
             }
         }
 
-        // Bắt sự kiện bấm nút Xác nhận
-        verifyBtn.addEventListener('click', () => {
-            verifyBtn.style.display = 'none';
-            countdownZone.style.display = 'block';
+        // Tiến trình giả lập AI chạy dịch thuật & lồng tiếng hoàn chỉnh
+        btnStart.addEventListener('click', () => {
+            btnStart.style.display = 'none';
+            processContainer.style.display = 'block';
             
-            let timeLeft = 5;
-            const interval = setInterval(() => {
-                timeLeft--;
-                timerText.textContent = timeLeft;
-                
-                if (timeLeft <= 0) {
-                    clearInterval(interval);
-                    // Ẩn khu vực nhiệm vụ và hiện Script
-                    gateZone.style.display = 'none';
-                    scriptZone.style.display = 'block';
+            const steps = [
+                { progress: 15, text: "🔍 [AI OCR] Đang quét toàn bộ khung hình để tìm chữ Tiếng Trung..." },
+                { progress: 40, text: "🤖 [AI Translate] Đang phân tích ngữ cảnh và dịch sang ngữ nghĩa Tiếng Việt hài hước..." },
+                { progress: 70, text: "🎙️ [AI TTS Voice] Đang khởi tạo giọng đọc AI siêu hay, khớp theo dòng thời gian..." },
+                { progress: 90, text: "✨ [AI Render] Đang nén luồng âm thanh và ghi phụ đề cứng (Hardsub) vào video..." },
+                { progress: 100, text: "🎉 Hoàn thành! Video hoàn chỉnh đã sẵn sàng." }
+            ];
+
+            let stepIndex = 0;
+
+            const processInterval = setInterval(() => {
+                if (stepIndex < steps.length) {
+                    progressBar.style.width = `${steps[stepIndex].progress}%`;
+                    statusText.textContent = steps[stepIndex].text;
+                    stepIndex++;
+                } else {
+                    clearInterval(processInterval);
+                    
+                    // Hiển thị khu vực kết quả sau khi hoàn tất
+                    setTimeout(() => {
+                        processContainer.style.display = 'none';
+                        resultContainer.style.display = 'block';
+                        
+                        // Đưa video thật của người dùng vào trình phát
+                        resultVideo.src = currentVideoURL;
+                        
+                        // Thiết lập nút tải xuống đúng file video vừa chọn
+                        btnDownload.href = currentVideoURL;
+                        btnDownload.download = `lynvietsub_ai_${fileInput.files[0].name}`;
+                        
+                        // Giả lập phụ đề thay đổi theo thời gian chạy video để nhìn chân thật
+                        setupSubtitleSimulation();
+                    }, 600);
                 }
-            }, 1000);
+            }, 2000); // Mỗi bước chạy trong 2 giây
         });
 
-        // Bắt sự kiện nút Copy
-        copyBtn.addEventListener('click', () => {
-            scriptCode.select();
-            scriptCode.setSelectionRange(0, 99999); // Dành cho thiết bị di động
-
-            navigator.clipboard.writeText(scriptCode.value).then(() => {
-                copyBtn.innerHTML = '<i class="fas fa-check"></i> Đã sao chép thành công!';
-                copyBtn.style.backgroundColor = '#4cd137';
-                
-                setTimeout(() => {
-                    copyBtn.innerHTML = '<i class="fas fa-copy"></i> Sao chép Script';
-                    copyBtn.style.backgroundColor = 'var(--accent-color)';
-                }, 2000);
-            }).catch(err => {
-                alert('Có lỗi xảy ra khi copy, hãy tự bôi đen để copy nhé!');
+        // Hàm thay đổi phụ đề giả lập khi video đang phát
+        function setupSubtitleSimulation() {
+            const sampleSubs = [
+                "Haha nhìn con gấu trúc bựa này chưa kìa!",
+                "Đừng có đùa với anh nha chú em!",
+                "Lynvietsub AI đã lồng tiếng siêu hay thành công...",
+                "Bấm nút màu xanh bên dưới để tải video này về máy nhé!"
+            ];
+            
+            resultVideo.addEventListener('timeupdate', () => {
+                // Đổi phụ đề dựa trên số giây của video
+                const currentTime = Math.floor(resultVideo.currentTime);
+                const subIndex = currentTime % sampleSubs.length;
+                subtitlesOverlay.textContent = sampleSubs[subIndex];
             });
-        });
+        }
     </script>
 </body>
 </html>
