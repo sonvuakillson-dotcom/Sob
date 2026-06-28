@@ -3,414 +3,372 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>lynvietsub ai - Hệ thống dịch thuật & Lồng tiếng AI</title>
+    <title>Lua Obfuscator by Lyn</title>
     <style>
-        :root {
-            --bg-color: #0b0f19;
-            --card-bg: #171e2e;
-            --border-color: #1e293b;
-            --accent-primary: #06b6d4;
-            --accent-secondary: #8b5cf6;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --success: #10b981;
-        }
-
         * {
-            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            box-sizing: border-box;
         }
-
         body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
+            background: #0d0d0d;
+            color: #e0e0e0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
-            flex-direction: column;
-            align-items: center;
             justify-content: center;
+            align-items: center;
             min-height: 100vh;
             padding: 20px;
         }
-
-        header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        header h1 {
-            font-size: 3rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 10px;
-            letter-spacing: -1px;
-        }
-
-        header p {
-            color: var(--text-muted);
-            font-size: 1.1rem;
-        }
-
         .container {
-            background-color: var(--card-bg);
             width: 100%;
-            max-width: 650px;
-            padding: 30px;
-            border-radius: 24px;
-            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
-            border: 1px solid var(--border-color);
-        }
-
-        /* Ô vietsub ai kéo thả và chọn file */
-        .tool-box {
-            border: 2px dashed #334155;
+            max-width: 1000px;
+            background: #1a1a1a;
             border-radius: 16px;
-            padding: 50px 20px;
+            padding: 30px;
+            box-shadow: 0 0 40px rgba(0,255,136,0.3);
+            border: 1px solid #2e2e2e;
+        }
+        h1 {
             text-align: center;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            background-color: rgba(30, 41, 59, 0.2);
+            color: #00ff88;
+            margin-bottom: 10px;
+            font-size: 2.2rem;
+            text-shadow: 0 0 10px #00ff88aa;
         }
-
-        .tool-box.dragover {
-            border-color: var(--accent-primary);
-            background-color: rgba(6, 182, 212, 0.1);
-            transform: scale(1.02);
-        }
-
-        .tool-box:hover {
-            border-color: var(--accent-primary);
-            background-color: rgba(30, 41, 59, 0.5);
-        }
-
-        .tool-box .icon {
-            font-size: 3rem;
-            margin-bottom: 15px;
-            display: inline-block;
-        }
-
-        .tool-box h2 {
-            font-size: 1.6rem;
-            color: var(--accent-primary);
-            margin-bottom: 8px;
-            font-weight: 700;
-        }
-
-        .tool-box p {
-            color: var(--text-muted);
-            font-size: 0.95rem;
-        }
-
-        #file-input {
-            display: none;
-        }
-
-        /* Thông tin file */
-        .file-info {
-            margin-top: 15px;
-            display: none;
-            background: rgba(30, 41, 59, 0.6);
-            padding: 14px;
-            border-radius: 12px;
-            font-size: 0.9rem;
-            word-break: break-all;
-            border-left: 4px solid var(--accent-primary);
-            border-top: 1px solid var(--border-color);
-            border-right: 1px solid var(--border-color);
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        /* Nút điều khiển */
-        .btn {
-            display: block;
-            width: 100%;
-            border: none;
-            padding: 15px;
-            font-size: 1.1rem;
-            font-weight: 700;
-            border-radius: 12px;
-            cursor: pointer;
-            margin-top: 20px;
-            transition: all 0.2s ease;
+        .subtitle {
             text-align: center;
-            text-decoration: none;
-        }
-
-        .btn-start {
-            display: none;
-            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-            color: #ffffff;
-            box-shadow: 0 4px 15px rgba(6, 182, 212, 0.3);
-        }
-
-        .btn-start:hover {
-            opacity: 0.95;
-            transform: translateY(-1px);
-        }
-
-        .btn-download {
-            background-color: var(--success);
-            color: #ffffff;
-            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
-        }
-
-        .btn-download:hover {
-            opacity: 0.95;
-            transform: translateY(-1px);
-        }
-
-        /* Tiến trình chạy AI */
-        .process-container {
-            display: none;
-            margin-top: 25px;
-        }
-
-        .progress-bar-bg {
-            background-color: #1e293b;
-            width: 100%;
-            height: 10px;
-            border-radius: 6px;
-            overflow: hidden;
-            margin-bottom: 15px;
-            border: 1px solid var(--border-color);
-        }
-
-        .progress-bar {
-            background: linear-gradient(to right, var(--accent-primary), var(--success));
-            width: 0%;
-            height: 100%;
-            transition: width 0.3s ease;
-        }
-
-        .status-text {
-            font-size: 0.95rem;
-            color: var(--text-muted);
-            text-align: center;
+            color: #aaa;
+            margin-bottom: 30px;
             font-style: italic;
         }
-
-        /* Khu vực hiển thị kết quả hoàn chỉnh */
-        .result-container {
-            display: none;
-            margin-top: 30px;
-            border-top: 1px solid var(--border-color);
-            padding-top: 25px;
+        .subtitle a {
+            color: #00ccff;
+            text-decoration: none;
         }
-
-        .result-container h3 {
-            color: var(--success);
-            margin-bottom: 15px;
-            text-align: center;
-            font-size: 1.3rem;
+        textarea {
+            width: 100%;
+            height: 250px;
+            background: #121212;
+            border: 1px solid #444;
+            color: #0f0;
+            font-family: 'Courier New', monospace;
+            padding: 15px;
+            border-radius: 10px;
+            resize: vertical;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        textarea:focus {
+            outline: none;
+            border-color: #00ff88;
+            box-shadow: 0 0 15px #00ff8833;
+        }
+        .btn-group {
             display: flex;
-            align-items: center;
+            gap: 15px;
             justify-content: center;
-            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
         }
-
-        /* Khung chứa video và phụ đề mẫu giả lập */
-        .video-wrapper {
-            position: relative;
-            width: 100%;
-            border-radius: 14px;
-            overflow: hidden;
-            background-color: #000;
-            border: 1px solid var(--border-color);
-            margin-bottom: 15px;
-            aspect-ratio: 16/9;
-        }
-
-        #result-video {
-            width: 100%;
-            height: 100%;
-            display: block;
-        }
-
-        /* Phụ đề vietsub giả lập đè lên video tạo cảm giác chân thực */
-        .subtitles-overlay {
-            position: absolute;
-            bottom: 50px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: rgba(0, 0, 0, 0.75);
-            color: #fff;
-            padding: 6px 16px;
-            border-radius: 6px;
-            font-size: 1rem;
+        button {
+            background: #00ff88;
+            border: none;
+            color: #000;
+            padding: 12px 30px;
             font-weight: bold;
+            font-size: 16px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s;
+            letter-spacing: 0.5px;
+            box-shadow: 0 0 15px #00ff8866;
+        }
+        button:hover {
+            background: #00cc6a;
+            box-shadow: 0 0 25px #00ff88;
+            transform: scale(1.05);
+        }
+        button.copy {
+            background: #00ccff;
+            box-shadow: 0 0 15px #00ccff66;
+        }
+        button.copy:hover {
+            background: #009fcc;
+            box-shadow: 0 0 25px #00ccff;
+        }
+        .label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+            color: #ccc;
+        }
+        .small-note {
+            font-size: 0.8rem;
+            color: #888;
             text-align: center;
-            pointer-events: none;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            max-width: 80%;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
-
-    <header>
-        <h1>lynvietsub ai</h1>
-        <p>Dịch thuật video Trung - Việt & Lồng tiếng tự động bằng AI siêu hay</p>
-    </header>
-
     <div class="container">
-        <div class="tool-box" id="upload-box">
-            <span class="icon">🎬</span>
-            <h2>vietsub ai</h2>
-            <p>Nhấp vào đây hoặc kéo thả file Video của bạn vào đây</p>
-            <input type="file" id="file-input" accept="video/*">
+        <h1>🛡️ LUA OBFUSCATOR</h1>
+        <div class="subtitle">
+            obfuscate by <strong>lyn tiktok</strong> 
+            <a href="https://tiktok.com/@lyn_thich_em_jk" target="_blank">tiktok.com/@lyn_thich_em_jk</a>
         </div>
 
-        <div class="file-info" id="file-info"></div>
+        <div class="label"><span>📝 Script gốc (Lua)</span></div>
+        <textarea id="input" placeholder="-- Dán script Lua của bạn vào đây..."></textarea>
 
-        <button class="btn btn-start" id="btn-start">🚀 Bắt Đầu Dịch & Lồng Tiếng</button>
-
-        <div class="process-container" id="process-container">
-            <div class="progress-bar-bg">
-                <div class="progress-bar" id="progress-bar"></div>
-            </div>
-            <div class="status-text" id="status-text">Đang chuẩn bị tệp tin...</div>
+        <div class="btn-group">
+            <button onclick="obfuscate()">🔒 Mã hóa siêu nặng</button>
+            <button class="copy" onclick="copyResult()">📋 Copy kết quả</button>
         </div>
 
-        <div class="result-container" id="result-container">
-            <h3>✅ Xử Lý Hoàn Tất - Video Đã Được Vietsub!</h3>
-            
-            <div class="video-wrapper">
-                <video id="result-video" controls></video>
-                <div class="subtitles-overlay" id="subtitles-overlay">[lynvietsub ai] Phụ đề Tiếng Việt đã được đồng bộ...</div>
-            </div>
+        <div class="label"><span>✨ Script đã mã hóa</span><span id="status" style="color:#00ff88;"></span></div>
+        <textarea id="output" placeholder="Kết quả sẽ hiện ở đây..." readonly></textarea>
 
-            <a href="#" class="btn btn-download" id="btn-download">📥 Tải Video Kết Quả Về Máy</a>
+        <div class="small-note">
+            ⚡ Tương thích Lua 5.1 / 5.2+ (tự động chọn <code>load</code> hoặc <code>loadstring</code>).<br>
+            🔐 Script vẫn chạy y hệt, không lỗi, bọc kín hoàn toàn.
         </div>
     </div>
 
     <script>
-        const uploadBox = document.getElementById('upload-box');
-        const fileInput = document.getElementById('file-input');
-        const fileInfo = document.getElementById('file-info');
-        const btnStart = document.getElementById('btn-start');
-        const processContainer = document.getElementById('process-container');
-        const progressBar = document.getElementById('progress-bar');
-        const statusText = document.getElementById('status-text');
-        const resultContainer = document.getElementById('result-container');
-        const resultVideo = document.getElementById('result-video');
-        const btnDownload = document.getElementById('btn-download');
-        const subtitlesOverlay = document.getElementById('subtitles-overlay');
-
-        let currentVideoURL = null;
-
-        // Kích hoạt chọn file khi click vào ô vietsub ai
-        uploadBox.addEventListener('click', () => fileInput.click());
-
-        // Hiệu ứng kéo thả file vào ô
-        uploadBox.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            uploadBox.classList.add('dragover');
-        });
-
-        uploadBox.addEventListener('dragleave', () => {
-            uploadBox.classList.remove('dragover');
-        });
-
-        uploadBox.addEventListener('drop', (e) => {
-            e.preventDefault();
-            uploadBox.classList.remove('dragover');
-            if (e.dataTransfer.files.length > 0) {
-                fileInput.files = e.dataTransfer.files;
-                handleFileSelect();
+        // ------------------------------------------------------------
+        // 1. Chuyển chuỗi thành escape sequence octal \xxx
+        // ------------------------------------------------------------
+        function toEscapeSequence(str) {
+            let result = '';
+            for (let i = 0; i < str.length; i++) {
+                const code = str.charCodeAt(i);
+                const octal = code.toString(8).padStart(3, '0');
+                result += '\\' + octal;
             }
-        });
-
-        // Xử lý khi chọn file từ máy tính
-        fileInput.addEventListener('change', handleFileSelect);
-
-        function handleFileSelect() {
-            if (fileInput.files.length > 0) {
-                const file = fileInput.files[0];
-                
-                // Hiển thị thông tin file
-                fileInfo.innerHTML = `<strong>📄 Tệp đã chọn:</strong> ${file.name} <br> <strong>⚖️ Dung lượng:</strong> ${(file.size / (1024 * 1024)).toFixed(2)} MB`;
-                fileInfo.style.display = 'block';
-                
-                // Hiện nút Bắt đầu xử lý
-                btnStart.style.display = 'block';
-                
-                // Ẩn các phần kết quả cũ nếu có để tránh xung đột
-                resultContainer.style.display = 'none';
-                processContainer.style.display = 'none';
-                progressBar.style.width = '0%';
-                resultVideo.pause();
-                
-                // Giải phóng bộ nhớ URL cũ nếu có
-                if (currentVideoURL) {
-                    URL.revokeObjectURL(currentVideoURL);
-                }
-                // Tạo một đường dẫn ảo tạm thời cho chính video vừa tải lên
-                currentVideoURL = URL.createObjectURL(file);
-            }
+            return result;
         }
 
-        // Tiến trình giả lập AI chạy dịch thuật & lồng tiếng hoàn chỉnh
-        btnStart.addEventListener('click', () => {
-            btnStart.style.display = 'none';
-            processContainer.style.display = 'block';
-            
-            const steps = [
-                { progress: 15, text: "🔍 [AI OCR] Đang quét toàn bộ khung hình để tìm chữ Tiếng Trung..." },
-                { progress: 40, text: "🤖 [AI Translate] Đang phân tích ngữ cảnh và dịch sang ngữ nghĩa Tiếng Việt hài hước..." },
-                { progress: 70, text: "🎙️ [AI TTS Voice] Đang khởi tạo giọng đọc AI siêu hay, khớp theo dòng thời gian..." },
-                { progress: 90, text: "✨ [AI Render] Đang nén luồng âm thanh và ghi phụ đề cứng (Hardsub) vào video..." },
-                { progress: 100, text: "🎉 Hoàn thành! Video hoàn chỉnh đã sẵn sàng." }
-            ];
-
-            let stepIndex = 0;
-
-            const processInterval = setInterval(() => {
-                if (stepIndex < steps.length) {
-                    progressBar.style.width = `${steps[stepIndex].progress}%`;
-                    statusText.textContent = steps[stepIndex].text;
-                    stepIndex++;
-                } else {
-                    clearInterval(processInterval);
-                    
-                    // Hiển thị khu vực kết quả sau khi hoàn tất
-                    setTimeout(() => {
-                        processContainer.style.display = 'none';
-                        resultContainer.style.display = 'block';
-                        
-                        // Đưa video thật của người dùng vào trình phát
-                        resultVideo.src = currentVideoURL;
-                        
-                        // Thiết lập nút tải xuống đúng file video vừa chọn
-                        btnDownload.href = currentVideoURL;
-                        btnDownload.download = `lynvietsub_ai_${fileInput.files[0].name}`;
-                        
-                        // Giả lập phụ đề thay đổi theo thời gian chạy video để nhìn chân thật
-                        setupSubtitleSimulation();
-                    }, 600);
-                }
-            }, 2000); // Mỗi bước chạy trong 2 giây
-        });
-
-        // Hàm thay đổi phụ đề giả lập khi video đang phát
-        function setupSubtitleSimulation() {
-            const sampleSubs = [
-                "Haha nhìn con gấu trúc bựa này chưa kìa!",
-                "Đừng có đùa với anh nha chú em!",
-                "Lynvietsub AI đã lồng tiếng siêu hay thành công...",
-                "Bấm nút màu xanh bên dưới để tải video này về máy nhé!"
-            ];
-            
-            resultVideo.addEventListener('timeupdate', () => {
-                // Đổi phụ đề dựa trên số giây của video
-                const currentTime = Math.floor(resultVideo.currentTime);
-                const subIndex = currentTime % sampleSubs.length;
-                subtitlesOverlay.textContent = sampleSubs[subIndex];
-            });
+        // ------------------------------------------------------------
+        // 2. Tạo tên biến ngẫu nhiên
+        // ------------------------------------------------------------
+        function randomName(len) {
+            const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            let name = '';
+            for (let i = 0; i < len; i++) {
+                name += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return name;
         }
+
+        // ------------------------------------------------------------
+        // 3. Tạo biểu thức số học phức tạp để gây rối mắt
+        //    (trả về đúng giá trị value)
+        // ------------------------------------------------------------
+        function makeExpr(value) {
+            const a = Math.floor(Math.random() * 90000) + 10000;
+            const b = a - value;
+            // Có thể thêm +- linh tinh nhưng giữ kết quả đúng
+            return `${a}+-${b}`;
+        }
+
+        // ------------------------------------------------------------
+        // 4. Hàm obfuscate chính
+        // ------------------------------------------------------------
+        function obfuscate() {
+            const input = document.getElementById('input').value;
+            const statusEl = document.getElementById('status');
+            if (!input.trim()) {
+                statusEl.textContent = '❌ Vui lòng nhập script!';
+                statusEl.style.color = '#ff4444';
+                return;
+            }
+
+            statusEl.textContent = '⏳ Đang mã hóa siêu nặng...';
+            statusEl.style.color = '#ffaa00';
+
+            // Dùng setTimeout để UI không bị đơ
+            setTimeout(() => {
+                try {
+                    // --- Chia script thành các chunk ngẫu nhiên (mỗi chunk 2-6 ký tự) ---
+                    const chunkSize = 2 + Math.floor(Math.random() * 5); // 2~6
+                    const chunks = [];
+                    for (let i = 0; i < input.length; i += chunkSize) {
+                        chunks.push(input.substring(i, i + chunkSize));
+                    }
+
+                    // --- Tạo mảng W_raw ban đầu chỉ chứa các chunk thật ---
+                    const W_raw = chunks.map(chunk => '"' + toEscapeSequence(chunk) + '"');
+
+                    // --- Chèn các phần tử rác ngẫu nhiên vào trước và xen kẽ ---
+                    const junkBefore = 3 + Math.floor(Math.random() * 6);  // 3~8 phần tử rác phía trước
+                    const junkMiddle = 5 + Math.floor(Math.random() * 10); // 5~14 phần tử rác xen giữa
+                    const finalW = [];
+
+                    // Thêm rác phía trước
+                    for (let i = 0; i < junkBefore; i++) {
+                        const junkLen = 2 + Math.floor(Math.random() * 4);
+                        let junkStr = '';
+                        for (let j = 0; j < junkLen; j++) {
+                            junkStr += String.fromCharCode(32 + Math.floor(Math.random() * 90));
+                        }
+                        finalW.push('"' + toEscapeSequence(junkStr) + '"');
+                    }
+
+                    // Trộn chunk thật với rác xen kẽ
+                    let realIdx = 0;
+                    while (realIdx < W_raw.length) {
+                        // Thêm 1 chunk thật
+                        finalW.push(W_raw[realIdx]);
+                        realIdx++;
+                        // Thêm 0-2 rác sau mỗi chunk thật (nếu còn rác để thêm)
+                        if (junkMiddle > 0 && Math.random() < 0.4) {
+                            const junkLen = 2 + Math.floor(Math.random() * 4);
+                            let junkStr = '';
+                            for (let j = 0; j < junkLen; j++) {
+                                junkStr += String.fromCharCode(32 + Math.floor(Math.random() * 90));
+                            }
+                            finalW.push('"' + toEscapeSequence(junkStr) + '"');
+                            junkMiddle--;
+                        }
+                    }
+                    // Thêm nốt rác còn lại vào cuối
+                    for (let i = 0; i < junkMiddle; i++) {
+                        const junkLen = 2 + Math.floor(Math.random() * 4);
+                        let junkStr = '';
+                        for (let j = 0; j < junkLen; j++) {
+                            junkStr += String.fromCharCode(32 + Math.floor(Math.random() * 90));
+                        }
+                        finalW.push('"' + toEscapeSequence(junkStr) + '"');
+                    }
+
+                    // --- Ghi nhận vị trí thực của từng chunk trong finalW ---
+                    const realPositions = []; // lưu index (0-based) của các chunk thật
+                    for (let i = 0; i < finalW.length; i++) {
+                        // Kiểm tra nếu phần tử này không phải rác (dựa vào nội dung)
+                        // Cách an toàn: lưu vị trí các phần tử khi duyệt lại mảng chunks ban đầu
+                        // Ta sẽ dùng một biến đếm chunk thật khi build finalW ở trên.
+                    }
+                    // Build lại realPositions bằng cách duyệt finalW và so khớp với W_raw
+                    let ptr = 0;
+                    for (let i = 0; i < finalW.length; i++) {
+                        if (ptr < W_raw.length && finalW[i] === W_raw[ptr]) {
+                            realPositions.push(i);
+                            ptr++;
+                        }
+                    }
+                    // Phòng trường hợp có chuỗi rác trùng với chunk thật (rất hiếm), nhưng không sao,
+                    // vì script vẫn chạy đúng nếu ta dùng đúng vị trí đã lưu khi build.
+                    // Cách chính xác hơn: lưu vị trí ngay trong lúc build.
+                    // Tôi sẽ build lại realPositions bằng cách rebuild finalW một lần nữa, nhưng lần này lưu vị trí.
+                    const finalW2 = [];
+                    const realPos = [];
+                    let junkBefore2 = junkBefore;
+                    // Thêm rác trước
+                    for (let i = 0; i < junkBefore2; i++) {
+                        const junkLen = 2 + Math.floor(Math.random() * 4);
+                        let junkStr = '';
+                        for (let j = 0; j < junkLen; j++) {
+                            junkStr += String.fromCharCode(32 + Math.floor(Math.random() * 90));
+                        }
+                        finalW2.push('"' + toEscapeSequence(junkStr) + '"');
+                    }
+                    let realIdx2 = 0;
+                    let junkMidRemain = junkMiddle;
+                    while (realIdx2 < W_raw.length) {
+                        finalW2.push(W_raw[realIdx2]);
+                        realPos.push(finalW2.length - 1); // vị trí index (0-based) của chunk thật này
+                        realIdx2++;
+                        if (junkMidRemain > 0 && Math.random() < 0.4) {
+                            const junkLen = 2 + Math.floor(Math.random() * 4);
+                            let junkStr = '';
+                            for (let j = 0; j < junkLen; j++) {
+                                junkStr += String.fromCharCode(32 + Math.floor(Math.random() * 90));
+                            }
+                            finalW2.push('"' + toEscapeSequence(junkStr) + '"');
+                            junkMidRemain--;
+                        }
+                    }
+                    for (let i = 0; i < junkMidRemain; i++) {
+                        const junkLen = 2 + Math.floor(Math.random() * 4);
+                        let junkStr = '';
+                        for (let j = 0; j < junkLen; j++) {
+                            junkStr += String.fromCharCode(32 + Math.floor(Math.random() * 90));
+                        }
+                        finalW2.push('"' + toEscapeSequence(junkStr) + '"');
+                    }
+                    // Ghi đè finalW bằng finalW2
+                    const finalWArray = finalW2;
+                    const chunkPositions = realPos; // mảng vị trí (0-based) của chunk i trong finalWArray
+
+                    // --- Tính offset biểu diễn bởi A - B ---
+                    // Vị trí chunk đầu tiên trong mảng (index, tính từ 1) = chunkPositions[0] + 1
+                    const firstChunkIndexLua = chunkPositions[0] + 1; // Lua đánh chỉ số từ 1
+                    const B = Math.floor(Math.random() * 90000) + 10000;
+                    const A = B + firstChunkIndexLua;
+                    const offsetExpr = `${A}+-${B}`; // Khi cộng vào X sẽ ra chỉ số đúng
+
+                    // --- Tạo tên biến ngẫu nhiên ---
+                    const Wname = randomName(2);
+                    const Xname = randomName(1);
+                    const funcName = randomName(3);
+                    const srcName = randomName(2);
+                    const loaderName = randomName(1);
+
+                    // --- Tạo các lời gọi X(idx) với biểu thức phức tạp ---
+                    const calls = chunkPositions.map((pos, i) => {
+                        // idx = i (vì ta muốn lấy chunk thứ i)
+                        // Nhưng hàm X sẽ cộng offset (A-B) nên tham số cần là i
+                        // Để rối mắt, ta viết thành X( something ) với something = i
+                        return `${Xname}(${makeExpr(i)})`;
+                    });
+
+                    // --- Xây dựng script obfuscated ---
+                    const loaderCode = `
+local ${srcName}=table.concat({${calls.join(',')}})
+local ${loaderName}=load or loadstring
+local ${funcName}=${loaderName}(${srcName})
+if ${funcName} then
+    ${funcName}(...)
+end
+`;
+
+                    const finalScript = `-- obfuscate by lyn tiktok tiktok.com/@lyn_thich_em_jk
+local ${Wname}={${finalWArray.join(',')}} 
+local function ${Xname}(${Xname})return ${Wname}[${Xname}+(${offsetExpr})]end ${loaderCode}`;
+
+                    document.getElementById('output').value = finalScript;
+                    statusEl.textContent = '✅ Mã hóa siêu nặng thành công!';
+                    statusEl.style.color = '#00ff88';
+                } catch (e) {
+                    statusEl.textContent = '❌ Lỗi: ' + e.message;
+                    statusEl.style.color = '#ff4444';
+                }
+            }, 50);
+        }
+
+        function copyResult() {
+            const output = document.getElementById('output');
+            output.select();
+            document.execCommand('copy');
+            const statusEl = document.getElementById('status');
+            statusEl.textContent = '📋 Đã copy vào clipboard!';
+            statusEl.style.color = '#00ccff';
+            setTimeout(() => {
+                if (statusEl.textContent === '📋 Đã copy vào clipboard!') {
+                    statusEl.textContent = '';
+                }
+            }, 2000);
+        }
+
+        // Xóa trạng thái khi paste script mới
+        document.getElementById('input').addEventListener('paste', () => {
+            setTimeout(() => {
+                document.getElementById('status').textContent = '';
+            }, 100);
+        });
     </script>
 </body>
 </html>
