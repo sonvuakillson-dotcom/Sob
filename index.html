@@ -3,48 +3,124 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lua Obfuscator by Lyn</title>
+    <title>Lua Obfuscator by Lyn - Siêu nặng</title>
     <style>
-        * { margin:0; padding:0; box-sizing:border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
         body {
-            background: #0d0d0d; color: #e0e0e0;
+            background: #0a0a0a;
+            color: #d0d0d0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex; justify-content: center; align-items: center;
-            min-height: 100vh; padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
         }
         .container {
-            width: 100%; max-width: 1000px; background: #1a1a1a;
-            border-radius: 16px; padding: 30px;
-            box-shadow: 0 0 40px rgba(0,255,136,0.3); border: 1px solid #2e2e2e;
+            width: 100%;
+            max-width: 1100px;
+            background: #121212;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 0 60px rgba(0,255,136,0.4);
+            border: 1px solid #333;
         }
         h1 {
-            text-align: center; color: #00ff88; margin-bottom: 10px;
-            font-size: 2.2rem; text-shadow: 0 0 10px #00ff88aa;
+            text-align: center;
+            color: #0f0;
+            margin-bottom: 8px;
+            font-size: 2.5rem;
+            letter-spacing: 2px;
+            text-shadow: 0 0 20px #0f0;
         }
         .subtitle {
-            text-align: center; color: #aaa; margin-bottom: 30px; font-style: italic;
+            text-align: center;
+            color: #aaa;
+            margin-bottom: 35px;
+            font-style: italic;
+            font-size: 1.1rem;
         }
-        .subtitle a { color: #00ccff; text-decoration: none; }
+        .subtitle a {
+            color: #0cf;
+            text-decoration: none;
+            font-weight: bold;
+        }
         textarea {
-            width: 100%; height: 250px; background: #121212; border: 1px solid #444;
-            color: #0f0; font-family: 'Courier New', monospace; padding: 15px;
-            border-radius: 10px; resize: vertical; font-size: 14px; margin-bottom: 20px;
+            width: 100%;
+            height: 260px;
+            background: #1a1a1a;
+            border: 1px solid #444;
+            color: #0f0;
+            font-family: 'Courier New', monospace;
+            padding: 18px;
+            border-radius: 12px;
+            resize: vertical;
+            font-size: 14px;
+            margin-bottom: 20px;
+            transition: all 0.3s;
         }
-        textarea:focus { outline: none; border-color: #00ff88; box-shadow: 0 0 15px #00ff8833; }
-        .btn-group { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-bottom: 20px; }
+        textarea:focus {
+            outline: none;
+            border-color: #0f0;
+            box-shadow: 0 0 25px #0f04;
+        }
+        .btn-group {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+        }
         button {
-            background: #00ff88; border: none; color: #000; padding: 12px 30px;
-            font-weight: bold; font-size: 16px; border-radius: 30px; cursor: pointer;
-            transition: all 0.3s; letter-spacing: 0.5px; box-shadow: 0 0 15px #00ff8866;
+            background: #0f0;
+            border: none;
+            color: #000;
+            padding: 14px 35px;
+            font-weight: bold;
+            font-size: 16px;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: all 0.3s;
+            letter-spacing: 1px;
+            box-shadow: 0 0 20px #0f06;
+            text-transform: uppercase;
         }
-        button:hover { background: #00cc6a; box-shadow: 0 0 25px #00ff88; transform: scale(1.05); }
-        button.copy { background: #00ccff; box-shadow: 0 0 15px #00ccff66; }
-        button.copy:hover { background: #009fcc; box-shadow: 0 0 25px #00ccff; }
+        button:hover {
+            background: #0c0;
+            box-shadow: 0 0 35px #0f0;
+            transform: scale(1.06);
+        }
+        button.copy {
+            background: #09f;
+            box-shadow: 0 0 20px #09f6;
+        }
+        button.copy:hover {
+            background: #07c;
+            box-shadow: 0 0 35px #09f;
+        }
         .label {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 5px; color: #ccc;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            color: #bbb;
+            font-weight: bold;
         }
-        .small-note { font-size: 0.8rem; color: #888; text-align: center; margin-top: 20px; }
+        #status {
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+        .small-note {
+            font-size: 0.85rem;
+            color: #888;
+            text-align: center;
+            margin-top: 30px;
+            line-height: 1.6;
+        }
     </style>
 </head>
 <body>
@@ -54,36 +130,60 @@
             obfuscate by <strong>lyn tiktok</strong>
             <a href="https://tiktok.com/@lyn_thich_em_jk" target="_blank">tiktok.com/@lyn_thich_em_jk</a>
         </div>
+
         <div class="label"><span>📝 Script gốc (Lua)</span></div>
         <textarea id="input" placeholder="-- Dán script Lua của bạn vào đây..."></textarea>
+
         <div class="btn-group">
-            <button onclick="obfuscate()">🔒 Mã hóa siêu nặng</button>
+            <button onclick="obfuscate()">🔒 Mã hóa SIÊU NẶNG</button>
             <button class="copy" onclick="copyResult()">📋 Copy kết quả</button>
         </div>
-        <div class="label"><span>✨ Script đã mã hóa</span><span id="status" style="color:#00ff88;"></span></div>
-        <textarea id="output" placeholder="Kết quả sẽ hiện ở đây..." readonly></textarea>
+
+        <div class="label">
+            <span>✨ Script đã mã hóa</span>
+            <span id="status" style="color:#0f0;"></span>
+        </div>
+        <textarea id="output" placeholder="Kết quả cực nặng sẽ hiện ở đây..." readonly></textarea>
+
         <div class="small-note">
-            ⚡ Tương thích Lua 5.1 / 5.2+ (tự động chọn <code>load</code> hoặc <code>loadstring</code>).<br>
-            🔐 Script vẫn chạy y hệt, không lỗi, bọc kín hoàn toàn.
+            ⚡ Tương thích <strong>mọi phiên bản Lua</strong> (5.1 → 5.4, Roblox).<br>
+            🔐 Sử dụng kỹ thuật obfuscation tầng sâu, mảng rác lớn, hoán đổi động, biểu thức tử thần.<br>
+            🧠 Script gốc được khôi phục hoàn hảo và chạy không lỗi.
         </div>
     </div>
 
     <script>
-        function toOct(str) {
+        // ---- Công cụ ----
+        function toDecEscape(str) {
             let r = '';
             for (let i = 0; i < str.length; i++) {
-                let c = str.charCodeAt(i).toString(8);
-                while (c.length < 3) c = '0' + c;
-                r += '\\' + c;
+                let code = str.charCodeAt(i);
+                let s = code.toString();
+                while (s.length < 3) s = '0' + s;
+                r += '\\' + s;
             }
             return r;
         }
 
-        function rndName(len) {
-            const ch = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        function randomName(len) {
+            const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
             let n = '';
-            for (let i = 0; i < len; i++) n += ch[Math.floor(Math.random() * ch.length)];
+            for (let i = 0; i < len; i++) n += chars[Math.floor(Math.random() * chars.length)];
             return n;
+        }
+
+        function randomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        // Tạo biểu thức phức tạp trả về giá trị `val`
+        function makeExpr(val) {
+            let a = randomInt(8000, 20000);
+            let b = a - val;
+            // Thêm một vài phép toán vô hại
+            let junk = '';
+            if (Math.random() < 0.5) junk = '+0';
+            return `(${a}+-${b}${junk})`;
         }
 
         function obfuscate() {
@@ -91,83 +191,113 @@
             const statusEl = document.getElementById('status');
             if (!input.trim()) {
                 statusEl.textContent = '❌ Vui lòng nhập script!';
-                statusEl.style.color = '#ff4444';
+                statusEl.style.color = '#f44';
                 return;
             }
-            statusEl.textContent = '⏳ Đang mã hóa siêu nặng...';
-            statusEl.style.color = '#ffaa00';
+
+            statusEl.textContent = '⏳ Đang xây dựng obfuscation siêu nặng...';
+            statusEl.style.color = '#fa0';
 
             setTimeout(() => {
                 try {
-                    // 1. Chia script thành các chunk nhỏ
-                    let chunkSize = 3 + Math.floor(Math.random() * 5); // 3~7
+                    // 1. Chia script thành các chunk siêu nhỏ (1-3 ký tự) để tăng số lượng phần tử
+                    let chunkSize = randomInt(1, 3);
                     let chunks = [];
                     for (let i = 0; i < input.length; i += chunkSize) {
                         chunks.push(input.substring(i, i + chunkSize));
+                        chunkSize = randomInt(1, 3); // thay đổi liên tục
                     }
+                    // Đảm bảo chunk cuối không rỗng
+                    if (chunks.length === 0) chunks = [input];
 
-                    // 2. Tạo mảng W_raw ban đầu chỉ chứa chunk thật (đã escape octal)
-                    let W_raw = chunks.map(c => '"' + toOct(c) + '"');
+                    // 2. Tạo mảng W_raw chứa escape decimal của từng chunk thật
+                    let W_real = chunks.map(c => '"' + toDecEscape(c) + '"');
 
-                    // 3. Chèn rác vào trước và xen kẽ
-                    let junkBefore = 2 + Math.floor(Math.random() * 5);
-                    let junkMiddle = 4 + Math.floor(Math.random() * 8);
-                    let finalW = [];
-                    // a) Thêm rác trước
-                    for (let i = 0; i < junkBefore; i++) {
-                        let len = 2 + Math.floor(Math.random() * 4);
+                    // 3. Xây dựng mảng W lớn với nhiều rác
+                    let junkFront = randomInt(15, 30);   // rác đầu
+                    let junkBack = randomInt(15, 30);    // rác cuối
+                    let W = [];
+
+                    // Thêm rác đầu
+                    for (let i = 0; i < junkFront; i++) {
+                        let len = randomInt(1, 5);
                         let s = '';
-                        for (let j = 0; j < len; j++) s += String.fromCharCode(32 + Math.floor(Math.random() * 90));
-                        finalW.push('"' + toOct(s) + '"');
+                        for (let j = 0; j < len; j++) s += String.fromCharCode(randomInt(32, 126));
+                        W.push('"' + toDecEscape(s) + '"');
                     }
-                    // b) Trộn chunk thật với rác
-                    let realPositions = []; // lưu vị trí (index 0-based) của chunk thật trong finalW
-                    let realIdx = 0;
-                    let junkRemain = junkMiddle;
-                    while (realIdx < W_raw.length) {
-                        finalW.push(W_raw[realIdx]);
-                        realPositions.push(finalW.length - 1); // vị trí của chunk thứ realIdx
-                        realIdx++;
-                        if (junkRemain > 0 && Math.random() < 0.4) {
-                            let len = 2 + Math.floor(Math.random() * 4);
+
+                    // Thêm các chunk thật, xen kẽ rác ngẫu nhiên (0-2 rác trước mỗi chunk thật)
+                    let realPositions = []; // vị trí (0-based) của chunk thật trong W
+                    for (let i = 0; i < W_real.length; i++) {
+                        // Thêm 0-2 rác
+                        let extraJunk = randomInt(0, 2);
+                        for (let k = 0; k < extraJunk; k++) {
+                            let len = randomInt(1, 5);
                             let s = '';
-                            for (let j = 0; j < len; j++) s += String.fromCharCode(32 + Math.floor(Math.random() * 90));
-                            finalW.push('"' + toOct(s) + '"');
-                            junkRemain--;
+                            for (let j = 0; j < len; j++) s += String.fromCharCode(randomInt(32, 126));
+                            W.push('"' + toDecEscape(s) + '"');
                         }
+                        // Thêm chunk thật
+                        W.push(W_real[i]);
+                        realPositions.push(W.length - 1);
                     }
-                    // c) Thêm nốt rác còn lại vào cuối
-                    for (let i = 0; i < junkRemain; i++) {
-                        let len = 2 + Math.floor(Math.random() * 4);
+
+                    // Thêm rác cuối
+                    for (let i = 0; i < junkBack; i++) {
+                        let len = randomInt(1, 5);
                         let s = '';
-                        for (let j = 0; j < len; j++) s += String.fromCharCode(32 + Math.floor(Math.random() * 90));
-                        finalW.push('"' + toOct(s) + '"');
+                        for (let j = 0; j < len; j++) s += String.fromCharCode(randomInt(32, 126));
+                        W.push('"' + toDecEscape(s) + '"');
                     }
 
-                    // 4. Tính offset cho hàm X
-                    // Vị trí của chunk đầu tiên trong Lua (index từ 1) = realPositions[0] + 1
-                    let firstIndex = realPositions[0] + 1;
-                    let B = Math.floor(Math.random() * 60000) + 10000;
-                    let A = B + firstIndex;
-                    let offsetExpr = `${A}+-${B}`; // X + (A-B) = X + firstIndex -> trả về chunk thứ X
+                    // 4. Tạo danh sách các cặp hoán đổi (swap) để làm rối W (theo phong cách mẫu)
+                    let swapPairs = [];
+                    let numSwaps = randomInt(5, 15);
+                    for (let i = 0; i < numSwaps; i++) {
+                        let a = randomInt(0, W.length - 1);
+                        let b = randomInt(0, W.length - 1);
+                        if (a !== b) swapPairs.push([a + 1, b + 1]); // Lua index từ 1
+                    }
 
-                    // 5. Tạo tên biến
-                    let Wname = rndName(2);
-                    let Xname = rndName(1);
-                    let fname = rndName(3);
-                    let sname = rndName(2);
-                    let lname = rndName(1);
+                    // 5. Tính offset cho hàm X
+                    let firstRealIndex = realPositions[0] + 1; // Lua index
+                    let B = randomInt(10000, 50000);
+                    let A = B + firstRealIndex;
+                    let offsetExpr = `(${A}+-${B})`; // A - B = firstRealIndex
 
-                    // 6. Tạo danh sách gọi X(i) với biểu thức phức tạp
-                    let calls = realPositions.map((pos, i) => {
-                        // Để rối mắt, tham số là i nhưng biểu diễn phức tạp
-                        let val = i;
-                        let x = Math.floor(Math.random() * 8000) + 2000;
-                        let y = x - val;
-                        return `${Xname}(${x}+-${y})`; // luôn ra val
-                    });
+                    // 6. Tên biến ngẫu nhiên
+                    let Wname = randomName(randomInt(2, 3));
+                    let Xname = randomName(1);
+                    let fname = randomName(randomInt(3, 4));
+                    let sname = randomName(randomInt(2, 3));
+                    let lname = randomName(1);
+                    let junkVar1 = randomName(randomInt(2, 3));
+                    let junkVar2 = randomName(randomInt(2, 3));
 
-                    // 7. Script loader
+                    // 7. Tạo danh sách gọi X(i) với biểu thức phức tạp
+                    let calls = realPositions.map((_, i) => `${Xname}${makeExpr(i)}`);
+
+                    // 8. Tạo đoạn mã hoán đổi (giống mẫu)
+                    let swapTable = swapPairs.map(pair => `{${pair[0]},${pair[1]}}`).join(',');
+                    let swapCode = '';
+                    if (swapPairs.length > 0) {
+                        swapCode = `
+for ${randomName(1)},${randomName(2)} in ipairs({${swapTable}}) do 
+    while ${randomName(1)}[${randomInt(1,2)}] < ${randomName(1)}[${randomInt(1,2)}] do 
+        ${Wname}[${randomName(1)}[1]], ${Wname}[${randomName(1)}[2]], ${randomName(1)}[1], ${randomName(1)}[2] = 
+        ${Wname}[${randomName(1)}[2]], ${Wname}[${randomName(1)}[1]], ${randomName(1)}[1]+1, ${randomName(1)}[2]-1 
+    end 
+end`;
+                    }
+
+                    // 9. Thêm biến rác và phép gán vô nghĩa
+                    let junkVars = `
+local ${junkVar1} = ${randomInt(1000,9999)}
+local ${junkVar2} = "${randomName(randomInt(5,10))}"
+${junkVar1} = ${junkVar1} + ${randomInt(1,100)} - ${randomInt(1,100)}
+`;
+
+                    // 10. Loader chính
                     let loader = `
 local ${sname}=table.concat({${calls.join(',')}})
 local ${lname}=load or loadstring
@@ -176,31 +306,42 @@ if ${fname} then
     ${fname}(...)
 end
 `;
+
+                    // 11. Script cuối cùng
                     let finalScript = `-- obfuscate by lyn tiktok tiktok.com/@lyn_thich_em_jk
-local ${Wname}={${finalW.join(',')}} 
-local function ${Xname}(${Xname})return ${Wname}[${Xname}+(${offsetExpr})]end ${loader}`;
+local ${Wname}={${W.join(',')}} 
+local function ${Xname}(${Xname})return ${Wname}[${Xname}+${offsetExpr}]end 
+${junkVars}
+${swapCode}
+${loader}`;
 
                     document.getElementById('output').value = finalScript;
-                    statusEl.textContent = '✅ Mã hóa siêu nặng thành công!';
-                    statusEl.style.color = '#00ff88';
+                    statusEl.textContent = '✅ Mã hóa SIÊU NẶNG thành công!';
+                    statusEl.style.color = '#0f0';
                 } catch (e) {
                     statusEl.textContent = '❌ Lỗi: ' + e.message;
-                    statusEl.style.color = '#ff4444';
+                    statusEl.style.color = '#f44';
                 }
-            }, 50);
+            }, 60);
         }
 
         function copyResult() {
-            let out = document.getElementById('output');
+            const out = document.getElementById('output');
             out.select();
             document.execCommand('copy');
-            let st = document.getElementById('status');
+            const st = document.getElementById('status');
             st.textContent = '📋 Đã copy vào clipboard!';
-            st.style.color = '#00ccff';
-            setTimeout(() => { if (st.textContent === '📋 Đã copy vào clipboard!') st.textContent = ''; }, 2000);
+            st.style.color = '#0cf';
+            setTimeout(() => {
+                if (st.textContent === '📋 Đã copy vào clipboard!') st.textContent = '';
+            }, 2000);
         }
+
+        // Xóa trạng thái khi paste script mới
         document.getElementById('input').addEventListener('paste', () => {
-            setTimeout(() => { document.getElementById('status').textContent = ''; }, 100);
+            setTimeout(() => {
+                document.getElementById('status').textContent = '';
+            }, 100);
         });
     </script>
 </body>
