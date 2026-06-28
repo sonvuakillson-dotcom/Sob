@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lua Obfuscator by Lyn - Siêu nặng</title>
+    <title>Lua Obfuscator by Lyn - SIÊU NẶNG & CHẠY NGON</title>
     <style>
         * {
             margin: 0;
@@ -26,7 +26,7 @@
             background: #121212;
             border-radius: 20px;
             padding: 30px;
-            box-shadow: 0 0 60px rgba(0,255,136,0.4);
+            box-shadow: 0 0 60px rgba(0, 255, 136, 0.4);
             border: 1px solid #333;
         }
         h1 {
@@ -121,6 +121,12 @@
             margin-top: 30px;
             line-height: 1.6;
         }
+        .warning {
+            color: #fa0;
+            text-align: center;
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
     </style>
 </head>
 <body>
@@ -147,20 +153,21 @@
 
         <div class="small-note">
             ⚡ Tương thích <strong>mọi phiên bản Lua</strong> (5.1 → 5.4, Roblox).<br>
-            🔐 Sử dụng kỹ thuật obfuscation tầng sâu, mảng rác lớn, hoán đổi động, biểu thức tử thần.<br>
-            🧠 Script gốc được khôi phục hoàn hảo và chạy không lỗi.
+            🔐 Obfuscation tầng sâu: decimal escape, mảng rác khổng lồ, hoán đổi rác, biểu thức tử thần, biến rác.<br>
+            🧠 <strong>Script gốc chạy hoàn hảo sau khi obfuscate – không lỗi.</strong>
+        </div>
+        <div class="warning">
+            ✅ ĐẢM BẢO CHẠY: chunk thật không bị swap, chỉ swap rác – offset chính xác tuyệt đối.
         </div>
     </div>
 
     <script>
-        // ---- Công cụ ----
+        // ---- Tiện ích ----
         function toDecEscape(str) {
             let r = '';
             for (let i = 0; i < str.length; i++) {
-                let code = str.charCodeAt(i);
-                let s = code.toString();
-                while (s.length < 3) s = '0' + s;
-                r += '\\' + s;
+                const code = str.charCodeAt(i);
+                r += '\\' + code.toString().padStart(3, '0');
             }
             return r;
         }
@@ -176,16 +183,15 @@
             return Math.floor(Math.random() * (max - min + 1)) + min;
         }
 
-        // Tạo biểu thức phức tạp trả về giá trị `val`
+        // Tạo biểu thức phức tạp (luôn trả về val)
         function makeExpr(val) {
-            let a = randomInt(8000, 20000);
-            let b = a - val;
-            // Thêm một vài phép toán vô hại
-            let junk = '';
-            if (Math.random() < 0.5) junk = '+0';
+            const a = randomInt(8000, 25000);
+            const b = a - val;
+            const junk = Math.random() < 0.5 ? '+0' : '';
             return `(${a}+-${b}${junk})`;
         }
 
+        // ---- OBFUSCATE ----
         function obfuscate() {
             const input = document.getElementById('input').value;
             const statusEl = document.getElementById('status');
@@ -200,120 +206,129 @@
 
             setTimeout(() => {
                 try {
-                    // 1. Chia script thành các chunk siêu nhỏ (1-3 ký tự) để tăng số lượng phần tử
-                    let chunkSize = randomInt(1, 3);
+                    // 1. Chia script thành chunk nhỏ (1-4 ký tự) – càng nhỏ càng nhiều chunk
                     let chunks = [];
-                    for (let i = 0; i < input.length; i += chunkSize) {
-                        chunks.push(input.substring(i, i + chunkSize));
-                        chunkSize = randomInt(1, 3); // thay đổi liên tục
+                    let i = 0;
+                    while (i < input.length) {
+                        let size = randomInt(1, 4);
+                        chunks.push(input.substring(i, i + size));
+                        i += size;
                     }
-                    // Đảm bảo chunk cuối không rỗng
-                    if (chunks.length === 0) chunks = [input];
 
-                    // 2. Tạo mảng W_raw chứa escape decimal của từng chunk thật
-                    let W_real = chunks.map(c => '"' + toDecEscape(c) + '"');
+                    // 2. Mã hóa từng chunk thật dạng \xxx (decimal)
+                    const realChunks = chunks.map(c => '"' + toDecEscape(c) + '"');
 
-                    // 3. Xây dựng mảng W lớn với nhiều rác
-                    let junkFront = randomInt(15, 30);   // rác đầu
-                    let junkBack = randomInt(15, 30);    // rác cuối
+                    // 3. Tạo mảng W với RÁC KHỔNG LỒ
+                    const junkFront = randomInt(40, 80);   // rác trước
+                    const junkBack = randomInt(40, 80);    // rác sau
                     let W = [];
 
-                    // Thêm rác đầu
-                    for (let i = 0; i < junkFront; i++) {
-                        let len = randomInt(1, 5);
+                    // Thêm rác trước
+                    for (let j = 0; j < junkFront; j++) {
+                        let len = randomInt(1, 8);
                         let s = '';
-                        for (let j = 0; j < len; j++) s += String.fromCharCode(randomInt(32, 126));
+                        for (let k = 0; k < len; k++) s += String.fromCharCode(randomInt(32, 126));
                         W.push('"' + toDecEscape(s) + '"');
                     }
 
-                    // Thêm các chunk thật, xen kẽ rác ngẫu nhiên (0-2 rác trước mỗi chunk thật)
-                    let realPositions = []; // vị trí (0-based) của chunk thật trong W
-                    for (let i = 0; i < W_real.length; i++) {
-                        // Thêm 0-2 rác
-                        let extraJunk = randomInt(0, 2);
-                        for (let k = 0; k < extraJunk; k++) {
-                            let len = randomInt(1, 5);
-                            let s = '';
-                            for (let j = 0; j < len; j++) s += String.fromCharCode(randomInt(32, 126));
-                            W.push('"' + toDecEscape(s) + '"');
-                        }
-                        // Thêm chunk thật
-                        W.push(W_real[i]);
-                        realPositions.push(W.length - 1);
-                    }
+                    // Ghi nhận vị trí bắt đầu của chunk thật (0-based)
+                    const realStartIndex = W.length;
 
-                    // Thêm rác cuối
-                    for (let i = 0; i < junkBack; i++) {
-                        let len = randomInt(1, 5);
+                    // Thêm tất cả chunk thật (liên tiếp)
+                    W = W.concat(realChunks);
+
+                    // Ghi nhận vị trí kết thúc của chunk thật (0-based, exclusive)
+                    const realEndIndex = W.length - 1;
+
+                    // Thêm rác sau
+                    for (let j = 0; j < junkBack; j++) {
+                        let len = randomInt(1, 8);
                         let s = '';
-                        for (let j = 0; j < len; j++) s += String.fromCharCode(randomInt(32, 126));
+                        for (let k = 0; k < len; k++) s += String.fromCharCode(randomInt(32, 126));
                         W.push('"' + toDecEscape(s) + '"');
                     }
 
-                    // 4. Tạo danh sách các cặp hoán đổi (swap) để làm rối W (theo phong cách mẫu)
+                    // 4. Chuẩn bị swap RÁC (chỉ swap những phần tử không phải chunk thật)
                     let swapPairs = [];
-                    let numSwaps = randomInt(5, 15);
-                    for (let i = 0; i < numSwaps; i++) {
-                        let a = randomInt(0, W.length - 1);
-                        let b = randomInt(0, W.length - 1);
-                        if (a !== b) swapPairs.push([a + 1, b + 1]); // Lua index từ 1
+                    // Tập chỉ số rác (0-based) loại trừ vùng realStartIndex..realEndIndex
+                    const totalW = W.length;
+                    const junkIndices = [];
+                    for (let idx = 0; idx < totalW; idx++) {
+                        if (idx < realStartIndex || idx > realEndIndex) {
+                            junkIndices.push(idx);
+                        }
+                    }
+                    // Tạo ngẫu nhiên các cặp swap trong junkIndices
+                    const numSwaps = randomInt(15, 30);
+                    for (let s = 0; s < numSwaps; s++) {
+                        if (junkIndices.length < 2) break;
+                        let i1 = randomInt(0, junkIndices.length - 1);
+                        let i2 = randomInt(0, junkIndices.length - 1);
+                        if (i1 !== i2) {
+                            // Lưu ý: Lua index bắt đầu từ 1
+                            swapPairs.push([junkIndices[i1] + 1, junkIndices[i2] + 1]);
+                        }
                     }
 
                     // 5. Tính offset cho hàm X
-                    let firstRealIndex = realPositions[0] + 1; // Lua index
-                    let B = randomInt(10000, 50000);
-                    let A = B + firstRealIndex;
-                    let offsetExpr = `(${A}+-${B})`; // A - B = firstRealIndex
+                    // Vị trí chunk đầu tiên trong Lua = realStartIndex + 1
+                    const firstRealLuaIdx = realStartIndex + 1;
+                    const B = randomInt(15000, 60000);
+                    const A = B + firstRealLuaIdx;
+                    const offsetExpr = `(${A}+-${B})`;
 
                     // 6. Tên biến ngẫu nhiên
-                    let Wname = randomName(randomInt(2, 3));
-                    let Xname = randomName(1);
-                    let fname = randomName(randomInt(3, 4));
-                    let sname = randomName(randomInt(2, 3));
-                    let lname = randomName(1);
-                    let junkVar1 = randomName(randomInt(2, 3));
-                    let junkVar2 = randomName(randomInt(2, 3));
+                    const Wname = randomName(2);
+                    const Xname = randomName(1);
+                    const funcName = randomName(3);
+                    const srcName = randomName(2);
+                    const loaderName = randomName(1);
+                    const junkVar1 = randomName(2);
+                    const junkVar2 = randomName(2);
+                    const junkVar3 = randomName(2);
 
                     // 7. Tạo danh sách gọi X(i) với biểu thức phức tạp
-                    let calls = realPositions.map((_, i) => `${Xname}${makeExpr(i)}`);
+                    const calls = realChunks.map((_, idx) => `${Xname}${makeExpr(idx)}`);
 
-                    // 8. Tạo đoạn mã hoán đổi (giống mẫu)
-                    let swapTable = swapPairs.map(pair => `{${pair[0]},${pair[1]}}`).join(',');
-                    let swapCode = '';
-                    if (swapPairs.length > 0) {
-                        swapCode = `
-for ${randomName(1)},${randomName(2)} in ipairs({${swapTable}}) do 
-    while ${randomName(1)}[${randomInt(1,2)}] < ${randomName(1)}[${randomInt(1,2)}] do 
-        ${Wname}[${randomName(1)}[1]], ${Wname}[${randomName(1)}[2]], ${randomName(1)}[1], ${randomName(1)}[2] = 
-        ${Wname}[${randomName(1)}[2]], ${Wname}[${randomName(1)}[1]], ${randomName(1)}[1]+1, ${randomName(1)}[2]-1 
-    end 
-end`;
-                    }
-
-                    // 9. Thêm biến rác và phép gán vô nghĩa
-                    let junkVars = `
-local ${junkVar1} = ${randomInt(1000,9999)}
-local ${junkVar2} = "${randomName(randomInt(5,10))}"
-${junkVar1} = ${junkVar1} + ${randomInt(1,100)} - ${randomInt(1,100)}
+                    // 8. Mã rác (biến rác, phép toán vô nghĩa)
+                    const junkCode = `
+local ${junkVar1}=${randomInt(100, 9999)}
+local ${junkVar2}="${randomName(randomInt(5, 12))}"
+local ${junkVar3}=${junkVar1}+${randomInt(1, 100)}-${randomInt(1, 100)}
+${junkVar1}=${junkVar1}*2
+${junkVar3}=${junkVar1}+${junkVar3}
 `;
 
-                    // 10. Loader chính
-                    let loader = `
-local ${sname}=table.concat({${calls.join(',')}})
-local ${lname}=load or loadstring
-local ${fname}=${lname}(${sname})
-if ${fname} then
-    ${fname}(...)
+                    // 9. Mã swap (chỉ swap phần tử rác)
+                    let swapCode = '';
+                    if (swapPairs.length > 0) {
+                        const swapTable = swapPairs.map(pair => `{${pair[0]},${pair[1]}}`).join(',');
+                        const loopVar1 = randomName(1);
+                        const loopVar2 = randomName(2);
+                        swapCode = `
+for ${loopVar1},${loopVar2} in ipairs({${swapTable}}) do 
+    ${Wname}[${loopVar2}[1]],${Wname}[${loopVar2}[2]]=${Wname}[${loopVar2}[2]],${Wname}[${loopVar2}[1]]
+end
+`;
+                    }
+
+                    // 10. Loader
+                    const loaderCode = `
+local ${srcName}=table.concat({${calls.join(',')}})
+local ${loaderName}=load or loadstring
+local ${funcName}=${loaderName}(${srcName})
+if ${funcName} then
+    ${funcName}(...)
 end
 `;
 
-                    // 11. Script cuối cùng
-                    let finalScript = `-- obfuscate by lyn tiktok tiktok.com/@lyn_thich_em_jk
+                    // 11. Script hoàn chỉnh
+                    const finalScript = `-- obfuscate by lyn tiktok tiktok.com/@lyn_thich_em_jk
 local ${Wname}={${W.join(',')}} 
 local function ${Xname}(${Xname})return ${Wname}[${Xname}+${offsetExpr}]end 
-${junkVars}
+${junkCode}
 ${swapCode}
-${loader}`;
+${loaderCode}`;
 
                     document.getElementById('output').value = finalScript;
                     statusEl.textContent = '✅ Mã hóa SIÊU NẶNG thành công!';
@@ -322,7 +337,7 @@ ${loader}`;
                     statusEl.textContent = '❌ Lỗi: ' + e.message;
                     statusEl.style.color = '#f44';
                 }
-            }, 60);
+            }, 50);
         }
 
         function copyResult() {
@@ -337,7 +352,6 @@ ${loader}`;
             }, 2000);
         }
 
-        // Xóa trạng thái khi paste script mới
         document.getElementById('input').addEventListener('paste', () => {
             setTimeout(() => {
                 document.getElementById('status').textContent = '';
