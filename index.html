@@ -3,164 +3,232 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lua VM Obfuscator by Lyn - MAX HIDDEN</title>
+    <title>Iron-Superflow VM Lua Obfuscator</title>
     <style>
-        * { margin:0; padding:0; box-sizing:border-box; }
-        body { background: #050505; color: #d0d0d0; font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
-        .container { width: 100%; max-width: 1200px; background: #0a0c10; border-radius: 12px; padding: 30px; box-shadow: 0 0 50px rgba(255, 0, 85, 0.15); border: 1px solid #2a0815; }
-        h1 { text-align: center; color: #ff0055; margin-bottom: 5px; font-size: 2.5rem; letter-spacing: 2px; text-shadow: 0 0 20px rgba(255, 0, 85, 0.5); text-transform: uppercase; }
-        .subtitle { text-align: center; color: #6b7280; margin-bottom: 25px; font-size: 1rem; }
-        textarea { width: 100%; height: 220px; background: #000; border: 1px solid #333; color: #ff0055; font-family: 'Consolas', monospace; padding: 15px; border-radius: 8px; resize: vertical; font-size: 13px; margin-bottom: 20px; white-space: pre; overflow-wrap: normal; overflow-x: scroll; }
-        textarea:focus { outline: none; border-color: #ff0055; box-shadow: 0 0 15px rgba(255, 0, 85, 0.2); }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #050505; color: #d4d4d4; font-family: 'Consolas', 'Courier New', monospace; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        .container { width: 100%; max-width: 1200px; background: #0f0f13; border-radius: 10px; padding: 30px; box-shadow: 0 0 50px rgba(255, 68, 68, 0.15); border: 1px solid #2a2a30; }
+        h1 { text-align: center; color: #ff3333; margin-bottom: 5px; font-size: 2.2rem; text-transform: uppercase; letter-spacing: 2px; }
+        .subtitle { text-align: center; color: #777; margin-bottom: 25px; font-size: 0.95rem; }
+        .tech-tags { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; }
+        .tag { background: #1a1a24; border: 1px solid #ff3333; color: #ff5555; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: bold; }
+        textarea { width: 100%; height: 220px; background: #0a0a0c; border: 1px solid #333; color: #ff4444; font-family: 'Consolas', monospace; padding: 15px; border-radius: 6px; resize: vertical; font-size: 13px; margin-bottom: 20px; }
+        textarea:focus { outline: none; border-color: #ff3333; box-shadow: 0 0 15px rgba(255, 51, 51, 0.2); }
         .btn-group { display: flex; gap: 15px; justify-content: center; margin-bottom: 20px; }
-        button { background: #ff0055; border: none; color: #fff; padding: 12px 30px; font-weight: bold; font-size: 15px; border-radius: 6px; cursor: pointer; transition: all 0.2s; text-transform: uppercase; }
-        button:hover { background: #cc0044; box-shadow: 0 0 20px rgba(255, 0, 85, 0.4); transform: translateY(-2px); }
-        button.copy { background: #2563eb; }
-        button.copy:hover { background: #1d4ed8; box-shadow: 0 0 20px rgba(37, 99, 235, 0.4); }
-        .label { font-weight: bold; color: #9ca3af; text-transform: uppercase; font-size: 0.85rem; margin-bottom: 8px; display: flex; justify-content: space-between; }
-        #status { color: #ff0055; }
+        button { background: #ff3333; border: none; color: #fff; padding: 12px 30px; font-weight: bold; font-size: 14px; border-radius: 4px; cursor: pointer; transition: all 0.2s; text-transform: uppercase; letter-spacing: 1px; }
+        button:hover { background: #e60000; transform: translateY(-2px); box-shadow: 0 5px 20px rgba(255, 51, 51, 0.3); }
+        button.copy { background: #222; color: #fff; border: 1px solid #444; }
+        button.copy:hover { background: #333; box-shadow: 0 5px 15px rgba(255,255,255,0.1); }
+        .status-bar { display: flex; justify-content: space-between; margin-bottom: 10px; font-weight: bold; color: #888; font-size: 13px; }
+        #status { color: #ff3333; }
+        .metrics { text-align: center; color: #666; font-size: 12px; margin-top: 10px; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🛡️ LYN VM XHIDER</h1>
-        <div class="subtitle">Fake Virtual Machine Architecture - Constant Pool Optimized</div>
-
-        <div class="label"><span>Input Lua Script</span></div>
-        <textarea id="input" spellcheck="false" placeholder="Dán mã nguồn Lua hoạt động 100% vào đây..."></textarea>
-
-        <div class="btn-group">
-            <button onclick="obfuscate()">🔒 Mã Hóa Chuẩn XHIDER</button>
-            <button class="copy" onclick="copyResult()">📋 Copy Kết Quả</button>
+        <h1>Luau Superflow + IronBrew VM</h1>
+        <div class="subtitle">Trình dịch ngược ảo hóa (Virtual Machine Compilation) cấp độ doanh nghiệp</div>
+        
+        <div class="tech-tags">
+            <span class="tag">Register-Based VM</span>
+            <span class="tag">Binary Search Dispatcher</span>
+            <span class="tag">Superflow CFF</span>
+            <span class="tag">Dynamic Opcodes</span>
         </div>
 
-        <div class="label"><span>Output (Max Hidden Matrix)</span><span id="status">Sẵn sàng</span></div>
-        <textarea id="output" readonly placeholder="Mã sau khi băm sẽ xuất hiện ở đây..."></textarea>
+        <div class="status-bar">
+            <span>> INPUT_STREAM.LUA</span>
+        </div>
+        <textarea id="input" spellcheck="false" placeholder="Nhập Script Lua/Luau..."></textarea>
+
+        <div class="btn-group">
+            <button onclick="compileToVM()">🔥 Biên dịch VM</button>
+            <button class="copy" onclick="copyResult()">📋 Copy Bytecode</button>
+        </div>
+
+        <div class="status-bar">
+            <span>> VM_BYTECODE_OUTPUT.LUA</span>
+            <span id="status"></span>
+        </div>
+        <textarea id="output" readonly></textarea>
+        <div class="metrics" id="metrics">Dung lượng: 0 KB | Opcodes: 0</div>
     </div>
 
     <script>
-        const constantPool = [];
-        for (let i = 0; i < 150; i++) {
-            constantPool.push(Math.floor(Math.random() * 900000) + 100000);
-        }
-
         function toUtf8Bytes(str) {
             return Array.from(new TextEncoder().encode(str));
         }
 
-        function extremeMath(val) {
-            const numPairs = Math.floor(Math.random() * 4) + 3; 
-            let str = `${val}`;
-            for (let i = 0; i < numPairs; i++) {
-                const r = constantPool[Math.floor(Math.random() * constantPool.length)];
-                str += (Math.random() > 0.5) ? ` + ${r} - ${r}` : ` - ${r} + ${r}`;
-            }
-            return `(${str})`;
-        }
-
-        function generateVar() {
+        function randVar(length) {
+            const chars = 'IlO0'; // Confusing characters
             let res = '';
-            const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-            for (let i = 0; i < 6; i++) res += chars.charAt(Math.floor(Math.random() * chars.length));
-            return res;
+            for (let i = 0; i < length; i++) res += chars.charAt(Math.floor(Math.random() * chars.length));
+            return 'v_' + res + Math.floor(Math.random()*1000);
         }
 
-        function obfuscate() {
+        // Tạo ma trận số học để làm phình file cực lớn (No Junk)
+        function mathExpr(target) {
+            let a = Math.floor(Math.random() * 900000) + 100000;
+            let b = Math.floor(Math.random() * 900000) + 100000;
+            let c = Math.floor(Math.random() * 900000) + 100000;
+            let offset = (a - b) + c;
+            let finalMod = target - offset;
+            
+            let type = Math.floor(Math.random() * 3);
+            if (type === 0) return `((${a}-${b})+${c})+(${finalMod})`;
+            if (type === 1) return `((${c}+${a})-${b})-(${-finalMod})`;
+            return `((${a}+${c})-${b})+(${finalMod})`;
+        }
+
+        // Tạo Binary Search Tree cho Dispatcher (Kỹ thuật lõi của IronBrew)
+        function buildBST(ops, start, end) {
+            if (start > end) return "";
+            if (start === end) {
+                return `if op == ${ops[start].op} then\n                    ${ops[start].code}\n                end`;
+            }
+            
+            let mid = Math.floor((start + end) / 2);
+            let left = buildBST(ops, start, mid);
+            let right = buildBST(ops, mid + 1, end);
+            
+            return `if op <= ${ops[mid].op} then\n                ${left}\n            else\n                ${right}\n            end`;
+        }
+
+        function compileToVM() {
             const input = document.getElementById('input').value;
             const statusEl = document.getElementById('status');
+            const metricsEl = document.getElementById('metrics');
             
             if (!input.trim()) {
-                statusEl.textContent = '❌ Trống!';
+                statusEl.textContent = 'Script trống!';
                 return;
             }
 
-            statusEl.textContent = '⏳ Đang khởi tạo VM Matrix...';
-            
+            statusEl.textContent = 'Đang phân tích và xây dựng VM...';
+
             setTimeout(() => {
                 try {
                     const bytes = toUtf8Bytes(input);
-                    const shiftKey = Math.floor(Math.random() * 150) + 50;
                     
-                    let dataChunks = [];
-                    let currentChunk = [];
+                    // Khởi tạo Dynamic Opcodes (Mỗi lần chạy sẽ khác nhau)
+                    let opBase = Math.floor(Math.random() * 50) + 10;
+                    let opsList = [
+                        { id: 'ADD', op: opBase + Math.floor(Math.random() * 10) + 1 },
+                        { id: 'XOR', op: opBase + Math.floor(Math.random() * 10) + 20 },
+                        { id: 'PUSH', op: opBase + Math.floor(Math.random() * 10) + 40 },
+                        { id: 'HALT', op: opBase + Math.floor(Math.random() * 10) + 60 }
+                    ];
 
-                    // Băm dữ liệu thành các cục giống hệt cấu trúc XHider: q[1]({...})
-                    for (let i = 0; i < bytes.length; i++) {
-                        currentChunk.push(extremeMath(bytes[i] + shiftKey));
-                        if (currentChunk.length >= 15 || i === bytes.length - 1) {
-                            // Trộn thêm rác dạng chuỗi để đánh lừa luồng đọc
-                            const junkStr = `"${Math.random().toString(36).substring(2, 8)}"`;
-                            const chunkData = currentChunk.join(',');
-                            dataChunks.push(`q[1]({${chunkData}, ${junkStr}})`);
-                            currentChunk = [];
-                        }
+                    let opMap = {};
+                    opsList.forEach(o => opMap[o.id] = o.op);
+
+                    // Map mã thực thi cho IronBrew Dispatcher
+                    let dispatcherOps = [
+                        { op: opMap.ADD, code: `reg[inst[2]] = inst[3] + inst[4]; st = 2` },
+                        { op: opMap.XOR, code: `reg[inst[2]] = _bx(reg[inst[3]], inst[4]); st = 2` },
+                        { op: opMap.PUSH, code: `out[#out+1] = string.char(reg[inst[2]]); st = 2` },
+                        { op: opMap.HALT, code: `st = 3` }
+                    ];
+                    // Phải sort để Binary Search Tree hoạt động đúng
+                    dispatcherOps.sort((a, b) => a.op - b.op); 
+
+                    // Dịch source code thành mảng Bytecode Instructions
+                    let vmInstructions = [];
+                    for(let i = 0; i < bytes.length; i++) {
+                        let b = bytes[i];
+                        let key = Math.floor(Math.random() * 255);
+                        let offset = Math.floor(Math.random() * 5000);
+                        let val = (b ^ key) - offset;
+                        
+                        // Định dạng Instruction: {Opcode, Register_Dest, Arg1, Arg2}
+                        vmInstructions.push(`{${opMap.ADD}, 1, ${mathExpr(val)}, ${mathExpr(offset)}}`);
+                        vmInstructions.push(`{${opMap.XOR}, 1, 1, ${mathExpr(key)}}`);
+                        vmInstructions.push(`{${opMap.PUSH}, 1, 0, 0}`);
                     }
+                    vmInstructions.push(`{${opMap.HALT}, 0, 0, 0}`);
 
-                    // Các biến nội bộ ảo
-                    const v_env = generateVar();
-                    const v_str = generateVar();
-                    const v_tab = generateVar();
-                    const v_ins = generateVar();
-                    const v_load = generateVar();
-                    const v_buf = generateVar();
+                    // Generate Lua VM Architecture
+                    const bstDispatcher = buildBST(dispatcherOps, 0, dispatcherOps.length - 1);
+                    const vmEnv = randVar(6);
+                    
+                    const luaScript = `--// V4 - IronBrew & Superflow Engine
+--// Compiled & Encrypted Matrix Bytecode
+return (function(...)
+    local ${vmEnv} = getfenv and getfenv() or getgenv and getgenv() or _G
+    local _L = ${vmEnv}.loadstring or ${vmEnv}.load
+    if not _L then return end
 
-                    const luaScript = `--// This file was protected by Lyn VM XHider Architecture
-return(function(...)
-    local ${v_env}, ${v_str}, ${v_tab}, ${v_ins} = getfenv and getfenv() or _ENV, string.char, table.concat, table.insert
-    local ${v_load} = ${v_env}.loadstring or ${v_env}.load
-    if not ${v_load} then return end
-    
-    local q = {}
-    q[1] = function(d)
-        local t = {}
-        for i = 1, #d do
-            if type(d[i]) == "number" then
-                ${v_ins}(t, ${v_str}(d[i] - ${extremeMath(shiftKey)}))
-            end
+    local _bx = bit32 and bit32.bxor or function(a, b)
+        local p, c = 1, 0
+        while a > 0 and b > 0 do
+            local ra, rb = a % 2, b % 2
+            if ra ~= rb then c = c + p end
+            a, b, p = (a - ra) / 2, (b - rb) / 2, p * 2
         end
-        return ${v_tab}(t)
+        if a < b then a = b end
+        while a > 0 do
+            local ra = a % 2
+            if ra > 0 then c = c + p end
+            a, p = (a - ra) / 2, p * 2
+        end
+        return c
     end
-    
-    q[9] = {
-        ${dataChunks.join(',\n        ')}
+
+    local bytecode = {
+        ${vmInstructions.join(',\n        ')}
     }
-    
-    -- Control Flow Flattening (Fake VM Dispatcher)
-    local ${v_buf} = {}
-    local state = 1
+
+    local reg = {}
+    local out = {}
+    local pc = 1
+    local st = 0
+    local inst, op
+
+    -- Superflow Control Flow Flattening
     while true do
-        if state == 2 then
-            local exec = ${v_load}(${v_tab}(${v_buf}))
-            if exec then return exec(...) end
+        if st == 0 then
+            inst = bytecode[pc]
+            if not inst then break end
+            op = inst[1]
+            st = 1
+        elseif st == 1 then
+            -- IronBrew Binary Search Dispatcher
+            ${bstDispatcher}
+        elseif st == 2 then
+            pc = pc + 1
+            st = 0
+        elseif st == 3 then
             break
-        elseif state == 1 then
-            for _, block in ipairs(q[9]) do
-                if type(block) == "string" then
-                    ${v_ins}(${v_buf}, block)
-                end
-            end
-            state = 2
-        elseif state == 3 then
-            -- Junk state to confuse decompilers
-            state = 1
         end
+    end
+
+    local final_code = table.concat(out)
+    local exec, err = pcall(_L, final_code)
+    if exec and err then
+        return err(...)
     end
 end)(...)`;
 
-                    document.getElementById('output').value = luaScript;
-                    statusEl.textContent = `✅ Hoàn tất!`;
-                } catch (e) {
-                    statusEl.textContent = `❌ Lỗi: ` + e.message;
+                    const outputEl = document.getElementById('output');
+                    outputEl.value = luaScript;
+                    
+                    const kbSize = (luaScript.length / 1024).toFixed(2);
+                    metricsEl.textContent = `Dung lượng: ${kbSize} KB | Opcodes sinh ra: ${vmInstructions.length}`;
+                    
+                    statusEl.textContent = 'Biên dịch VM hoàn tất!';
+                } catch (err) {
+                    statusEl.textContent = 'Lỗi VM: ' + err.message;
                 }
-            }, 50);
+            }, 500);
         }
 
         function copyResult() {
             const out = document.getElementById('output');
-            if(!out.value) return;
             out.select();
             document.execCommand('copy');
-            document.getElementById('status').textContent = '📋 Đã Copy!';
+            const st = document.getElementById('status');
+            st.textContent = 'Đã Copy vào Clipboard!';
+            setTimeout(() => st.textContent = 'Biên dịch VM hoàn tất!', 2000);
         }
     </script>
 </body>
