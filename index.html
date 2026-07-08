@@ -4,13 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
   <title>Lyn Obfuscate</title>
+  <!-- Thư viện phân tích cú pháp Lua -->
   <script src="https://cdn.jsdelivr.net/npm/luaparse@0.3.1/lib/luaparse.js"></script>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       background: #0c0f14;
       font-family: 'Segoe UI', 'Consolas', monospace;
@@ -27,14 +24,14 @@
       width: 100%;
       background: #1a1e24;
       border-radius: 24px;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.6);
       padding: 24px;
       display: flex;
       flex-direction: column;
       gap: 20px;
     }
     .ascii-logo {
-      background: #000000;
+      background: #000;
       padding: 16px;
       border-radius: 16px;
       text-align: center;
@@ -51,7 +48,6 @@
       font-weight: 400;
       letter-spacing: 2px;
       color: #e0e0e0;
-      margin-bottom: 6px;
     }
     textarea {
       width: 100%;
@@ -64,19 +60,14 @@
       font-size: 13px;
       resize: vertical;
       outline: none;
-      transition: 0.2s;
     }
     textarea:focus {
       border-color: #4a6fa5;
-      box-shadow: 0 0 10px rgba(74, 111, 165, 0.3);
+      box-shadow: 0 0 10px rgba(74,111,165,0.3);
     }
-    .btn-group {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
+    .btn-group { display: flex; gap: 12px; flex-wrap: wrap; }
     button {
-      background: #1e2a3a;
+      background: linear-gradient(180deg, #1f2b3b 0%, #131a24 100%);
       border: 1px solid #3a4455;
       color: #ddd;
       padding: 12px 24px;
@@ -84,8 +75,7 @@
       font-weight: 600;
       cursor: pointer;
       letter-spacing: 0.5px;
-      transition: all 0.2s;
-      background: linear-gradient(180deg, #1f2b3b 0%, #131a24 100%);
+      transition: 0.2s;
       text-transform: uppercase;
     }
     button:hover {
@@ -93,25 +83,13 @@
       border-color: #5b7aa0;
       color: white;
     }
-    button:active {
-      transform: translateY(1px);
-    }
-    .status {
-      font-size: 13px;
-      color: #a0a0a0;
-      min-height: 20px;
-    }
-    .footer {
-      text-align: center;
-      font-size: 11px;
-      color: #5a6070;
-      margin-top: 8px;
-    }
+    .status { font-size: 13px; color: #a0a0a0; min-height: 20px; }
+    .footer { text-align: center; font-size: 11px; color: #5a6070; margin-top: 8px; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="ascii-logo">
+<div class="container">
+  <div class="ascii-logo">
 <!--
 ██╗     ██╗   ██╗███╗   ██╗     ██████╗ ██████╗ ███████╗██╗   ██╗███████╗ ██████╗ █████╗ ████████╗███████╗
 ██║     ╚██╗ ██╔╝████╗  ██║    ██╔═══██╗██╔══██╗██╔════╝██║   ██║██╔════╝██╔════╝██╔══██╗╚══██╔══╝██╔════╝
@@ -119,242 +97,182 @@
 ██║       ╚██╔╝  ██║╚██╗██║    ██║   ██║██╔══██╗██╔══╝  ██║   ██║╚════██║██║     ██╔══██║   ██║   ██╔══╝  
 ███████╗   ██║   ██║ ╚████║    ╚██████╔╝██████╔╝██║     ╚██████╔╝███████║╚██████╗██║  ██║   ██║   ███████╗
 ╚══════╝   ╚═╝   ╚═╝  ╚═══╝     ╚═════╝ ╚═════╝ ╚═╝      ╚═════╝ ╚══════╝ ╚═════╝╚═╝  ╚═╝   ╚═╝   ╚══════╝
-    </div>
-    <h1>🐾 LYN OBFUSCATE</h1>
-    <textarea id="input" rows="12" placeholder="Paste your Lua code here..."></textarea>
-    <div class="btn-group">
-      <button id="obfuscateBtn">Obfuscate Code</button>
-      <button id="copyBtn">Copy Output</button>
-      <button id="clearBtn">Clear All</button>
-    </div>
-    <textarea id="output" rows="14" placeholder="Obfuscated code will appear here..." readonly></textarea>
-    <div class="status" id="status">Ready. Your Lua code will be heavily armored.</div>
-    <div class="footer">Lyn Obfuscate &copy; 2026 — Heavy Lua protection</div>
   </div>
+  <h1>🐾 LYN OBFUSCATE</h1>
+  <textarea id="input" rows="12" placeholder="Paste your Lua code here..."></textarea>
+  <div class="btn-group">
+    <button id="obfuscateBtn">Obfuscate Code</button>
+    <button id="copyBtn">Copy Output</button>
+    <button id="clearBtn">Clear All</button>
+  </div>
+  <textarea id="output" rows="14" placeholder="Obfuscated code will appear here..." readonly></textarea>
+  <div class="status" id="status">Ready. Your Lua code will be heavily armored.</div>
+  <div class="footer">Lyn Obfuscate &copy; 2026 — Heavy Lua protection</div>
+</div>
 
-  <script>
-    (function() {
-      // -------- internal helpers --------
-      let nameCounter = 0;
-      function freshName(prefix = 'lyn_') {
-        return prefix + (++nameCounter).toString(36);
-      }
+<script>
+(function() {
+  let nameCounter = 0;
+  function freshName(prefix = 'lyn_') {
+    return prefix + (++nameCounter).toString(36);
+  }
 
-      // Random key generator (returns string of bytes 0-255)
-      function generateRandomKey(length = 8) {
-        const arr = new Uint8Array(length);
-        window.crypto.getRandomValues(arr);
-        return String.fromCharCode(...arr);
-      }
+  function generateRandomKey(length = 8) {
+    const arr = new Uint8Array(length);
+    window.crypto.getRandomValues(arr);
+    return String.fromCharCode(...arr);
+  }
 
-      // XOR two strings (treated as byte arrays)
-      function xorBytes(str, key) {
-        const out = new Uint8Array(str.length);
-        for (let i = 0; i < str.length; i++) {
-          const b = str.charCodeAt(i) & 0xFF;
-          const k = key.charCodeAt(i % key.length) & 0xFF;
-          out[i] = b ^ k;
-        }
-        return out;
-      }
+  function xorBytes(str, key) {
+    const out = new Uint8Array(str.length);
+    for (let i = 0; i < str.length; i++) {
+      const b = str.charCodeAt(i) & 0xFF;
+      const k = key.charCodeAt(i % key.length) & 0xFF;
+      out[i] = b ^ k;
+    }
+    return out;
+  }
 
-      // Convert byte array to Lua escape string (always 3-digit decimal)
-      function bytesToLuaEscape(bytes) {
-        return Array.from(bytes, b => '\\' + b.toString(10).padStart(3, '0')).join('');
-      }
+  function bytesToLuaEscape(bytes) {
+    return Array.from(bytes, b => '\\' + b.toString(10).padStart(3, '0')).join('');
+  }
 
-      // Scope management for variable renaming
-      class Scope {
-        constructor(parent = null) {
-          this.parent = parent;
-          this.vars = new Map(); // original -> newName
-        }
-        add(original, newName) {
-          this.vars.set(original, newName);
-        }
-        lookup(name) {
-          if (this.vars.has(name)) return this.vars.get(name);
-          return this.parent ? this.parent.lookup(name) : null;
-        }
-      }
+  class Scope {
+    constructor(parent = null) {
+      this.parent = parent;
+      this.vars = new Map();
+    }
+    add(original, newName) { this.vars.set(original, newName); }
+    lookup(name) {
+      if (this.vars.has(name)) return this.vars.get(name);
+      return this.parent ? this.parent.lookup(name) : null;
+    }
+  }
 
-      // AST walker with scope and replacements
-      function walkAST(node, parent, scope, replacements, code) {
-        if (!node || typeof node !== 'object') return;
-        if (node.type) {
-          switch (node.type) {
-            case 'LocalStatement': {
-              // variables: array of Identifier
-              if (node.variables) {
-                node.variables.forEach(v => {
-                  if (v.type === 'Identifier') {
-                    const newName = freshName();
-                    scope.add(v.name, newName);
-                    replacements.push({ start: v.range[0], end: v.range[1], text: newName });
-                  }
-                });
-              }
-              break;
-            }
-            case 'FunctionDeclaration': {
-              // if it's local function, rename its name (otherwise leave global)
-              if (node.isLocal && node.identifier && node.identifier.type === 'Identifier') {
+  function walkAST(node, parent, scope, replacements) {
+    if (!node || typeof node !== 'object') return;
+    if (node.type) {
+      switch (node.type) {
+        case 'LocalStatement': {
+          if (node.variables) {
+            node.variables.forEach(v => {
+              if (v.type === 'Identifier') {
                 const newName = freshName();
-                scope.add(node.identifier.name, newName);
-                replacements.push({ start: node.identifier.range[0], end: node.identifier.range[1], text: newName });
+                scope.add(v.name, newName);
+                replacements.push({ start: v.range[0], end: v.range[1], text: newName });
               }
-              // create new scope for body + parameters
-              const funcScope = new Scope(scope);
-              if (node.parameters) {
-                node.parameters.forEach(p => {
-                  if (p.type === 'Identifier') {
-                    const newName = freshName();
-                    funcScope.add(p.name, newName);
-                    replacements.push({ start: p.range[0], end: p.range[1], text: newName });
-                  }
-                });
-              }
-              // walk body with new scope
-              walkAST(node.body, node, funcScope, replacements, code);
-              return; // skip default children loop for body (already walked)
-            }
-            case 'ForGeneric':
-            case 'ForNumeric': {
-              // variables are local to the loop body
-              if (node.variables) {
-                node.variables.forEach(v => {
-                  if (v.type === 'Identifier') {
-                    const newName = freshName();
-                    scope.add(v.name, newName);
-                    replacements.push({ start: v.range[0], end: v.range[1], text: newName });
-                  }
-                });
-              }
-              const loopScope = new Scope(scope);
-              // copy variables to inner scope with their new names
-              if (node.variables) {
-                node.variables.forEach(v => {
-                  if (v.type === 'Identifier') {
-                    const newName = scope.lookup(v.name);
-                    if (newName) loopScope.add(v.name, newName);
-                  }
-                });
-              }
-              // walk loop body with inner scope
-              walkAST(node.body, node, loopScope, replacements, code);
-              // walk other parts (init, limit, step) with outer scope
-              ['init', 'limit', 'step'].forEach(prop => {
-                if (node[prop]) walkAST(node[prop], node, scope, replacements, code);
-              });
-              return;
-            }
-            case 'Identifier': {
-              // Do not rename field names in MemberExpression (obj.field)
-              if (parent && parent.type === 'MemberExpression' && parent.indexer === '.' && parent.identifier === node) {
-                break;
-              }
-              const newName = scope.lookup(node.name);
-              if (newName) {
-                replacements.push({ start: node.range[0], end: node.range[1], text: newName });
-              }
-              break;
-            }
-            case 'StringLiteral': {
-              // Encrypt string literals
-              const key = generateRandomKey(6 + Math.floor(Math.random() * 8));
-              const encryptedBytes = xorBytes(node.value, key);
-              const encStr = bytesToLuaEscape(encryptedBytes);
-              const keyStr = bytesToLuaEscape([...key].map(c => c.charCodeAt(0)));
-              const callText = `lyn_decrypt("${encStr}","${keyStr}")`;
-              replacements.push({ start: node.range[0], end: node.range[1], text: callText });
-              break;
-            }
+            });
           }
+          break;
         }
-        // recurse children
-        for (const key in node) {
-          if (key === 'parent' || key === 'range' || key === 'loc' || key === 'type') continue;
-          const child = node[key];
-          if (Array.isArray(child)) {
-            child.forEach(c => walkAST(c, node, scope, replacements, code));
-          } else if (child && typeof child === 'object' && child.type) {
-            walkAST(child, node, scope, replacements, code);
+        case 'FunctionDeclaration': {
+          if (node.isLocal && node.identifier && node.identifier.type === 'Identifier') {
+            const newName = freshName();
+            scope.add(node.identifier.name, newName);
+            replacements.push({ start: node.identifier.range[0], end: node.identifier.range[1], text: newName });
           }
-        }
-      }
-
-      // generate some junk code to mix in
-      function generateJunkLines(count = 3) {
-        const junk = [];
-        for (let i = 0; i < count; i++) {
-          const r = Math.random();
-          if (r < 0.3) {
-            const v = freshName('j_');
-            junk.push(`local ${v} = (${Math.floor(Math.random()*1000)} + ${Math.floor(Math.random()*500)}) / 2;`);
-          } else if (r < 0.6) {
-            junk.push(`if (0x${Math.floor(Math.random()*0xFF).toString(16)} > ${Math.floor(Math.random()*50)}) then end`);
-          } else {
-            junk.push(`task.wait(${(0.05 + Math.random()*0.2).toFixed(2)})`);
+          const funcScope = new Scope(scope);
+          if (node.parameters) {
+            node.parameters.forEach(p => {
+              if (p.type === 'Identifier') {
+                const newName = freshName();
+                funcScope.add(p.name, newName);
+                replacements.push({ start: p.range[0], end: p.range[1], text: newName });
+              }
+            });
           }
+          walkAST(node.body, node, funcScope, replacements);
+          return;
         }
-        return junk.join('\n');
-      }
-
-      // main obfuscation function
-      function obfuscateLuaCode(originalCode) {
-        if (!originalCode.trim()) throw new Error('No code provided');
-
-        // Parse with luaparse (need locations and ranges)
-        let ast;
-        try {
-          ast = luaparse.parse(originalCode, {
-            wait: false,
-            locations: true,
-            ranges: true,
-            scope: false
+        case 'ForGeneric':
+        case 'ForNumeric': {
+          if (node.variables) {
+            node.variables.forEach(v => {
+              if (v.type === 'Identifier') {
+                const newName = freshName();
+                scope.add(v.name, newName);
+                replacements.push({ start: v.range[0], end: v.range[1], text: newName });
+              }
+            });
+          }
+          const loopScope = new Scope(scope);
+          if (node.variables) {
+            node.variables.forEach(v => {
+              if (v.type === 'Identifier') {
+                const newName = scope.lookup(v.name);
+                if (newName) loopScope.add(v.name, newName);
+              }
+            });
+          }
+          walkAST(node.body, node, loopScope, replacements);
+          ['init', 'limit', 'step'].forEach(prop => {
+            if (node[prop]) walkAST(node[prop], node, scope, replacements);
           });
-        } catch (e) {
-          throw new Error('Parse error: ' + e.message);
+          return;
         }
-
-        // Reset name counter for fresh names (keep decrypt names separate)
-        nameCounter = 0;
-        const replacements = [];
-        const globalScope = new Scope();
-
-        // Walk AST
-        walkAST(ast, null, globalScope, replacements, originalCode);
-
-        // Sort replacements descending by start position
-        replacements.sort((a, b) => b.start - a.start);
-
-        // Apply replacements
-        let obfCode = originalCode;
-        for (const rep of replacements) {
-          obfCode = obfCode.slice(0, rep.start) + rep.text + obfCode.slice(rep.end);
+        case 'Identifier': {
+          if (parent && parent.type === 'MemberExpression' && parent.indexer === '.' && parent.identifier === node) break;
+          const newName = scope.lookup(node.name);
+          if (newName) replacements.push({ start: node.range[0], end: node.range[1], text: newName });
+          break;
         }
+        case 'StringLiteral': {
+          const key = generateRandomKey(6 + Math.floor(Math.random() * 8));
+          const encryptedBytes = xorBytes(node.value, key);
+          const encStr = bytesToLuaEscape(encryptedBytes);
+          const keyStr = bytesToLuaEscape([...key].map(c => c.charCodeAt(0)));
+          replacements.push({ start: node.range[0], end: node.range[1], text: `lyn_decrypt("${encStr}","${keyStr}")` });
+          break;
+        }
+      }
+    }
+    for (const key in node) {
+      if (key === 'parent' || key === 'range' || key === 'loc' || key === 'type') continue;
+      const child = node[key];
+      if (Array.isArray(child)) child.forEach(c => walkAST(c, node, scope, replacements));
+      else if (child && typeof child === 'object' && child.type) walkAST(child, node, scope, replacements);
+    }
+  }
 
-        // Generate decrypt function header with random local names
-        const dNames = {
-          char: freshName('_d'),
-          byte: freshName('_d'),
-          sub: freshName('_d'),
-          bit: freshName('_d'),
-          bxor: freshName('_d'),
-          concat: freshName('_d'),
-          insert: freshName('_d'),
-        };
-        const header = `
---[[
- ██╗     ██╗   ██╗███╗   ██╗     ██████╗ ██████╗ ███████╗██╗   ██╗███████╗ ██████╗ █████╗ ████████╗███████╗
- ██║     ╚██╗ ██╔╝████╗  ██║    ██╔═══██╗██╔══██╗██╔════╝██║   ██║██╔════╝██╔════╝██╔══██╗╚══██╔══╝██╔════╝
- ██║      ╚████╔╝ ██╔██╗ ██║    ██║   ██║██████╔╝█████╗  ██║   ██║███████╗██║     ███████║   ██║   █████╗  
- ██║       ╚██╔╝  ██║╚██╗██║    ██║   ██║██╔══██╗██╔══╝  ██║   ██║╚════██║██║     ██╔══██║   ██║   ██╔══╝  
- ███████╗   ██║   ██║ ╚████║    ╚██████╔╝██████╔╝██║     ╚██████╔╝███████║╚██████╗██║  ██║   ██║   ███████╗
- ╚══════╝   ╚═╝   ╚═╝  ╚═══╝     ╚═════╝ ╚═════╝ ╚═╝      ╚═════╝ ╚══════╝ ╚═════╝╚═╝  ╚═╝   ╚═╝   ╚══════╝
---]]
+  function generateJunkLines(count = 3) {
+    const junk = [];
+    for (let i = 0; i < count; i++) {
+      const r = Math.random();
+      if (r < 0.3) {
+        const v = freshName('j_');
+        junk.push(`local ${v} = (${Math.floor(Math.random()*1000)} + ${Math.floor(Math.random()*500)}) / 2;`);
+      } else if (r < 0.6) {
+        junk.push(`if (0x${Math.floor(Math.random()*0xFF).toString(16)} > ${Math.floor(Math.random()*50)}) then end`);
+      } else {
+        junk.push(`task.wait(${(0.05 + Math.random()*0.2).toFixed(2)})`);
+      }
+    }
+    return junk.join('\n');
+  }
+
+  function obfuscateLuaCode(code) {
+    if (!code.trim()) throw new Error('No code provided');
+    let ast;
+    try {
+      ast = luaparse.parse(code, { wait: false, locations: true, ranges: true, scope: false });
+    } catch (e) {
+      throw new Error('Parse error: ' + e.message);
+    }
+    nameCounter = 0;
+    const replacements = [];
+    const globalScope = new Scope();
+    walkAST(ast, null, globalScope, replacements);
+    replacements.sort((a, b) => b.start - a.start);
+    let obfCode = code;
+    for (const rep of replacements) {
+      obfCode = obfCode.slice(0, rep.start) + rep.text + obfCode.slice(rep.end);
+    }
+    const dNames = {
+      char: freshName('_d'), byte: freshName('_d'), sub: freshName('_d'),
+      bit: freshName('_d'), bxor: freshName('_d'), concat: freshName('_d'), insert: freshName('_d')
+    };
+    const header = `
 -- Lyn Obfuscate (heavy Lua armor)
-
 local ${dNames.char} = string.char;
 local ${dNames.byte} = string.byte;
 local ${dNames.sub} = string.sub;
@@ -375,68 +293,44 @@ end
 ${generateJunkLines(4)}
 -- End junk
 `;
-
-        const footer = `
+    const footer = `
 -- Junk end
 ${generateJunkLines(2)}
 `;
+    return header + obfCode + footer;
+  }
 
-        return header + '\n' + obfCode + '\n' + footer;
-      }
-
-      // -------- UI bindings --------
-      const inputEl = document.getElementById('input');
-      const outputEl = document.getElementById('output');
-      const statusEl = document.getElementById('status');
-      const obfBtn = document.getElementById('obfuscateBtn');
-      const copyBtn = document.getElementById('copyBtn');
-      const clearBtn = document.getElementById('clearBtn');
-
-      obfBtn.addEventListener('click', () => {
-        try {
-          const original = inputEl.value;
-          if (!original.trim()) {
-            statusEl.textContent = 'Please paste some Lua code.';
-            return;
-          }
-          statusEl.textContent = 'Obfuscating...';
-          const result = obfuscateLuaCode(original);
-          outputEl.value = result;
-          statusEl.textContent = 'Obfuscation complete. Code is heavily armored.';
-        } catch (err) {
-          statusEl.textContent = 'Error: ' + err.message;
-          outputEl.value = '';
-        }
-      });
-
-      copyBtn.addEventListener('click', () => {
-        const text = outputEl.value;
-        if (!text) {
-          statusEl.textContent = 'Nothing to copy.';
-          return;
-        }
-        navigator.clipboard.writeText(text).then(() => {
-          statusEl.textContent = 'Copied to clipboard!';
-        }).catch(() => {
-          statusEl.textContent = 'Copy failed. Please select and copy manually.';
-        });
-      });
-
-      clearBtn.addEventListener('click', () => {
-        inputEl.value = '';
-        outputEl.value = '';
-        statusEl.textContent = 'Cleared.';
-      });
-
-      // Load example if empty
-      if (!inputEl.value) {
-        inputEl.value = `-- example Lua code
+  const inputEl = document.getElementById('input');
+  const outputEl = document.getElementById('output');
+  const statusEl = document.getElementById('status');
+  document.getElementById('obfuscateBtn').addEventListener('click', () => {
+    try {
+      const original = inputEl.value;
+      if (!original.trim()) { statusEl.textContent = 'Please paste some Lua code.'; return; }
+      statusEl.textContent = 'Obfuscating...';
+      outputEl.value = obfuscateLuaCode(original);
+      statusEl.textContent = 'Obfuscation complete. Code is heavily armored.';
+    } catch (err) {
+      statusEl.textContent = 'Error: ' + err.message;
+      outputEl.value = '';
+    }
+  });
+  document.getElementById('copyBtn').addEventListener('click', () => {
+    const text = outputEl.value;
+    if (!text) { statusEl.textContent = 'Nothing to copy.'; return; }
+    navigator.clipboard.writeText(text).then(() => statusEl.textContent = 'Copied!').catch(() => statusEl.textContent = 'Copy failed');
+  });
+  document.getElementById('clearBtn').addEventListener('click', () => {
+    inputEl.value = ''; outputEl.value = ''; statusEl.textContent = 'Cleared.';
+  });
+  if (!inputEl.value) {
+    inputEl.value = `-- example Lua code
 local function greet(name)
   print("Hello, " .. name)
 end
 greet("World")`;
-      }
-    })();
-  </script>
+  }
+})();
+</script>
 </body>
-    </html>
+</html>
