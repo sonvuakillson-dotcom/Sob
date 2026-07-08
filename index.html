@@ -3,22 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lyn AI - Vietsub & Lồng Tiếng</title>
+    <title>Lyn AI - Vietsub & Lồng Tiếng Pro</title>
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', Roboto, sans-serif;
             background-color: #121212;
             color: #ffffff;
-            max-width: 800px;
+            max-width: 850px;
             margin: 0 auto;
             padding: 20px;
             text-align: center;
         }
-        h1 { color: #00ff88; }
+        h1 { color: #00ff88; margin-bottom: 5px; }
         .upload-box {
             border: 2px dashed #00ff88;
-            padding: 20px;
-            border-radius: 10px;
+            padding: 25px;
+            border-radius: 12px;
             margin-bottom: 20px;
             background: #1e1e1e;
         }
@@ -26,44 +26,82 @@
             background-color: #00ff88;
             color: #000;
             border: none;
-            padding: 10px 20px;
+            padding: 12px 25px;
             font-size: 16px;
             font-weight: bold;
-            border-radius: 5px;
+            border-radius: 6px;
             cursor: pointer;
-            margin-top: 10px;
+            margin-top: 15px;
+            transition: 0.2s;
         }
-        button:hover { background-color: #00cc6a; }
-        #player {
+        button:hover { background-color: #00cc6a; transform: scale(1.02); }
+        
+        /* Khung chứa video và Subtitle đè lên nhau */
+        .video-container {
+            position: relative;
+            display: inline-block;
             width: 100%;
             margin-top: 20px;
-            border-radius: 10px;
-            display: none;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0px 10px 30px rgba(0,0,0,0.5);
+            background: #000;
         }
-        #status { margin-top: 15px; color: #ffcc00; font-style: italic; }
-        .options { margin-top: 15px; }
+        #player {
+            width: 100%;
+            display: none;
+            vertical-align: bottom;
+        }
+        /* Style chữ Vietsub đè lên phim cực chuẩn */
+        #sub-overlay {
+            position: absolute;
+            bottom: 8%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.75);
+            color: #ffffff;
+            padding: 6px 16px;
+            border-radius: 6px;
+            font-size: 22px;
+            font-weight: bold;
+            text-align: center;
+            pointer-events: none;
+            display: none;
+            max-width: 85%;
+            white-space: pre-line;
+            text-shadow: 2px 2px 4px #000000;
+            line-height: 1.4;
+            z-index: 10;
+        }
+        #status { margin-top: 15px; color: #ffcc00; font-weight: 500; }
+        .options { margin-top: 10px; font-size: 14px; }
     </style>
 </head>
 <body>
 
-    <h1>🎙️ Lyn AI - Hệ Thống Vietsub & Lồng Tiếng</h1>
-    <p>Tự động bóc băng, dịch chuẩn xác và đọc giọng Việt Nam.</p>
+    <h1>🎙️ Lyn AI - Vietsub & Lồng Tiếng Cao Cấp</h1>
+    <p style="color: #aaa;">Hệ thống bóc băng siêu tốc, đè chữ Vietsub rạp và thuyết minh giọng Việt chuẩn.</p>
 
     <div class="upload-box">
         <input type="file" id="videoFile" accept="video/*, audio/*">
         <div class="options">
             <input type="checkbox" id="enableVoice" checked>
-            <label for="enableVoice">Bật giọng đọc Tiếng Việt (Lyn AI Voice)</label>
+            <label for="enableVoice">🎙️ Bật lồng tiếng chuẩn (Lyn Voice Engine)</label>
         </div>
-        <button onclick="processVideo()">Tạo Vietsub Ngay</button>
-        <div id="status"></div>
+        <button onclick="processVideo()">Bắt Đầu Vietsub</button>
+        <div id="status">Sẵn sàng nhận file từ 5 - 10 phút...</div>
     </div>
 
-    <video id="player" controls crossorigin="anonymous"></video>
+    <!-- Khung hiển thị Video + Chữ Vietsub đè lên -->
+    <div class="video-container">
+        <video id="player" controls crossorigin="anonymous"></video>
+        <div id="sub-overlay"></div>
+    </div>
 
     <script>
-        // API Key bạn đã cung cấp
         const GROQ_API_KEY = "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";
+        let globalCues = [];
+        let ttsAudio = new Audio();
 
         function setStatus(msg) {
             document.getElementById('status').innerText = msg;
@@ -74,23 +112,25 @@
             const file = fileInput.files[0];
             
             if (!file) {
-                alert("Vui lòng chọn một file video hoặc audio!");
-                return;
-            }
-
-            // Giới hạn của API Whisper Groq là 25MB
-            if (file.size > 25 * 1024 * 1024) {
-                alert("File quá lớn! Groq API hiện tại chỉ nhận file dưới 25MB.");
+                alert("Chọn file video/audio cái đã ông bạn!");
                 return;
             }
 
             const video = document.getElementById('player');
+            const subOverlay = document.getElementById('sub-overlay');
+            
+            // Reset dữ liệu cũ
+            globalCues = [];
+            subOverlay.innerText = "";
+            subOverlay.style.display = "none";
+            ttsAudio.pause();
+
             video.style.display = 'block';
             video.src = URL.createObjectURL(file);
             
             try {
-                // Bước 1: Gọi Whisper bóc băng
-                setStatus("Lyn AI đang nghe và trích xuất âm thanh (Whisper V3)...");
+                // BƯỚC 1: Bóc băng siêu tốc bằng Whisper V3
+                setStatus("🚀 Lyn AI đang xử lý âm thanh siêu tốc...");
                 const formData = new FormData();
                 formData.append("file", file);
                 formData.append("model", "whisper-large-v3");
@@ -102,18 +142,18 @@
                     body: formData
                 });
 
-                if (!whisperRes.ok) throw new Error("Lỗi bóc băng: " + await whisperRes.text());
+                if (!whisperRes.ok) throw new Error("Lỗi trích xuất âm thanh.");
                 const originalVTT = await whisperRes.text();
 
-                // Bước 2: Gọi Llama 3 dịch sang Tiếng Việt
-                setStatus("Lyn AI đang dịch chuẩn xác sang Tiếng Việt...");
-                const prompt = `Dịch toàn bộ file WebVTT sau sang Tiếng Việt. 
+                // BƯỚC 2: Dịch thuật chuẩn xác bằng Llama 3 70B không sai ngữ cảnh
+                setStatus("🧠 Lyn AI đang dịch thuật Vietsub chuẩn context phim...");
+                const prompt = `Dịch toàn bộ file WebVTT sau sang Tiếng Việt.
 Yêu cầu:
-1. Dịch thuật tự nhiên, chuẩn xác, không lỗi văn cảnh.
-2. TUYỆT ĐỐI GIỮ NGUYÊN cấu trúc thời gian (timestamps).
-3. CHỈ TRẢ VỀ nội dung WebVTT đã dịch, bắt đầu bằng "WEBVTT". Không kèm theo bất kỳ lời chào hay giải thích nào.
+1. Dịch chuẩn nghĩa văn cảnh, tự nhiên như phim vietsub rạp, không dịch thô.
+2. Giữ nguyên mốc thời gian (timestamps) gốc dạng 00:00:00.000 --> 00:00:00.000.
+3. Chỉ trả về nội dung text WebVTT đã dịch, bắt đầu bằng chữ "WEBVTT". Không thêm bớt lời giải thích nào khác.
 
-Nội dung gốc:
+Nội dung:
 ${originalVTT}`;
 
                 const llamaRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -123,73 +163,99 @@ ${originalVTT}`;
                         "Content-Type": "application/json"
                     },
                     body: JSON.stringify({
-                        model: "llama3-70b-8192", // Model lớn nhất để dịch không lỗi
+                        model: "llama3-70b-8192",
                         messages: [{role: "user", content: prompt}],
-                        temperature: 0.1 // Giữ nhiệt độ thấp để AI tập trung dịch chính xác, không chế cháo
+                        temperature: 0.1
                     })
                 });
 
                 const llamaData = await llamaRes.json();
                 let translatedVTT = llamaData.choices[0].message.content.trim();
                 
-                // Đảm bảo format VTT hợp lệ
                 if (!translatedVTT.startsWith("WEBVTT")) {
                     translatedVTT = "WEBVTT\n\n" + translatedVTT;
                 }
 
-                // Bước 3: Nạp Subtitle vào Video
-                setStatus("Hoàn tất! Đang đồng bộ phụ đề và giọng đọc...");
-                const blob = new Blob([translatedVTT], { type: 'text/vtt' });
-                const track = document.createElement('track');
-                track.kind = 'captions';
-                track.label = 'Tiếng Việt (Lyn AI)';
-                track.srclang = 'vi';
-                track.src = URL.createObjectURL(blob);
-                track.default = true;
+                // BƯỚC 3: Khởi chạy bộ đồng bộ chữ đè + Giọng chuẩn
+                setStatus("⚙️ Đang render chữ đè lên video và đồng bộ giọng đọc...");
+                globalCues = parseVTT(translatedVTT);
                 
-                // Xóa track cũ nếu có
-                while (video.firstChild) {
-                    video.removeChild(video.firstChild);
-                }
-                video.appendChild(track);
-
-                // Thiết lập Giọng Đọc Việt Nam
-                setupVoice(video);
-                
-                setStatus("✅ Hoàn thành! Bấm Play để xem thành quả.");
+                initSubAndVoiceEngine(video, subOverlay);
+                setStatus("✅ Hoàn tất! Bấm nút Play trên video để thưởng thức.");
 
             } catch (error) {
-                setStatus("❌ Có lỗi xảy ra: " + error.message);
+                setStatus("❌ Gặp lỗi rồi: " + error.message);
                 console.error(error);
             }
         }
 
-        function setupVoice(video) {
-            const enableVoice = document.getElementById('enableVoice').checked;
-            if (!enableVoice) return;
+        // Hàm xử lý cắt file VTT thành mảng dữ liệu để điều khiển thời gian thực
+        function parseVTT(vttText) {
+            const lines = vttText.split('\n');
+            const cues = [];
+            let currentCue = null;
+            const timeRegex = /(\d{2}:\d{2}:\d{2}[\.,]\d{3})\s*-->\s*(\d{2}:\d{2}:\d{2}[\.,]\d{3})/;
+            
+            function toSeconds(tStr) {
+                const p = tStr.replace(',', '.').split(':');
+                return parseFloat(p[0]) * 3600 + parseFloat(p[1]) * 60 + parseFloat(p[2]);
+            }
 
-            video.addEventListener('loadedmetadata', function() {
-                const trackElement = video.textTracks[0];
-                if (!trackElement) return;
-                
-                trackElement.mode = 'showing'; 
-                
-                trackElement.oncuechange = (e) => {
-                    const activeCues = e.target.activeCues;
-                    if (activeCues && activeCues.length > 0) {
-                        const text = activeCues[0].text;
-                        // Gọi AI đọc giọng Việt Nam
-                        const utterance = new SpeechSynthesisUtterance(text);
-                        utterance.lang = 'vi-VN';
-                        utterance.rate = 1.1; // Chỉnh tốc độ đọc cho tự nhiên
-                        window.speechSynthesis.speak(utterance);
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].trim();
+                const match = line.match(timeRegex);
+                if (match) {
+                    currentCue = { start: toSeconds(match[1]), end: toSeconds(match[2]), text: "" };
+                } else if (currentCue && line !== "" && !line.startsWith("WEBVTT")) {
+                    currentCue.text += (currentCue.text ? "\n" : "") + line;
+                } else if (line === "" && currentCue) {
+                    cues.push(currentCue);
+                    currentCue = null;
+                }
+            }
+            if (currentCue) cues.push(currentCue);
+            return cues;
+        }
+
+        // Động cơ chạy chữ Vietsub đè lên phim và gọi giọng đọc chuẩn Việt
+        function initSubAndVoiceEngine(video, subOverlay) {
+            let lastText = "";
+
+            video.addEventListener('timeupdate', () => {
+                const currTime = video.currentTime;
+                // Tìm đoạn sub đang khớp với dây hiện tại của video
+                const activeCue = globalCues.find(c => currTime >= c.start && currTime <= c.end);
+
+                if (activeCue) {
+                    if (lastText !== activeCue.text) {
+                        lastText = activeCue.text;
+                        subOverlay.innerText = activeCue.text;
+                        subOverlay.style.display = 'block'; // Đè hiện chữ lên video
+                        
+                        // Đọc giọng Vietsub chuẩn
+                        playVietnameseVoice(activeCue.text);
                     }
-                };
-
-                // Ngừng đọc khi video tạm dừng hoặc tua
-                video.addEventListener('pause', () => window.speechSynthesis.cancel());
-                video.addEventListener('seeked', () => window.speechSynthesis.cancel());
+                } else {
+                    lastText = "";
+                    subOverlay.innerText = "";
+                    subOverlay.style.display = 'none'; // Hết giờ thì ẩn chữ đi
+                }
             });
+
+            // Đồng bộ bộ nghe: Dừng phim thì dừng tiếng thuyết minh, tua phim thì dừng tiếng cũ
+            video.addEventListener('pause', () => ttsAudio.pause());
+            video.addEventListener('seeking', () => ttsAudio.pause());
+        }
+
+        // Hàm phát giọng đọc chuẩn Việt Nam chất lượng cao
+        function playVietnameseVoice(text) {
+            if (!document.getElementById('enableVoice').checked) return;
+            
+            ttsAudio.pause();
+            // Sử dụng engine chuẩn tiếng Việt ngữ điệu tốt
+            const cleanText = text.replace(/\n/g, " ");
+            ttsAudio.src = `https://translate.google.com/translate_tts?ie=UTF-8&tl=vi&client=tw-ob&q=${encodeURIComponent(cleanText)}`;
+            ttsAudio.play().catch(err => console.log("Hệ thống âm thanh đang chờ đồng bộ..."));
         }
     </script>
 </body>
