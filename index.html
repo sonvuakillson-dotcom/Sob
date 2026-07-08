@@ -1,291 +1,196 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Lyn Obfuscate</title>
-  <style>
-    * { margin:0; padding:0; box-sizing:border-box; }
-    body {
-      background:#0c0f14; font-family:'Segoe UI','Consolas',monospace;
-      display:flex; flex-direction:column; align-items:center; justify-content:center;
-      min-height:100vh; padding:20px; color:#c0c0c0;
-    }
-    .container {
-      max-width:1000px; width:100%; background:#1a1e24; border-radius:24px;
-      box-shadow:0 20px 40px rgba(0,0,0,0.6); padding:24px; display:flex; flex-direction:column; gap:20px;
-    }
-    .ascii-logo {
-      background:#000; padding:16px; border-radius:16px; text-align:center; font-size:12px;
-      line-height:1.2; color:#b0b0b0; overflow-x:auto; white-space:pre; font-family:'Courier New',monospace;
-      border:1px solid #2a2f38;
-    }
-    h1 { text-align:center; font-weight:400; letter-spacing:2px; color:#e0e0e0; }
-    textarea {
-      width:100%; background:#0f1219; border:1px solid #2c313a; border-radius:12px; padding:14px;
-      color:#d4d4d4; font-family:'Consolas','Courier New',monospace; font-size:13px; resize:vertical; outline:none;
-    }
-    textarea:focus { border-color:#4a6fa5; box-shadow:0 0 10px rgba(74,111,165,0.3); }
-    .btn-group { display:flex; gap:12px; flex-wrap:wrap; }
-    button {
-      background:linear-gradient(180deg,#1f2b3b 0%,#131a24 100%); border:1px solid #3a4455; color:#ddd;
-      padding:12px 24px; border-radius:10px; font-weight:600; cursor:pointer; letter-spacing:0.5px;
-      transition:0.2s; text-transform:uppercase;
-    }
-    button:hover { background:#263445; border-color:#5b7aa0; color:white; }
-    .status { font-size:13px; color:#a0a0a0; min-height:20px; }
-    .footer { text-align:center; font-size:11px; color:#5a6070; margin-top:8px; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lyn AI - Vietsub & Lồng Tiếng</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+        h1 { color: #00ff88; }
+        .upload-box {
+            border: 2px dashed #00ff88;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            background: #1e1e1e;
+        }
+        button {
+            background-color: #00ff88;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover { background-color: #00cc6a; }
+        #player {
+            width: 100%;
+            margin-top: 20px;
+            border-radius: 10px;
+            display: none;
+        }
+        #status { margin-top: 15px; color: #ffcc00; font-style: italic; }
+        .options { margin-top: 15px; }
+    </style>
 </head>
 <body>
-<div class="container">
-  <div class="ascii-logo">
-<!--
-██╗     ██╗   ██╗███╗   ██╗     ██████╗ ██████╗ ███████╗██╗   ██╗███████╗ ██████╗ █████╗ ████████╗███████╗
-██║     ╚██╗ ██╔╝████╗  ██║    ██╔═══██╗██╔══██╗██╔════╝██║   ██║██╔════╝██╔════╝██╔══██╗╚══██╔══╝██╔════╝
-██║      ╚████╔╝ ██╔██╗ ██║    ██║   ██║██████╔╝█████╗  ██║   ██║███████╗██║     ███████║   ██║   █████╗  
-██║       ╚██╔╝  ██║╚██╗██║    ██║   ██║██╔══██╗██╔══╝  ██║   ██║╚════██║██║     ██╔══██║   ██║   ██╔══╝  
-███████╗   ██║   ██║ ╚████║    ╚██████╔╝██████╔╝██║     ╚██████╔╝███████║╚██████╗██║  ██║   ██║   ███████╗
-╚══════╝   ╚═╝   ╚═╝  ╚═══╝     ╚═════╝ ╚═════╝ ╚═╝      ╚═════╝ ╚══════╝ ╚═════╝╚═╝  ╚═╝   ╚═╝   ╚══════╝
---></div>
-  <h1>🐾 LYN OBFUSCATE</h1>
-  <textarea id="input" rows="12" placeholder="Paste your Lua code here...">-- example Roblox Lua
-local function greet(name)
-  print("Hello, " .. name)
-end
-greet("World")</textarea>
-  <div class="btn-group">
-    <button id="obfuscateBtn">Obfuscate Code</button>
-    <button id="copyBtn">Copy Output</button>
-    <button id="clearBtn">Clear All</button>
-  </div>
-  <textarea id="output" rows="14" placeholder="Obfuscated code will appear here..." readonly></textarea>
-  <div class="status" id="status">Ready. Your Lua code will be heavily armored.</div>
-  <div class="footer">Lyn Obfuscate &copy; 2026 — Heavy Lua protection</div>
-</div>
 
-<script>
-(function() {
-  // ========== TỰ VIẾT BỘ PHÂN TÍCH LUA NHẸ ==========
-  // Hỗ trợ: chuỗi đơn, chuỗi kép, chuỗi dài [[ ]], comment --, comment --[[ ]]
-  function tokenize(code) {
-    const tokens = []; // mỗi token: {type, value, start, end}
-    let i = 0;
-    const len = code.length;
-    while (i < len) {
-      // Bỏ qua khoảng trắng (nhưng ta vẫn giữ lại để tái tạo code)
-      // Ta sẽ xây dựng kết quả bằng cách thay thế trực tiếp, nên tokenize không cần giữ whitespace riêng.
-      // Thay vào đó, ta tìm các điểm cần thay thế (string literal hoặc định danh) và ghi nhận vị trí.
-      // Để đơn giản, ta chỉ lấy danh sách string literals.
-      // Xác định chuỗi
-      if (code[i] === '"' || code[i] === "'" || code[i] === '[') {
-        // Kiểm tra chuỗi dài [[ ... ]]
-        if (code[i] === '[' && code[i+1] === '[') {
-          let j = i+2;
-          while (j < len && !(code[j] === ']' && code[j+1] === ']')) j++;
-          if (j < len) {
-            const strContent = code.substring(i+2, j);
-            tokens.push({type: 'longstring', value: strContent, start: i, end: j+2});
-            i = j+2;
-            continue;
-          } else {
-            // lỗi, coi như ký tự bình thường
-            i++;
-            continue;
-          }
+    <h1>🎙️ Lyn AI - Hệ Thống Vietsub & Lồng Tiếng</h1>
+    <p>Tự động bóc băng, dịch chuẩn xác và đọc giọng Việt Nam.</p>
+
+    <div class="upload-box">
+        <input type="file" id="videoFile" accept="video/*, audio/*">
+        <div class="options">
+            <input type="checkbox" id="enableVoice" checked>
+            <label for="enableVoice">Bật giọng đọc Tiếng Việt (Lyn AI Voice)</label>
+        </div>
+        <button onclick="processVideo()">Tạo Vietsub Ngay</button>
+        <div id="status"></div>
+    </div>
+
+    <video id="player" controls crossorigin="anonymous"></video>
+
+    <script>
+        // API Key bạn đã cung cấp
+        const GROQ_API_KEY = "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";
+
+        function setStatus(msg) {
+            document.getElementById('status').innerText = msg;
         }
-        // Chuỗi thường
-        const quote = code[i];
-        let j = i+1;
-        let escaped = false;
-        while (j < len) {
-          if (escaped) { escaped = false; j++; continue; }
-          if (code[j] === '\\') { escaped = true; j++; continue; }
-          if (code[j] === quote) break;
-          j++;
+
+        async function processVideo() {
+            const fileInput = document.getElementById('videoFile');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert("Vui lòng chọn một file video hoặc audio!");
+                return;
+            }
+
+            // Giới hạn của API Whisper Groq là 25MB
+            if (file.size > 25 * 1024 * 1024) {
+                alert("File quá lớn! Groq API hiện tại chỉ nhận file dưới 25MB.");
+                return;
+            }
+
+            const video = document.getElementById('player');
+            video.style.display = 'block';
+            video.src = URL.createObjectURL(file);
+            
+            try {
+                // Bước 1: Gọi Whisper bóc băng
+                setStatus("Lyn AI đang nghe và trích xuất âm thanh (Whisper V3)...");
+                const formData = new FormData();
+                formData.append("file", file);
+                formData.append("model", "whisper-large-v3");
+                formData.append("response_format", "vtt");
+
+                const whisperRes = await fetch("https://api.groq.com/openai/v1/audio/transcriptions", {
+                    method: "POST",
+                    headers: { "Authorization": `Bearer ${GROQ_API_KEY}` },
+                    body: formData
+                });
+
+                if (!whisperRes.ok) throw new Error("Lỗi bóc băng: " + await whisperRes.text());
+                const originalVTT = await whisperRes.text();
+
+                // Bước 2: Gọi Llama 3 dịch sang Tiếng Việt
+                setStatus("Lyn AI đang dịch chuẩn xác sang Tiếng Việt...");
+                const prompt = `Dịch toàn bộ file WebVTT sau sang Tiếng Việt. 
+Yêu cầu:
+1. Dịch thuật tự nhiên, chuẩn xác, không lỗi văn cảnh.
+2. TUYỆT ĐỐI GIỮ NGUYÊN cấu trúc thời gian (timestamps).
+3. CHỈ TRẢ VỀ nội dung WebVTT đã dịch, bắt đầu bằng "WEBVTT". Không kèm theo bất kỳ lời chào hay giải thích nào.
+
+Nội dung gốc:
+${originalVTT}`;
+
+                const llamaRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${GROQ_API_KEY}`,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        model: "llama3-70b-8192", // Model lớn nhất để dịch không lỗi
+                        messages: [{role: "user", content: prompt}],
+                        temperature: 0.1 // Giữ nhiệt độ thấp để AI tập trung dịch chính xác, không chế cháo
+                    })
+                });
+
+                const llamaData = await llamaRes.json();
+                let translatedVTT = llamaData.choices[0].message.content.trim();
+                
+                // Đảm bảo format VTT hợp lệ
+                if (!translatedVTT.startsWith("WEBVTT")) {
+                    translatedVTT = "WEBVTT\n\n" + translatedVTT;
+                }
+
+                // Bước 3: Nạp Subtitle vào Video
+                setStatus("Hoàn tất! Đang đồng bộ phụ đề và giọng đọc...");
+                const blob = new Blob([translatedVTT], { type: 'text/vtt' });
+                const track = document.createElement('track');
+                track.kind = 'captions';
+                track.label = 'Tiếng Việt (Lyn AI)';
+                track.srclang = 'vi';
+                track.src = URL.createObjectURL(blob);
+                track.default = true;
+                
+                // Xóa track cũ nếu có
+                while (video.firstChild) {
+                    video.removeChild(video.firstChild);
+                }
+                video.appendChild(track);
+
+                // Thiết lập Giọng Đọc Việt Nam
+                setupVoice(video);
+                
+                setStatus("✅ Hoàn thành! Bấm Play để xem thành quả.");
+
+            } catch (error) {
+                setStatus("❌ Có lỗi xảy ra: " + error.message);
+                console.error(error);
+            }
         }
-        if (j < len) {
-          const strContent = code.substring(i+1, j);
-          tokens.push({type: 'string', quote: quote, value: strContent, start: i, end: j+1});
-          i = j+1;
-          continue;
-        } else {
-          i++; continue;
+
+        function setupVoice(video) {
+            const enableVoice = document.getElementById('enableVoice').checked;
+            if (!enableVoice) return;
+
+            video.addEventListener('loadedmetadata', function() {
+                const trackElement = video.textTracks[0];
+                if (!trackElement) return;
+                
+                trackElement.mode = 'showing'; 
+                
+                trackElement.oncuechange = (e) => {
+                    const activeCues = e.target.activeCues;
+                    if (activeCues && activeCues.length > 0) {
+                        const text = activeCues[0].text;
+                        // Gọi AI đọc giọng Việt Nam
+                        const utterance = new SpeechSynthesisUtterance(text);
+                        utterance.lang = 'vi-VN';
+                        utterance.rate = 1.1; // Chỉnh tốc độ đọc cho tự nhiên
+                        window.speechSynthesis.speak(utterance);
+                    }
+                };
+
+                // Ngừng đọc khi video tạm dừng hoặc tua
+                video.addEventListener('pause', () => window.speechSynthesis.cancel());
+                video.addEventListener('seeked', () => window.speechSynthesis.cancel());
+            });
         }
-      }
-      // Bỏ qua comment
-      if (code[i] === '-' && code[i+1] === '-') {
-        if (code[i+2] === '[' && code[i+3] === '[') {
-          // block comment
-          let j = i+4;
-          while (j < len && !(code[j] === ']' && code[j+1] === ']')) j++;
-          if (j < len) {
-            i = j+2;
-            continue;
-          } else {
-            i = len;
-            continue;
-          }
-        } else {
-          // line comment đến cuối dòng
-          let j = i+2;
-          while (j < len && code[j] !== '\n') j++;
-          i = j;
-          continue;
-        }
-      }
-      i++;
-    }
-    return tokens;
-  }
-
-  // ========== HÀM MÃ HÓA XOR ==========
-  function generateRandomKey(length = 8) {
-    const arr = new Uint8Array(length);
-    window.crypto.getRandomValues(arr);
-    return String.fromCharCode(...arr);
-  }
-
-  function xorBytes(str, key) {
-    const out = new Uint8Array(str.length);
-    for (let i = 0; i < str.length; i++) {
-      out[i] = (str.charCodeAt(i) & 0xFF) ^ (key.charCodeAt(i % key.length) & 0xFF);
-    }
-    return out;
-  }
-
-  function bytesToLuaEscape(bytes) {
-    return Array.from(bytes, b => '\\' + b.toString(10).padStart(3, '0')).join('');
-  }
-
-  // ========== THAY THẾ CHUỖI ==========
-  function encryptStrings(code) {
-    const tokens = tokenize(code);
-    let result = '';
-    let lastIdx = 0;
-    for (const tok of tokens) {
-      // Thêm phần code trước token
-      result += code.substring(lastIdx, tok.start);
-      const key = generateRandomKey(6 + Math.floor(Math.random() * 8));
-      const rawValue = tok.value;
-      const encrypted = xorBytes(rawValue, key);
-      const encStr = bytesToLuaEscape(encrypted);
-      const keyStr = bytesToLuaEscape([...key].map(c => c.charCodeAt(0)));
-      result += `lyn_decrypt("${encStr}","${keyStr}")`;
-      lastIdx = tok.end;
-    }
-    result += code.substring(lastIdx);
-    return result;
-  }
-
-  // ========== TẠO MÃ RÁC ==========
-  let junkCounter = 0;
-  function freshJunkName() { return 'j_' + (++junkCounter).toString(36); }
-  function generateJunkLines(count = 3) {
-    const lines = [];
-    for (let i = 0; i < count; i++) {
-      const r = Math.random();
-      if (r < 0.3) {
-        lines.push(`local ${freshJunkName()} = (${Math.floor(Math.random()*1000)} + ${Math.floor(Math.random()*500)}) / 2;`);
-      } else if (r < 0.6) {
-        lines.push(`if (0x${Math.floor(Math.random()*0xFF).toString(16)} > ${Math.floor(Math.random()*50)}) then end`);
-      } else {
-        lines.push(`task.wait(${(0.05 + Math.random()*0.2).toFixed(2)})`);
-      }
-    }
-    return lines.join('\n');
-  }
-
-  // ========== TẠO HEADER ==========
-  let dCounter = 0;
-  function freshDecryptName() { return '_d' + (++dCounter).toString(36); }
-  function buildHeader() {
-    const n = {
-      char: freshDecryptName(), byte: freshDecryptName(), sub: freshDecryptName(),
-      bit: freshDecryptName(), bxor: freshDecryptName(), concat: freshDecryptName(), insert: freshDecryptName()
-    };
-    return `
---[[
- ██╗     ██╗   ██╗███╗   ██╗     ██████╗ ██████╗ ███████╗██╗   ██╗███████╗ ██████╗ █████╗ ████████╗███████╗
- ██║     ╚██╗ ██╔╝████╗  ██║    ██╔═══██╗██╔══██╗██╔════╝██║   ██║██╔════╝██╔════╝██╔══██╗╚══██╔══╝██╔════╝
- ██║      ╚████╔╝ ██╔██╗ ██║    ██║   ██║██████╔╝█████╗  ██║   ██║███████╗██║     ███████║   ██║   █████╗  
- ██║       ╚██╔╝  ██║╚██╗██║    ██║   ██║██╔══██╗██╔══╝  ██║   ██║╚════██║██║     ██╔══██║   ██║   ██╔══╝  
- ███████╗   ██║   ██║ ╚████║    ╚██████╔╝██████╔╝██║     ╚██████╔╝███████║╚██████╗██║  ██║   ██║   ███████╗
- ╚══════╝   ╚═╝   ╚═╝  ╚═══╝     ╚═════╝ ╚═════╝ ╚═╝      ╚═════╝ ╚══════╝ ╚═════╝╚═╝  ╚═╝   ╚═╝   ╚══════╝
---]]
--- Lyn Obfuscate (heavy Lua armor)
-local ${n.char} = string.char;
-local ${n.byte} = string.byte;
-local ${n.sub} = string.sub;
-local ${n.bit} = bit32 or bit;
-local ${n.bxor} = ${n.bit}.bxor;
-local ${n.concat} = table.concat;
-local ${n.insert} = table.insert;
-
-local function lyn_decrypt(data, key)
-  local result = {};
-  for i = 1, #data do
-    ${n.insert}(result, ${n.char}(${n.bxor}(${n.byte}(${n.sub}(data, i, i)), ${n.byte}(${n.sub}(key, 1 + (i % #key), 1 + (i % #key)))) % 256));
-  end
-  return ${n.concat}(result);
-end
-
--- Junk start
-${generateJunkLines(4)}
--- End junk
-`;
-  }
-
-  // ========== OBFUSCATE CHÍNH ==========
-  function obfuscate(code) {
-    if (!code.trim()) throw new Error('No code provided');
-    let obfCode = code;
-    // Mã hóa tất cả chuỗi
-    obfCode = encryptStrings(obfCode);
-    // Ghép header + code + footer
-    const header = buildHeader();
-    const footer = `\n-- Junk end\n${generateJunkLines(2)}\n`;
-    return header + obfCode + footer;
-  }
-
-  // ========== GẮN SỰ KIỆN ==========
-  const inputEl = document.getElementById('input');
-  const outputEl = document.getElementById('output');
-  const statusEl = document.getElementById('status');
-
-  document.getElementById('obfuscateBtn').addEventListener('click', () => {
-    try {
-      const original = inputEl.value;
-      if (!original.trim()) {
-        statusEl.textContent = 'Please paste some Lua code.';
-        return;
-      }
-      statusEl.textContent = 'Obfuscating...';
-      const result = obfuscate(original);
-      outputEl.value = result;
-      statusEl.textContent = 'Obfuscation complete. Code is heavily armored.';
-    } catch (err) {
-      statusEl.textContent = 'Error: ' + err.message;
-      outputEl.value = '';
-    }
-  });
-
-  document.getElementById('copyBtn').addEventListener('click', () => {
-    const text = outputEl.value;
-    if (!text) {
-      statusEl.textContent = 'Nothing to copy.';
-      return;
-    }
-    navigator.clipboard.writeText(text).then(() => statusEl.textContent = 'Copied!')
-      .catch(() => statusEl.textContent = 'Copy failed');
-  });
-
-  document.getElementById('clearBtn').addEventListener('click', () => {
-    inputEl.value = '';
-    outputEl.value = '';
-    statusEl.textContent = 'Cleared.';
-  });
-})();
-</script>
+    </script>
 </body>
 </html>
