@@ -38,8 +38,8 @@
     </div>
 
     <script>
-        // API Key Gemini do bạn cung cấp
-        const GEMINI_API_KEY = "AQ.Ab8RN6In958--tilTkn5WfGtfdaPmb6EFE4Ygkt_-eeiGR_RGw";
+        // Dán API Key bắt đầu bằng AQ... của bạn vào giữa 2 dấu ngoặc kép bên dưới
+        const GEMINI_API_KEY = "DÁN_API_KEY_AQ_CỦA_BẠN_VÀO_ĐÂY";
         let globalCues = [];
         let ttsAudio = new Audio();
 
@@ -74,11 +74,15 @@
                 // BƯỚC 2: Triệu gọi Gemini 1.5 Flash xử lý trọn gói (Nghe + Dịch + Xuất JSON mốc thời gian)
                 setStatus("🚀 Đang gửi dữ liệu qua Gemini AI để xử lý Vietsub siêu tốc...");
                 
-                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+                // Loại bỏ ?key= khỏi URL để lách lỗi ACCESS_TOKEN_TYPE_UNSUPPORTED
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent`;
                 
                 const response = await fetch(url, {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    headers: { 
+                        "Content-Type": "application/json",
+                        "x-goog-api-key": GEMINI_API_KEY // Bơm thẳng key vào Header theo cấu trúc mới
+                    },
                     body: JSON.stringify({
                         contents: [{
                             parts: [
