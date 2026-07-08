@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lyn AI - Vietsub & Lồng Tiếng Cao Cấp (Fixed)</title>
+    <title>Lyn AI - Vietsub & Lồng Tiếng Pro (Gemini Engine)</title>
     <style>
         body { font-family: 'Segoe UI', Roboto, sans-serif; background-color: #121212; color: #ffffff; max-width: 850px; margin: 0 auto; padding: 20px; text-align: center; }
         h1 { color: #00ff88; margin-bottom: 5px; }
@@ -12,15 +12,15 @@
         button:hover { background-color: #00cc6a; transform: scale(1.02); }
         .video-container { position: relative; display: inline-block; width: 100%; margin-top: 20px; border-radius: 12px; overflow: hidden; box-shadow: 0px 10px 30px rgba(0,0,0,0.5); background: #000; }
         #player { width: 100%; display: none; vertical-align: bottom; }
-        /* Khung chữ Vietsub đè màn hình chuẩn rạp phim */
+        /* Style chữ Vietsub đè màn hình chuẩn phim chiếu rạp */
         #sub-overlay { position: absolute; bottom: 8%; left: 50%; transform: translateX(-50%); background: rgba(0, 0, 0, 0.75); color: #ffffff; padding: 6px 16px; border-radius: 6px; font-size: 22px; font-weight: bold; text-align: center; pointer-events: none; display: none; max-width: 85%; white-space: pre-line; text-shadow: 2px 2px 4px #000000; line-height: 1.4; z-index: 10; }
         #status { margin-top: 15px; color: #ffcc00; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <h1>🎙️ Lyn AI - Hệ Thống Vietsub & Lồng Tiếng Chuẩn</h1>
-    <p style="color: #aaa;">Đã sửa lỗi response_format - Hỗ trợ file video 5-10 phút mượt mà.</p>
+    <h1>🎙️ Lyn AI - Hệ Thống Vietsub & Lồng Tiếng Gemini</h1>
+    <p style="color: #aaa;">Sử dụng siêu trí tuệ Gemini 1.5 Flash bóc băng và dịch thuật không lỗi.</p>
 
     <div class="upload-box">
         <input type="file" id="videoFile" accept="video/*, audio/*">
@@ -29,7 +29,7 @@
             <label for="enableVoice">🎙️ Bật lồng tiếng chuẩn giọng Việt Nam (Lyn Voice)</label>
         </div>
         <button onclick="processVideo()">🚀 Xử Lý Vietsub Ngay</button>
-        <div id="status">Sẵn sàng! Hãy chọn file video của bạn.</div>
+        <div id="status">Sẵn sàng! Hãy chọn file video của bạn (Hỗ trợ file 5-10 phút).</div>
     </div>
 
     <div class="video-container">
@@ -38,7 +38,8 @@
     </div>
 
     <script>
-        const GROQ_API_KEY = "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";
+        // API Key Gemini do bạn cung cấp
+        const GEMINI_API_KEY = "AQ.Ab8RN6In958--tilTkn5WfGtfdaPmb6EFE4Ygkt_-eeiGR_RGw";
         let globalCues = [];
         let ttsAudio = new Audio();
 
@@ -47,12 +48,12 @@
         async function processVideo() {
             const fileInput = document.getElementById('videoFile');
             const file = fileInput.files[0];
-            if (!file) return alert("Vui lòng chọn file video!");
+            if (!file) return alert("Vui lòng chọn file video cái đã ông bạn!");
 
             const video = document.getElementById('player');
             const subOverlay = document.getElementById('sub-overlay');
             
-            // Xóa dữ liệu cũ để tránh chồng chéo khi đổi file
+            // Khởi tạo lại trạng thái ban đầu để tránh crash dữ liệu cũ
             globalCues = [];
             subOverlay.innerText = "";
             subOverlay.style.display = "none";
@@ -62,68 +63,53 @@
             video.src = URL.createObjectURL(file);
 
             try {
-                // BƯỚC 1: Tách và nén âm thanh cục bộ trên trình duyệt để tránh nghẽn băng thông
-                setStatus("⚙️ Đang bóc tách và tối ưu hóa luồng âm thanh đầu vào...");
+                // BƯỚC 1: Tách và nén âm thanh xuống chuẩn 12kHz Mono siêu nhẹ để nhét vừa băng thông API
+                setStatus("⚙️ Đang bóc tách luồng âm thanh và tối ưu dung lượng...");
                 const compressedAudioBlob = await extractAndCompressAudio(file);
 
-                // BƯỚC 2: Gửi lên Groq Whisper với cấu hình chuẩn verbose_json
-                setStatus("🚀 Đang gửi dữ liệu âm thanh vào AI Whisper bóc băng từng giây...");
-                const formData = new FormData();
-                formData.append("file", compressedAudioBlob, "audio.wav"); 
-                formData.append("model", "whisper-large-v3");
-                formData.append("response_format", "verbose_json"); // Đã sửa lỗi chỗ này
+                // Chuyển Audio Blob sang chuỗi Base64 để gửi trực tiếp trong request JSON của Gemini
+                setStatus("📦 Đang mã hóa dữ liệu âm thanh đầu vào...");
+                const base64Audio = await blobToBase64(compressedAudioBlob);
 
-                const whisperRes = await fetch("https://api.groq.com/openai/v1/audio/transcriptions", {
-                    method: "POST",
-                    headers: { "Authorization": `Bearer ${GROQ_API_KEY}` },
-                    body: formData
-                });
-
-                if (!whisperRes.ok) {
-                    const errText = await whisperRes.text();
-                    throw new Error("Lỗi máy chủ Whisper: " + errText);
-                }
+                // BƯỚC 2: Triệu gọi Gemini 1.5 Flash xử lý trọn gói (Nghe + Dịch + Xuất JSON mốc thời gian)
+                setStatus("🚀 Đang gửi dữ liệu qua Gemini AI để xử lý Vietsub siêu tốc...");
                 
-                const whisperData = await whisperRes.json();
-                if (!whisperData.segments) throw new Error("Không trích xuất được các phân đoạn âm thanh.");
-
-                // Đổi cấu trúc dữ liệu JSON từ Groq sang định dạng chuỗi VTT tạm thời
-                const originalVTT = segmentsToVTT(whisperData.segments);
-
-                // BƯỚC 3: Đưa qua Llama 3 70B dịch thuật bám sát ngữ cảnh phim
-                setStatus("🧠 Bộ não Lyn AI đang dịch thuật thông minh sang tiếng Việt...");
-                const prompt = `Dịch toàn bộ nội dung file WebVTT sau đây sang Tiếng Việt.
-Yêu cầu nghiêm ngặt:
-1. Thuyết minh/Dịch thuật tự nhiên, chính xác, không dịch thô, không dịch sai ngữ cảnh.
-2. TUYỆT ĐỐI GIỮ NGUYÊN các mốc thời gian dạng 00:00:00.000 --> 00:00:00.000.
-3. CHỈ TRẢ VỀ nội dung WebVTT sau khi dịch, bắt đầu bằng "WEBVTT". Không viết thêm lời thoại giải thích nào khác bên ngoài.
-
-Nội dung cần dịch:
-${originalVTT}`;
-
-                const llamaRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+                
+                const response = await fetch(url, {
                     method: "POST",
-                    headers: { "Authorization": `Bearer ${GROQ_API_KEY}`, "Content-Type": "application/json" },
-                    body: JSON.stringify({ 
-                        model: "llama3-70b-8192", 
-                        messages: [{role: "user", content: prompt}], 
-                        temperature: 0.1 // Giữ nhiệt độ thấp để dịch chuẩn xác từng chữ
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [
+                                { text: "Nghe đoạn âm thanh này. Hãy bóc băng (speech-to-text) và dịch toàn bộ nội dung sang Tiếng Việt chuẩn xác, mượt mà văn cảnh như phim chiếu rạp, không lỗi phụ đề. Xuất kết quả bắt buộc dưới dạng một mảng JSON (JSON Array), mỗi phần tử là một object có cấu trúc chính xác như sau: {\"start\": số_giây_bắt_đầu, \"end\": số_giây_kết_thúc, \"text\": \"câu_tiếng_việt_đã_dịch\"}. Cần đảm bảo các mốc thời gian start và end (kiểu số) khớp chính xác với lời thoại trong âm thanh. Không trả về bất kỳ ký tự nào khác ngoài chuỗi JSON sạch." },
+                                { inlineData: { mimeType: "audio/wav", data: base64Audio } }
+                            ]
+                        }],
+                        generationConfig: {
+                            responseMimeType: "application/json" // Ép cấu trúc đầu ra luôn là JSON sạch, chống crash chữ lạ
+                        }
                     })
                 });
 
-                if (!llamaRes.ok) throw new Error("Lỗi kết nối bộ dịch AI.");
-                const llamaData = await llamaRes.json();
-                let translatedVTT = llamaData.choices[0].message.content.trim();
-                
-                if (!translatedVTT.startsWith("WEBVTT")) {
-                    translatedVTT = "WEBVTT\n\n" + translatedVTT;
+                if (!response.ok) {
+                    const errText = await response.text();
+                    throw new Error("Lỗi kết nối Gemini API. Hãy kiểm tra lại tính chính xác của API Key. Chi tiết: " + errText);
                 }
 
-                // BƯỚC 4: Đồng bộ hóa chữ đè và Kích hoạt bộ engine phát giọng đọc
-                globalCues = parseVTT(translatedVTT);
-                initSubAndVoiceEngine(video, subOverlay);
+                const resJson = await response.json();
                 
-                setStatus("✅ Hoàn tất 100%! Bấm nút Play trên video để trải nghiệm.");
+                // Trích xuất chuỗi JSON mà Gemini trả về và nạp vào mảng điều khiển phụ đề
+                const rawText = resJson.candidates[0].content.parts[0].text;
+                globalCues = JSON.parse(rawText);
+
+                if (!Array.isArray(globalCues)) {
+                    throw new Error("Dữ liệu AI trả về không đúng cấu trúc mảng. Vui lòng bấm thử lại.");
+                }
+
+                // BƯỚC 3: Đồng bộ hóa phụ đề đè màn hình và động cơ giọng lồng tiếng Việt
+                initSubAndVoiceEngine(video, subOverlay);
+                setStatus("✅ Hoàn tất 100%! Bấm nút Play trên video để hưởng thụ thành quả.");
 
             } catch (error) {
                 setStatus("❌ Gặp sự cố xử lý: " + error.message);
@@ -131,33 +117,15 @@ ${originalVTT}`;
             }
         }
 
-        // Chuyển mảng segments của Groq thành cấu trúc text VTT để AI dễ dịch
-        function segmentsToVTT(segments) {
-            let vtt = "WEBVTT\n\n";
-            segments.forEach(seg => {
-                vtt += `${formatTime(seg.start)} --> ${formatTime(seg.end)}\n${seg.text.trim()}\n\n`;
-            });
-            return vtt;
-        }
-
-        // Định dạng thời gian chính xác dạng HH:MM:SS.mmm
-        function formatTime(seconds) {
-            const h = Math.floor(seconds / 3600).toString().padStart(2, '0');
-            const m = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
-            const s = Math.floor(seconds % 60).toString().padStart(2, '0');
-            const ms = Math.floor((seconds % 1) * 1000).toString().padStart(3, '0');
-            return `${h}:${m}:${s}.${ms}`;
-        }
-
-        // Tách âm thanh trực tiếp bằng Web Audio API
+        // Động cơ tối ưu âm thanh: Hạ tần số xuống 12000Hz, ép về 1 kênh Mono để tối giản dung lượng tối đa
         async function extractAndCompressAudio(file) {
             const arrayBuffer = await file.arrayBuffer();
-            const audioCtx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 16000 });
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 12000 });
             const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
             
             const numOfChannels = 1; 
             const length = audioBuffer.length;
-            const sampleRate = 16000;
+            const sampleRate = 12000;
             const offlineCtx = new OfflineAudioContext(numOfChannels, length, sampleRate);
             const source = offlineCtx.createBufferSource();
             source.buffer = audioBuffer;
@@ -196,42 +164,30 @@ ${originalVTT}`;
             return new Blob([out], { type: "audio/wav" });
         }
 
-        // Đọc dữ liệu text đã dịch và phân tách dựa trên mốc thời gian (Chống crash văn bản lạ)
-        function parseVTT(vttText) {
-            const lines = vttText.split('\n');
-            const cues = [];
-            let currentCue = null;
-            const timeRegex = /(\d{2}:\d{2}:\d{2}[\.,]\d{3})\s*-->\s*(\d{2}:\d{2}:\d{2}[\.,]\d{3})/;
-            const toSeconds = (t) => { const p = t.replace(',', '.').split(':'); return parseFloat(p[0]) * 3600 + parseFloat(p[1]) * 60 + parseFloat(p[2]); };
-
-            for (let i = 0; i < lines.length; i++) {
-                const line = lines[i].trim();
-                const match = line.match(timeRegex);
-                if (match) {
-                    if (currentCue && currentCue.text) cues.push(currentCue);
-                    currentCue = { start: toSeconds(match[1]), end: toSeconds(match[2]), text: "" };
-                } else if (currentCue && line && !line.startsWith("WEBVTT")) {
-                    currentCue.text += (currentCue.text ? "\n" : "") + line;
-                } else if (!line && currentCue) {
-                    if (currentCue.text) { cues.push(currentCue); currentCue = null; }
-                }
-            }
-            if (currentCue && currentCue.text) cues.push(currentCue);
-            return cues;
+        // Tiện ích chuyển đổi file nhị phân Blob sang chuỗi ký tự Base64
+        function blobToBase64(blob) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onloadend = () => resolve(reader.result.split(',')[1]);
+                reader.onerror = reject;
+                reader.readAsDataURL(blob);
+            });
         }
 
-        // Điều khiển hiển thị chữ đè lên phim và đồng bộ hóa âm thanh lồng tiếng
+        // Bộ xử lý quét mốc thời gian thực của Video để dập chữ lên màn hình và lồng tiếng Việt đúng nhịp
         function initSubAndVoiceEngine(video, subOverlay) {
             let lastText = "";
             video.addEventListener('timeupdate', () => {
                 const t = video.currentTime;
+                // Tìm kiếm câu phụ đề tương thích với giây hiện tại của video
                 const activeCue = globalCues.find(c => t >= c.start && t <= c.end);
+                
                 if (activeCue) {
                     if (lastText !== activeCue.text) {
                         lastText = activeCue.text;
                         subOverlay.innerText = activeCue.text;
-                        subOverlay.style.display = 'block'; // Đè hiển thị chữ trực tiếp
-                        playVietnameseVoice(activeCue.text); // Phát giọng thuyết minh Việt
+                        subOverlay.style.display = 'block'; // Đè hiển thị chữ trực tiếp lên khung hình phim
+                        playVietnameseVoice(activeCue.text); // Gọi giọng lồng tiếng chuẩn
                     }
                 } else { lastText = ""; subOverlay.style.display = 'none'; }
             });
@@ -239,7 +195,7 @@ ${originalVTT}`;
             video.addEventListener('seeking', () => ttsAudio.pause());
         }
 
-        // API phát giọng nói chuẩn tiếng Việt tự nhiên
+        // Bộ phát giọng đọc chuẩn Tiếng Việt mượt mà bám đuổi theo phụ đề
         function playVietnameseVoice(text) {
             if (!document.getElementById('enableVoice').checked) return;
             ttsAudio.pause();
