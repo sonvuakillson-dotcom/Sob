@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lyn AI - Vietsub Pro (Bypass 25MB Limit)</title>
+    <title>Lyn AI - Vietsub & Lồng Tiếng Cao Cấp (Fixed)</title>
     <style>
         body { font-family: 'Segoe UI', Roboto, sans-serif; background-color: #121212; color: #ffffff; max-width: 850px; margin: 0 auto; padding: 20px; text-align: center; }
         h1 { color: #00ff88; margin-bottom: 5px; }
@@ -12,20 +12,21 @@
         button:hover { background-color: #00cc6a; transform: scale(1.02); }
         .video-container { position: relative; display: inline-block; width: 100%; margin-top: 20px; border-radius: 12px; overflow: hidden; box-shadow: 0px 10px 30px rgba(0,0,0,0.5); background: #000; }
         #player { width: 100%; display: none; vertical-align: bottom; }
+        /* Khung chữ Vietsub đè màn hình chuẩn rạp phim */
         #sub-overlay { position: absolute; bottom: 8%; left: 50%; transform: translateX(-50%); background: rgba(0, 0, 0, 0.75); color: #ffffff; padding: 6px 16px; border-radius: 6px; font-size: 22px; font-weight: bold; text-align: center; pointer-events: none; display: none; max-width: 85%; white-space: pre-line; text-shadow: 2px 2px 4px #000000; line-height: 1.4; z-index: 10; }
         #status { margin-top: 15px; color: #ffcc00; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <h1>🎙️ Lyn AI - Hệ Thống Vietsub & Lồng Tiếng (Bản Bypass Mở Rộng)</h1>
-    <p style="color: #aaa;">Tự động tách âm thanh, ép dung lượng vượt rào Groq cho file dài 10-15 phút.</p>
+    <h1>🎙️ Lyn AI - Hệ Thống Vietsub & Lồng Tiếng Chuẩn</h1>
+    <p style="color: #aaa;">Đã sửa lỗi response_format - Hỗ trợ file video 5-10 phút mượt mà.</p>
 
     <div class="upload-box">
         <input type="file" id="videoFile" accept="video/*, audio/*">
         <div style="margin-top: 10px;">
             <input type="checkbox" id="enableVoice" checked>
-            <label for="enableVoice">🎙️ Bật lồng tiếng chuẩn giọng Việt Nam</label>
+            <label for="enableVoice">🎙️ Bật lồng tiếng chuẩn giọng Việt Nam (Lyn Voice)</label>
         </div>
         <button onclick="processVideo()">🚀 Xử Lý Vietsub Ngay</button>
         <div id="status">Sẵn sàng! Hãy chọn file video của bạn.</div>
@@ -51,7 +52,9 @@
             const video = document.getElementById('player');
             const subOverlay = document.getElementById('sub-overlay');
             
+            // Xóa dữ liệu cũ để tránh chồng chéo khi đổi file
             globalCues = [];
+            subOverlay.innerText = "";
             subOverlay.style.display = "none";
             ttsAudio.pause();
             
@@ -59,21 +62,16 @@
             video.src = URL.createObjectURL(file);
 
             try {
-                // BƯỚC 1: TÁCH VÀ NÉN ÂM THANH NGAY TRÊN TRÌNH DUYỆT
-                setStatus("⚙️ Đang tách âm thanh khỏi video và ép dung lượng (vượt rào 25MB)...");
+                // BƯỚC 1: Tách và nén âm thanh cục bộ trên trình duyệt để tránh nghẽn băng thông
+                setStatus("⚙️ Đang bóc tách và tối ưu hóa luồng âm thanh đầu vào...");
                 const compressedAudioBlob = await extractAndCompressAudio(file);
-                
-                if (compressedAudioBlob.size > 25 * 1024 * 1024) {
-                    throw new Error("File quá dài! Dù đã nén tối đa nhưng vẫn vượt 25MB (Chỉ nên dùng video dưới 15 phút).");
-                }
 
-                // BƯỚC 2: GỬI LÊN GROQ WHISPER
-                setStatus("🚀 Đang gửi âm thanh siêu nhẹ cho AI Whisper bóc băng...");
+                // BƯỚC 2: Gửi lên Groq Whisper với cấu hình chuẩn verbose_json
+                setStatus("🚀 Đang gửi dữ liệu âm thanh vào AI Whisper bóc băng từng giây...");
                 const formData = new FormData();
-                // Đặt tên file là audio.wav để đánh lừa Whisper
                 formData.append("file", compressedAudioBlob, "audio.wav"); 
                 formData.append("model", "whisper-large-v3");
-                formData.append("response_format", "vtt");
+                formData.append("response_format", "verbose_json"); // Đã sửa lỗi chỗ này
 
                 const whisperRes = await fetch("https://api.groq.com/openai/v1/audio/transcriptions", {
                     method: "POST",
@@ -81,41 +79,83 @@
                     body: formData
                 });
 
-                if (!whisperRes.ok) throw new Error("Lỗi bóc băng: " + await whisperRes.text());
-                const originalVTT = await whisperRes.text();
+                if (!whisperRes.ok) {
+                    const errText = await whisperRes.text();
+                    throw new Error("Lỗi máy chủ Whisper: " + errText);
+                }
+                
+                const whisperData = await whisperRes.json();
+                if (!whisperData.segments) throw new Error("Không trích xuất được các phân đoạn âm thanh.");
 
-                // BƯỚC 3: DỊCH CHUẨN XÁC VỚI LLAMA 3
-                setStatus("🧠 Đang dịch chuẩn ngữ cảnh sang Tiếng Việt...");
-                const prompt = `Dịch toàn bộ file WebVTT sau sang Tiếng Việt. Giữ nguyên mốc thời gian. Chỉ trả về mã WEBVTT đã dịch, không giải thích.\n\n${originalVTT}`;
+                // Đổi cấu trúc dữ liệu JSON từ Groq sang định dạng chuỗi VTT tạm thời
+                const originalVTT = segmentsToVTT(whisperData.segments);
+
+                // BƯỚC 3: Đưa qua Llama 3 70B dịch thuật bám sát ngữ cảnh phim
+                setStatus("🧠 Bộ não Lyn AI đang dịch thuật thông minh sang tiếng Việt...");
+                const prompt = `Dịch toàn bộ nội dung file WebVTT sau đây sang Tiếng Việt.
+Yêu cầu nghiêm ngặt:
+1. Thuyết minh/Dịch thuật tự nhiên, chính xác, không dịch thô, không dịch sai ngữ cảnh.
+2. TUYỆT ĐỐI GIỮ NGUYÊN các mốc thời gian dạng 00:00:00.000 --> 00:00:00.000.
+3. CHỈ TRẢ VỀ nội dung WebVTT sau khi dịch, bắt đầu bằng "WEBVTT". Không viết thêm lời thoại giải thích nào khác bên ngoài.
+
+Nội dung cần dịch:
+${originalVTT}`;
+
                 const llamaRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                     method: "POST",
                     headers: { "Authorization": `Bearer ${GROQ_API_KEY}`, "Content-Type": "application/json" },
-                    body: JSON.stringify({ model: "llama3-70b-8192", messages: [{role: "user", content: prompt}], temperature: 0.1 })
+                    body: JSON.stringify({ 
+                        model: "llama3-70b-8192", 
+                        messages: [{role: "user", content: prompt}], 
+                        temperature: 0.1 // Giữ nhiệt độ thấp để dịch chuẩn xác từng chữ
+                    })
                 });
 
+                if (!llamaRes.ok) throw new Error("Lỗi kết nối bộ dịch AI.");
                 const llamaData = await llamaRes.json();
                 let translatedVTT = llamaData.choices[0].message.content.trim();
-                if (!translatedVTT.startsWith("WEBVTT")) translatedVTT = "WEBVTT\n\n" + translatedVTT;
+                
+                if (!translatedVTT.startsWith("WEBVTT")) {
+                    translatedVTT = "WEBVTT\n\n" + translatedVTT;
+                }
 
-                // BƯỚC 4: HIỂN THỊ VÀ ĐỌC GIỌNG
-                setStatus("✅ Hoàn tất! Bấm Play trên video để xem Vietsub đè và nghe lồng tiếng.");
+                // BƯỚC 4: Đồng bộ hóa chữ đè và Kích hoạt bộ engine phát giọng đọc
                 globalCues = parseVTT(translatedVTT);
                 initSubAndVoiceEngine(video, subOverlay);
+                
+                setStatus("✅ Hoàn tất 100%! Bấm nút Play trên video để trải nghiệm.");
 
             } catch (error) {
-                setStatus("❌ Lỗi: " + error.message);
+                setStatus("❌ Gặp sự cố xử lý: " + error.message);
                 console.error(error);
             }
         }
 
-        // HÀM TÁCH VÀ ÉP DUNG LƯỢNG AUDIO BẰNG JAVASCRIPT
+        // Chuyển mảng segments của Groq thành cấu trúc text VTT để AI dễ dịch
+        function segmentsToVTT(segments) {
+            let vtt = "WEBVTT\n\n";
+            segments.forEach(seg => {
+                vtt += `${formatTime(seg.start)} --> ${formatTime(seg.end)}\n${seg.text.trim()}\n\n`;
+            });
+            return vtt;
+        }
+
+        // Định dạng thời gian chính xác dạng HH:MM:SS.mmm
+        function formatTime(seconds) {
+            const h = Math.floor(seconds / 3600).toString().padStart(2, '0');
+            const m = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
+            const s = Math.floor(seconds % 60).toString().padStart(2, '0');
+            const ms = Math.floor((seconds % 1) * 1000).toString().padStart(3, '0');
+            return `${h}:${m}:${s}.${ms}`;
+        }
+
+        // Tách âm thanh trực tiếp bằng Web Audio API
         async function extractAndCompressAudio(file) {
             const arrayBuffer = await file.arrayBuffer();
-            // Thiết lập AudioContext nén xuống 16kHz (chuẩn của Whisper)
             const audioCtx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 16000 });
             const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
             
-            const numOfChannels = 1; // Ép về âm thanh Mono (1 kênh) để giảm 50% dung lượng
+            const numOfChannels = 1; 
             const length = audioBuffer.length;
             const sampleRate = 16000;
             const offlineCtx = new OfflineAudioContext(numOfChannels, length, sampleRate);
@@ -139,33 +179,24 @@
             const setUint16 = (data) => { view.setUint16(pos, data, true); pos += 2; };
             const setUint32 = (data) => { view.setUint32(pos, data, true); pos += 4; };
 
-            setUint32(0x46464952); // "RIFF"
-            setUint32(length - 8);
-            setUint32(0x45564157); // "WAVE"
-            setUint32(0x20746d66); // "fmt "
-            setUint32(16);
-            setUint16(1); // PCM
-            setUint16(numOfChan);
-            setUint32(buffer.sampleRate);
-            setUint32(buffer.sampleRate * 2 * numOfChan);
-            setUint16(numOfChan * 2);
-            setUint16(16);
-            setUint32(0x61746164); // "data"
-            setUint32(length - pos - 4);
+            setUint32(0x46464952); setUint32(length - 8); setUint32(0x45564157); setUint32(0x20746d66); 
+            setUint32(16); setUint16(1); setUint16(numOfChan); setUint32(buffer.sampleRate);
+            setUint32(buffer.sampleRate * 2 * numOfChan); setUint16(numOfChan * 2); setUint16(16);
+            setUint32(0x61746164); setUint32(length - pos - 4);
 
             for (let i = 0; i < buffer.numberOfChannels; i++) channels.push(buffer.getChannelData(i));
             while (pos < length) {
                 for (let i = 0; i < numOfChan; i++) {
                     sample = Math.max(-1, Math.min(1, channels[i][offset]));
                     sample = (0.5 + sample < 0 ? sample * 32768 : sample * 32767) | 0;
-                    view.setInt16(pos, sample, true);
-                    pos += 2;
+                    view.setInt16(pos, sample, true); pos += 2;
                 }
                 offset++;
             }
             return new Blob([out], { type: "audio/wav" });
         }
 
+        // Đọc dữ liệu text đã dịch và phân tách dựa trên mốc thời gian (Chống crash văn bản lạ)
         function parseVTT(vttText) {
             const lines = vttText.split('\n');
             const cues = [];
@@ -176,14 +207,20 @@
             for (let i = 0; i < lines.length; i++) {
                 const line = lines[i].trim();
                 const match = line.match(timeRegex);
-                if (match) currentCue = { start: toSeconds(match[1]), end: toSeconds(match[2]), text: "" };
-                else if (currentCue && line && !line.startsWith("WEBVTT")) currentCue.text += (currentCue.text ? "\n" : "") + line;
-                else if (!line && currentCue) { cues.push(currentCue); currentCue = null; }
+                if (match) {
+                    if (currentCue && currentCue.text) cues.push(currentCue);
+                    currentCue = { start: toSeconds(match[1]), end: toSeconds(match[2]), text: "" };
+                } else if (currentCue && line && !line.startsWith("WEBVTT")) {
+                    currentCue.text += (currentCue.text ? "\n" : "") + line;
+                } else if (!line && currentCue) {
+                    if (currentCue.text) { cues.push(currentCue); currentCue = null; }
+                }
             }
-            if (currentCue) cues.push(currentCue);
+            if (currentCue && currentCue.text) cues.push(currentCue);
             return cues;
         }
 
+        // Điều khiển hiển thị chữ đè lên phim và đồng bộ hóa âm thanh lồng tiếng
         function initSubAndVoiceEngine(video, subOverlay) {
             let lastText = "";
             video.addEventListener('timeupdate', () => {
@@ -193,8 +230,8 @@
                     if (lastText !== activeCue.text) {
                         lastText = activeCue.text;
                         subOverlay.innerText = activeCue.text;
-                        subOverlay.style.display = 'block';
-                        playVietnameseVoice(activeCue.text);
+                        subOverlay.style.display = 'block'; // Đè hiển thị chữ trực tiếp
+                        playVietnameseVoice(activeCue.text); // Phát giọng thuyết minh Việt
                     }
                 } else { lastText = ""; subOverlay.style.display = 'none'; }
             });
@@ -202,6 +239,7 @@
             video.addEventListener('seeking', () => ttsAudio.pause());
         }
 
+        // API phát giọng nói chuẩn tiếng Việt tự nhiên
         function playVietnameseVoice(text) {
             if (!document.getElementById('enableVoice').checked) return;
             ttsAudio.pause();
