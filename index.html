@@ -6,7 +6,7 @@
     <title>Lyn AI - Hệ Thống Vietsub Tiếng Trung Tối Thượng</title>
     <style>
         /* ==========================================================================
-           1. THIẾT KẾ GIAO DIỆN CHUẨN CINEMATIC DARK MODE
+           1. THIẾT KẾ GIAO DIỆN CINEMATIC DARK MODE CHUYÊN NGHIỆP
            ========================================================================== */
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #0a0a0a; color: #f0f0f0; padding: 30px; line-height: 1.6; }
@@ -25,12 +25,12 @@
         .input-group input[type="password"] { width: 100%; background: #1d1d1d; border: 1px solid #333; padding: 14px; border-radius: 8px; color: #00ff88; font-family: monospace; font-size: 1rem; transition: all 0.3s ease; letter-spacing: 2px; }
         .input-group input[type="password"]:focus { border-color: #00ff88; outline: none; box-shadow: 0 0 10px rgba(0,255,136,0.2); }
         
-        /* Khu vực kéo thả hoặc nhấn chọn tập tin video */
-        .upload-zone { border: 2px dashed #333; padding: 35px; border-radius: 10px; background: #181818; cursor: pointer; text-align: center; transition: all 0.3s ease; margin-bottom: 20px; }
+        /* KHU VỰC TẢI FILE DÙNG LABEL THUẦN - CHỐNG LẶP CLICK GÂY SẬP TRANG */
+        .upload-zone { display: block; border: 2px dashed #333; padding: 35px; border-radius: 10px; background: #181818; cursor: pointer; text-align: center; transition: all 0.3s ease; margin-bottom: 20px; }
         .upload-zone:hover { border-color: #00ff88; background: #1c1c1c; }
         .upload-zone input[type="file"] { display: none; }
         .upload-zone p { color: #ccc; font-size: 1rem; font-weight: 500; }
-        .file-info { margin-top: 12px; font-size: 0.85rem; color: #00ff88; display: none; font-weight: 600; background: rgba(0,255,136,0.05); padding: 6px 12px; border-radius: 4px; display: inline-block; }
+        .file-info { margin-top: 12px; font-size: 0.85rem; color: #00ff88; display: none; font-weight: 600; background: rgba(0,255,136,0.05); padding: 6px 12px; border-radius: 4px; }
 
         /* ==========================================================================
            2. THANH TIẾN TRÌNH RENDER ĐỘC QUYỀN (PROGRESS BAR)
@@ -69,7 +69,7 @@
 <div class="container">
     <header>
         <h1>🎙️ Lyn AI - Vietsub Tiếng Trung Chuyên Nghiệp</h1>
-        <p>Bản sửa lỗi kết nối mạng tối thượng - Không hiển thị API lộ thiên - Đè phụ đề thông minh</p>
+        <p>Bản sửa lỗi kết nối mạng tối thượng - Chống sập trình duyệt - Thanh tải thời gian thực</p>
     </header>
 
     <div class="control-panel">
@@ -78,12 +78,11 @@
             <input type="password" id="apiKey" value="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" placeholder="Nhập mã gsk_ của ông vào đây...">
         </div>
         
-        <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
-            <p>Nhấp vào đây để chọn tệp Video tiếng Trung của ông</p>
+        <label class="upload-zone" for="fileInput">
+            <p>Nhập vào đây để chọn tệp Video tiếng Trung của ông</p>
             <input type="file" id="fileInput" accept="video/*, audio/*" onchange="handleFileSelect(event)">
-            <br>
             <div id="fileInfo" class="file-info"></div>
-        </div>
+        </label>
 
         <div class="progress-container" id="progressContainer">
             <div class="progress-bar" id="progressBar"></div>
@@ -97,7 +96,7 @@
     </div>
 
     <div class="console-box" id="consoleBox">
-        <div class="log-item info">[Hệ thống] Sẵn sàng nhận dữ liệu. API Key đã được mã hóa ẩn danh an toàn.</div>
+        <div class="log-item info">[Hệ thống] Hệ thống đã sẵn sàng cấu trúc bảo mật. Hãy nạp file video cần xử lý.</div>
     </div>
 
     <div class="video-wrapper" id="videoWrapper">
@@ -130,11 +129,12 @@
         const pPercent = document.getElementById('progressPercent');
         const pStatus = document.getElementById('progressStatus');
 
-        pContainer.style.display = 'block';
-        pBar.style.styleWidth = percent + '%';
-        pBar.style.width = percent + '%';
-        pPercent.innerText = percent + '%';
-        pStatus.innerText = statusText;
+        if (pContainer && pBar && pPercent && pStatus) {
+            pContainer.style.display = 'block';
+            pBar.style.width = percent + '%';
+            pPercent.innerText = percent + '%';
+            pStatus.innerText = statusText;
+        }
     }
 
     function handleFileSelect(event) {
@@ -144,8 +144,7 @@
             const fileInfo = document.getElementById('fileInfo');
             fileInfo.innerText = `📁 Video mục tiêu: ${file.name} (${sizeInMB} MB)`;
             fileInfo.style.display = 'inline-block';
-            writeLog(`Đã tải file vào bộ nhớ tạm: ${file.name}`, 'success');
-            // Reset thanh tải về trạng thái ban đầu
+            writeLog(`Đã tải file vào bộ nhớ tạm an toàn: ${file.name}`, 'success');
             document.getElementById('progressContainer').style.display = 'none';
         }
     }
@@ -158,7 +157,6 @@
         writeLog("Khởi tạo bộ giải mã âm thanh Web Audio API...", 'info');
         const arrayBuffer = await file.arrayBuffer();
         
-        // Tần số lấy mẫu 16000Hz tối ưu dung lượng cho mô hình Whisper nhận dạng chính xác nhất
         const targetSampleRate = 16000;
         const audioContext = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: targetSampleRate });
         
@@ -168,7 +166,7 @@
         try {
             decodedBuffer = await audioContext.decodeAudioData(arrayBuffer);
         } catch (e) {
-            throw new Error("Không thể trích xuất luồng âm thanh. Định dạng video của ông không được trình duyệt hỗ trợ mã hóa thô.");
+            throw new Error("Không thể trích xuất luồng âm thanh. Định dạng video không được trình duyệt hỗ trợ mã hóa thô.");
         }
 
         updateProgress(40, "Đang nén kênh Stereo về Mono để giảm dung lượng file...");
@@ -230,23 +228,21 @@
         videoWrapper.style.display = 'block';
 
         try {
-            // Bước 1: Gọi hàm trích tách nén âm thanh và cập nhật thanh tải liên tục
             const compressedWavBlob = await extractAndDownsampleAudio(file);
             const finalSize = (compressedWavBlob.size / (1024*1024)).toFixed(2);
             writeLog(`Nén âm thanh hoàn tất! File WAV đầu ra đạt dung lượng cực nhẹ: ${finalSize} MB`, 'success');
 
             if (compressedWavBlob.size > 25 * 1024 * 1024) {
-                throw new Error("Dung lượng âm thanh vượt ngưỡng 25MB quy định của Groq. Vui lòng thử nghiệm với video ngắn hơn.");
+                throw new Error("Dung lượng âm thanh vượt ngưỡng 25MB quy định của Groq. Vui lòng cắt ngắn video phim.");
             }
 
-            // Bước 2: Tải dữ liệu lên máy chủ Groq Whisper AI nhận dạng tiếng Trung
             updateProgress(70, "Đang tải dữ liệu âm thanh lên Groq Whisper AI...");
             writeLog("Đang thiết lập cổng kết nối bảo mật đẩy file lên Groq Whisper...", 'info');
             
             const whisperFormData = new FormData();
             whisperFormData.append("file", compressedWavBlob, "audio.wav");
             whisperFormData.append("model", "whisper-large-v3");
-            whisperFormData.append("response_format", "verbose_json"); // Chuẩn định dạng phân đoạn thời gian không lỗi
+            whisperFormData.append("response_format", "verbose_json"); 
             whisperFormData.append("language", "zh"); 
 
             const whisperResponse = await fetch("https://api.groq.com/openai/v1/audio/transcriptions", {
@@ -267,7 +263,6 @@
 
             writeLog(`Bóc băng thành công! Hệ thống tìm thấy ${whisperData.segments.length} câu thoại tiếng Trung gốc.`, 'success');
 
-            // Bước 3: Đóng gói tối giản để chuyển đổi ngôn ngữ thông qua Llama 3.3
             updateProgress(85, "Đang chuyển dữ liệu qua Llama 3.3 biên dịch sang tiếng Việt...");
             writeLog("Đang nạp dữ liệu phân đoạn vào mô hình Llama 3.3 chuyên dịch thuật điện ảnh...", 'info');
             
@@ -291,7 +286,7 @@
                         { role: "user", content: JSON.stringify({ data: standardPayload }) }
                     ],
                     temperature: 0.1,
-                    response_format: { type: "json_object" } // Ép buộc đầu ra JSON sạch 100% không chứa tạp tự
+                    response_format: { type: "json_object" } 
                 })
             });
 
@@ -303,24 +298,21 @@
             const llamaData = await llamaResponse.json();
             const rawTranslationString = llamaData.choices[0].message.content.trim();
 
-            // Bước 4: Đồng bộ hóa mốc thời gian và chữ dịch
             updateProgress(95, "Đang xử lý căn khớp mốc thời gian phụ đề...");
             processAndRealignSubtitles(whisperData.segments, rawTranslationString);
             
             updateProgress(100, "Hoàn tất 100%! Phụ đề đã sẵn sàng.");
 
         } catch (error) {
-            // CƠ CHẾ TỰ CHẨN ĐOÁN LỖI MẠNG TOÀN DIỆN (SELF-HEALING & DIAGNOSTIC)
             if (error.message.includes("Failed to fetch")) {
-                writeLog("❌ PHÂN TÍCH SỰ CỐ MẠNG [Failed to fetch]: Trình duyệt của ông đã chặn đứng kết nối đến Groq!", 'error');
-                writeLog("👉 HƯỚNG DẪN KHẮC PHỤC NGAY:", 'warn');
-                writeLog("1. Nếu đang mở Tiện ích chặn quảng cáo (uBlock Origin, AdBlock...), hãy nhấn TẮT hoàn toàn trên trang này rồi bấm thử lại.", 'info');
-                writeLog("2. Nếu đang dùng VPN / Fake IP / Firewall công ty, hãy ngắt kết nối để tránh bị tường lửa chặn luồng tải file thô.", 'info');
-                writeLog("3. Thử nghiệm trước với một đoạn video ngắn khoảng 1 phút để kiểm tra độ ổn định của đường truyền Internet.", 'info');
+                writeLog("❌ SỰ CỐ MẠNG [Failed to fetch]: Kết nối bị chặn bởi chính trình duyệt của ông!", 'error');
+                writeLog("👉 CÁCH SỬA NGAY LẬP TỨC:", 'warn');
+                writeLog("1. Hãy TẮT các tiện ích chặn quảng cáo (AdBlock, uBlock Origin...) trên trang này rồi thử lại.", 'info');
+                writeLog("2. Kiểm tra lại mã API Key xem có bị thừa dấu cách hay sai ký tự nào không.", 'info');
             } else {
                 writeLog(`❌ Lỗi hệ thống: ${error.message}`, 'error');
             }
-            alert("Quá trình xử lý Vietsub dừng lại do trục trặc mạng hoặc dữ liệu. Hãy xem hướng dẫn chi tiết trong khung đen phía dưới!");
+            alert("Quá trình xử lý dừng lại. Vui lòng đọc hướng dẫn khắc phục trong hộp thoại nhật ký màu đen bên dưới.");
         } finally {
             submitBtn.disabled = false;
         }
@@ -381,19 +373,17 @@
 
         video.addEventListener('timeupdate', () => {
             const currentTime = video.currentTime;
-            
-            // Tìm dòng phụ đề khớp với số giây hiện tại của phim
             const activeCue = globalSubtitles.find(cue => currentTime >= cue.start && currentTime <= cue.end);
 
             if (activeCue) {
                 if (lastActiveCue !== activeCue) {
                     lastActiveCue = activeCue;
                     textContainer.innerText = activeCue.text;
-                    overlay.style.display = 'block'; // Đè hiển thị phụ đề chữ Việt lên phim
+                    overlay.style.display = 'block'; 
                 }
             } else {
                 lastActiveCue = null;
-                overlay.style.display = 'none'; // Ẩn khi không có hội thoại
+                overlay.style.display = 'none'; 
             }
         });
 
