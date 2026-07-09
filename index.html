@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lyn AI Real-time OCR Engine v3.0</title>
+    <title>Lyn AI Real-Time Subtitle Capture Pro</title>
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
     <style>
         /* ==========================================================================
@@ -66,7 +66,7 @@
 
 <div class="container">
     <header>
-        <h1>🎙️ Lyn AI Real-Time Subtitle Capture</h1>
+        <h1>🎙️ Lyn AI Real-Time Subtitle Capture Pro</h1>
         <p>Hệ Thống Chụp Ảnh Quét OCR Theo Giây - Đè Chữ Trung Quốc Tuyệt Đối - Chống Sập Trình Duyệt</p>
     </header>
 
@@ -137,7 +137,10 @@
     let tesseractWorker = null;
     let lastRecognizedChineseText = ""; // Bộ đệm tối ưu hóa chống trùng lặp câu thoại
     let lastOcrExecutionTime = 0; // Khống chế tần suất chụp ảnh theo mili giây
-    let isTranslationApiUrlCalling = false; // Khóa trạng thái luồng API tránh nghẽn mạch
+    
+    // KHÓA BẢO VỆ TUYỆT ĐỐI CHỐNG FREEZE/CRASH TRÌNH DUYỆT
+    let isOcrProcessing = false; 
+    let isTranslationApiUrlCalling = false; 
 
     const monitorBox = document.getElementById('monitorBox');
 
@@ -231,11 +234,11 @@
 
     async function initTesseractEngine() {
         if (tesseractWorker) return;
-        pushLog("Đang tải dữ liệu mô hình chữ Trung Quốc Giản Thể & Phồn Thể từ CDN quốc tế...", 'info');
+        pushLog("Đang tải dữ liệu mô hình chữ Trung Quốc từ máy chủ (Vui lòng đợi vài giây, không bấm nút khác)...", 'warn');
         tesseractWorker = await Tesseract.createWorker({ cacheMethod: 'readOnly' });
         await tesseractWorker.loadLanguage('chi_sim+chi_tra');
         await tesseractWorker.initialize('chi_sim+chi_tra');
-        pushLog("Động cơ thị giác OCR đã nạp cấu trúc thành công. Sẵn sàng quét khi phim chạy!", 'success');
+        pushLog("Động cơ thị giác OCR đã nạp cấu trúc thành công 100%. Sẵn sàng quét khi phim chạy!", 'success');
     }
 
     /* ==========================================================================
@@ -263,7 +266,8 @@
     }
 
     async function captureAndProcessOcrFrame(videoElement) {
-        if (!tesseractWorker || isTranslationApiUrlCalling) return;
+        // KIỂM TRA KHÓA CHỐNG SẬP: Nếu tiến trình cũ chưa chạy xong, hủy lệnh chụp ảnh mới ngay lập tức
+        if (!tesseractWorker || isOcrProcessing || isTranslationApiUrlCalling) return;
 
         const canvas = document.getElementById('ocrCanvas');
         const ctx = canvas.getContext('2d');
@@ -273,6 +277,9 @@
         canvas.height = videoElement.videoHeight;
 
         if (canvas.width === 0 || canvas.height === 0) return;
+
+        // BẬT KHÓA BAO VỆ
+        isOcrProcessing = true;
 
         const cropTopPercent = parseInt(document.getElementById('cropTop').value) / 100;
         const cropHeightPercent = parseInt(document.getElementById('cropHeight').value) / 100;
@@ -307,12 +314,12 @@
             // Nếu vùng quét trống rỗng, ẩn ngay lớp phủ phụ đề Việt
             if (cleanedChineseText.length <= 1) {
                 document.getElementById('subOverlay').style.display = 'none';
-                return;
+                return; 
             }
 
             // CƠ CHẾ CHỐNG TRÙNG LẶP: Nếu chữ giống hệt câu trước, giữ nguyên phụ đề Việt hiện tại, không gọi API
             if (cleanedChineseText === lastRecognizedChineseText) {
-                return;
+                return; 
             }
 
             lastRecognizedChineseText = cleanedChineseText;
@@ -323,6 +330,9 @@
 
         } catch (ocrError) {
             pushLog(`⚠️ Bỏ qua 1 khung hình lỗi: ${ocrError.message}`, 'warn');
+        } finally {
+            // LUÔN MỞ KHÓA BẢO VỆ TRONG MỌI TRƯỜNG HỢP THÀNH CÔNG HAY THẤT BẠI CHỐNG TREO WEB
+            isOcrProcessing = false;
         }
     }
 
