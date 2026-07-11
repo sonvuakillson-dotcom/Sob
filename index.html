@@ -3,457 +3,122 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lyn AI Real-Time Subtitle Capture Pro</title>
-    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+    <title>Lyn AI Voice</title>
     <style>
-        /* ==========================================================================
-           1. THIẾT KẾ PHÒNG ĐIỀU KHIỂN ĐIỆN ẢNH (CINEMATIC DARK MODE)
-           ========================================================================== */
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #060606; color: #eeeeee; padding: 20px; line-height: 1.4; }
-        .container { max-width: 980px; margin: 0 auto; }
-        
-        header { margin-bottom: 20px; text-align: center; }
-        header h1 { color: #00ff88; font-size: 2rem; font-weight: 800; text-transform: uppercase; text-shadow: 0 0 15px rgba(0,255,136,0.3); margin-bottom: 5px; }
-        header p { color: #888; font-size: 0.85rem; }
-
-        /* Khung quản lý cấu hình hệ thống */
-        .panel { background: #111; border: 1px solid #222; border-radius: 10px; padding: 20px; margin-bottom: 15px; box-shadow: 0 6px 20px rgba(0,0,0,0.7); }
-        .panel-title { font-size: 0.95rem; color: #00ff88; text-transform: uppercase; font-weight: 700; margin-bottom: 15px; border-bottom: 1px solid #222; padding-bottom: 8px; display: flex; justify-content: space-between; }
-        
-        /* Cấu hình vùng cắt ảnh phụ đề */
-        .ocr-config { background: #161616; border: 1px solid #2a2a2a; padding: 15px; border-radius: 6px; margin-bottom: 15px; }
-        .slider-group { margin-bottom: 10px; }
-        .slider-group label { display: flex; justify-content: space-between; font-size: 0.8rem; color: #ccc; margin-bottom: 4px; }
-        .slider-group input[type="range"] { width: 100%; accent-color: #00ff88; background: #333; height: 5px; border-radius: 3px; outline: none; }
-
-        /* Khung nạp tệp phim an toàn */
-        .upload-zone { display: block; border: 2px dashed #2c2c2c; padding: 25px; border-radius: 6px; background: #131313; cursor: pointer; text-align: center; transition: all 0.2s ease; margin-bottom: 15px; }
-        .upload-zone:hover { border-color: #00ff88; background: #161616; }
-        .upload-zone input[type="file"] { display: none; }
-        .file-info { margin-top: 8px; font-size: 0.8rem; color: #00ff88; display: none; font-weight: 600; background: rgba(0,255,136,0.05); padding: 4px 10px; border-radius: 3px; }
-
-        /* Động cơ cấu hình giọng thuyết minh */
-        .tts-panel { background: #141414; padding: 12px; border-radius: 6px; border: 1px solid #252525; margin-bottom: 15px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
-        .tts-toggle { display: flex; align-items: center; gap: 6px; font-size: 0.85rem; font-weight: 600; color: #fff; }
-        .tts-toggle input { width: 16px; height: 16px; accent-color: #00ff88; cursor: pointer; }
-        .voice-select { background: #1d1d1d; color: #00ff88; border: 1px solid #3d3d3d; padding: 6px 10px; border-radius: 4px; font-size: 0.8rem; outline: none; cursor: pointer; flex: 1; }
-
-        /* Khung Monitor giám sát tác vụ mạng và trạng thái OCR */
-        .monitor-box { background: #030303; border: 1px solid #1a1a1a; border-radius: 6px; padding: 10px; max-height: 140px; overflow-y: auto; font-family: monospace; font-size: 0.78rem; margin-bottom: 15px; box-shadow: inset 0 2px 6px rgba(0,0,0,0.8); }
-        .log-line { margin-bottom: 3px; color: #888; }
-        .log-line.success { color: #00ff88; font-weight: bold; }
-        .log-line.warn { color: #ffaa00; }
-        .log-line.error { color: #ff3333; font-weight: bold; }
-
-        /* ==========================================================================
-           2. KHUNG PHÁT PHIM CINEMATIC VÀ LỚP PHỦ PHỤ ĐỀ ĐÈ KÍN CHỮ TRUNG
-           ========================================================================== */
-        .player-wrapper { position: relative; width: 100%; background: #000; border-radius: 10px; overflow: hidden; border: 1px solid #222; margin-top: 15px; box-shadow: 0 12px 30px rgba(0,0,0,0.8); }
-        video { width: 100%; display: block; }
-        
-        /* Lớp phủ phụ đề thiết kế bọc nền đen dày 96% triệt tiêu hoàn toàn chữ gốc bên dưới */
-        .subtitle-overlay { position: absolute; bottom: 8%; left: 50%; transform: translateX(-50%); width: 88%; text-align: center; pointer-events: none; z-index: 999; display: none; }
-        .subtitle-text { display: inline-block; background: rgba(0, 0, 0, 0.96); color: #ffffff; padding: 6px 18px; border-radius: 6px; font-size: 24px; font-weight: 700; line-height: 1.4; white-space: pre-line; word-wrap: break-word; text-shadow: 0px 2px 4px rgba(0,0,0,1); border: 1px solid rgba(255,255,255,0.08); letter-spacing: 0.3px; }
-
-        /* Canvas chẩn đoán hiển thị trực quan vùng chữ đang được chụp để ông dễ căn chỉnh */
-        .preview-box { text-align: center; margin-top: 10px; background: #111; padding: 10px; border-radius: 6px; border: 1px solid #222; }
-        .preview-box p { font-size: 0.8rem; color: #00bfff; margin-bottom: 6px; font-weight: 600; }
-        #ocrCanvas { background: #000; max-width: 100%; height: auto; border: 1px solid #333; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        h2 { text-align: center; color: #ff6b81; margin-bottom: 5px; }
+        p { text-align: center; color: #777; font-size: 14px; margin-top: 0; }
+        textarea {
+            width: 100%; height: 120px; padding: 10px;
+            border: 1px solid #ccc; border-radius: 8px;
+            font-size: 16px; margin-bottom: 15px; resize: none;
+            box-sizing: border-box;
+        }
+        select {
+            width: 100%; padding: 12px; margin-bottom: 15px;
+            border: 1px solid #ccc; border-radius: 8px;
+            font-size: 15px; background: #fff;
+        }
+        button {
+            width: 100%; padding: 15px; background-color: #ff6b81;
+            color: white; border: none; border-radius: 8px;
+            font-size: 16px; font-weight: bold; cursor: pointer;
+        }
+        button:active { background-color: #ff4757; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <header>
-        <h1>🎙️ Lyn AI Real-Time Subtitle Capture Pro</h1>
-        <p>Hệ Thống Chụp Ảnh Quét OCR Theo Giây - Đè Chữ Trung Quốc Tuyệt Đối - Chống Sập Trình Duyệt</p>
-    </header>
+    <h2>Lyn AI Voice 🎙️</h2>
+    <p>Chuyển văn bản thành giọng nói</p>
 
-    <div class="panel">
-        <div class="panel-title">
-            <span>⚙️ Bộ Điều Khiển Động Cơ Trực Tiếp</span>
-            <span id="keyStatus" style="color: #ffaa00; font-size: 0.8rem;">Bể chứa: 5 Keys Hoạt Động Xoay Vòng</span>
-        </div>
-
-        <div class="ocr-config">
-            <div style="font-size: 0.8rem; color: #00ff88; font-weight: bold; margin-bottom: 10px;">🎯 Kéo thanh trượt để Khung Xem Trước bên dưới ôm khít dòng chữ Trung Quốc:</div>
-            <div class="slider-group">
-                <label><span>Vị trí cắt (Từ đỉnh xuống):</span><span id="valTop">80%</span></label>
-                <input type="range" id="cropTop" min="50" max="95" value="80" oninput="syncSliders()">
-            </div>
-            <div class="slider-group">
-                <label><span>Chiều cao vùng chứa chữ:</span><span id="valHeight">12%</span></label>
-                <input type="range" id="cropHeight" min="5" max="25" value="12" oninput="syncSliders()">
-            </div>
-        </div>
-
-        <label class="upload-zone" for="fileInput">
-            <p>Nhấp vào đây để nạp tệp Video phim tiếng Trung của ông (Giới hạn tối đa 8 phút)</p>
-            <input type="file" id="fileInput" accept="video/*" onchange="handleVideoInput(event)">
-            <div id="fileInfo" class="file-info"></div>
-        </label>
-
-        <div class="tts-panel">
-            <label class="tts-toggle">
-                <input type="checkbox" id="enableTTS" onchange="toggleVoiceEngine()"> 🔊 Bật Thuyết Minh AI
-            </label>
-            <select id="voiceSelect" class="voice-select" disabled>
-                <option value="">-- Đang nạp danh sách giọng đọc hệ thống... --</option>
-            </select>
-        </div>
-    </div>
-
-    <div class="monitor-box" id="monitorBox">
-        <div class="log-line">[Hệ thống] Trạng thái: Sẵn sàng bảo mật. Hãy nạp file video để kích hoạt chế độ chụp dịch trực tiếp.</div>
-    </div>
-
-    <div class="player-wrapper" id="playerWrapper" style="display: none;">
-        <video id="videoPlayer" controls crossorigin="anonymous"></video>
-        <div class="subtitle-overlay" id="subOverlay">
-            <span class="subtitle-text" id="subText"></span>
-        </div>
-    </div>
-
-    <div class="preview-box">
-        <p>📸 Khung ảnh chụp quét OCR thời gian thực (Đã lọc độ tương phản cao):</p>
-        <canvas id="ocrCanvas"></canvas>
-    </div>
+    <textarea id="textInput" placeholder="Nhập văn bản vào đây... Ví dụ: Xin chào, tôi là Lyn AI."></textarea>
+    
+    <select id="voiceSelect">
+        <option value="">Đang tải danh sách giọng nói...</option>
+    </select>
+    
+    <button onclick="speakText()">Phát Âm Thanh</button>
 </div>
 
 <script>
-    /* ==========================================================================
-       3. CẤU TRÚC BỂ CHỨA API KEY XOAY VÒNG CHỐNG NGHẼN MẠNG
-       ========================================================================== */
-    let activeKeyIndex = 0;
-    const groqKeysPool = [
-        "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",
-        "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",
-        "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",
-        "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",
-        "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"
-    ];
+    let synth = window.speechSynthesis;
+    let voiceSelect = document.getElementById('voiceSelect');
+    let voices = [];
 
-    let tesseractWorker = null;
-    let lastRecognizedChineseText = ""; // Bộ đệm tối ưu hóa chống trùng lặp câu thoại
-    let lastOcrExecutionTime = 0; // Khống chế tần suất chụp ảnh theo mili giây
-    
-    // KHÓA BẢO VỆ TUYỆT ĐỐI CHỐNG FREEZE/CRASH TRÌNH DUYỆT
-    let isOcrProcessing = false; 
-    let isTranslationApiUrlCalling = false; 
-
-    const monitorBox = document.getElementById('monitorBox');
-
-    function pushLog(text, mode = 'info') {
-        const line = document.createElement('div');
-        line.className = `log-line ${mode}`;
-        line.innerText = `[${new Date().toLocaleTimeString()}] ${text}`;
-        monitorBox.appendChild(line);
-        monitorBox.scrollTop = monitorBox.scrollHeight;
-    }
-
-    function syncSliders() {
-        document.getElementById('valTop').innerText = document.getElementById('cropTop').value + '%';
-        document.getElementById('valHeight').innerText = document.getElementById('cropHeight').value + '%';
-    }
-
-    /* Core Fetch bọc lỗi bảo mật và tự động đảo xích chuyển Key khi dính Rate Limit 429 */
-    async function requestGroqTranslation(payload) {
-        let attempts = 0;
-        while (attempts < groqKeysPool.length) {
-            const currentKey = groqKeysPool[activeKeyIndex];
-            try {
-                const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-                    method: "POST",
-                    headers: {
-                        "Authorization": `Bearer ${currentKey}`,
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify(payload)
-                });
-
-                if (res.status === 429) {
-                    pushLog(`⚠️ Kênh API số ${activeKeyIndex + 1} bận (429). Tự động xoay sang kênh dự phòng...`, 'warn');
-                    activeKeyIndex = (activeKeyIndex + 1) % groqKeysPool.length;
-                    document.getElementById('keyStatus').innerText = `Xoay mạch: Kênh số ${activeKeyIndex + 1}`;
-                    attempts++;
-                    continue;
-                }
-
-                if (!res.ok) {
-                    throw new Error(`Máy chủ Groq phản hồi lỗi: ${res.status}`);
-                }
-
-                return await res.json();
-            } catch (err) {
-                if (attempts === groqKeysPool.length - 1) throw err;
-                pushLog(`⚠️ Kênh số ${activeKeyIndex + 1} mất kết nối. Đang chuyển đổi mạch...`, 'warn');
-                activeKeyIndex = (activeKeyIndex + 1) % groqKeysPool.length;
-                attempts++;
-            }
-        }
-        throw new Error("Toàn bộ các khóa API trong bể chứa đều quá tải hoặc hết hạn.");
-    }
-
-    /* ==========================================================================
-       4. XỬ LÝ ĐẦU VÀO VIDEO & KHÓA CỨNG AN TOÀN CHỐNG CRASH
-       ========================================================================== */
-    async function handleVideoInput(event) {
-        const file = event.target.files[0];
-        if (!file) return;
-
-        const validatorVideo = document.createElement('video');
-        validatorVideo.preload = 'metadata';
-        validatorVideo.src = URL.createObjectURL(file);
-
-        validatorVideo.onloadedmetadata = async function() {
-            URL.revokeObjectURL(validatorVideo.src);
-            
-            // KHÓA CỨNG CHỐNG TRÀN BỘ NHỚ: Giới hạn tối đa 8 phút (480 giây)
-            if (validatorVideo.duration > 480) {
-                pushLog(`❌ CHẶN LỖI: Chiều dài video ${(validatorVideo.duration/60).toFixed(1)} phút vượt ngưỡng 8 phút quy định!`, 'error');
-                alert("Hệ thống từ chối nhận file dài quá 8 phút nhằm ngăn chặn nguy cơ crash trình duyệt!");
-                document.getElementById('fileInput').value = "";
-                return;
-            }
-
-            const sizeInMB = (file.size / (1024 * 1024)).toFixed(2);
-            document.getElementById('fileInfo').innerText = `📁 Video hợp lệ: ${file.name} (${sizeInMB} MB) | Thời lượng: ${Math.round(validatorVideo.duration)} giây.`;
-            document.getElementById('fileInfo').style.display = 'block';
-            
-            pushLog(`Đã tải tệp vào vùng đệm. Đang khởi tạo luồng quét thị giác máy tính...`, 'success');
-            await initTesseractEngine();
-            
-            document.getElementById('videoPlayer').src = URL.createObjectURL(file);
-            document.getElementById('playerWrapper').style.display = 'block';
-            
-            // Kích hoạt cơ chế lắng nghe sự kiện của trình phát video
-            setupRealtimeVideoListeners();
-        };
-    }
-
-    async function initTesseractEngine() {
-        if (tesseractWorker) return;
-        pushLog("Đang tải dữ liệu mô hình chữ Trung Quốc từ máy chủ (Vui lòng đợi vài giây, không bấm nút khác)...", 'warn');
-        tesseractWorker = await Tesseract.createWorker({ cacheMethod: 'readOnly' });
-        await tesseractWorker.loadLanguage('chi_sim+chi_tra');
-        await tesseractWorker.initialize('chi_sim+chi_tra');
-        pushLog("Động cơ thị giác OCR đã nạp cấu trúc thành công 100%. Sẵn sàng quét khi phim chạy!", 'success');
-    }
-
-    /* ==========================================================================
-       5. ĐỘNG CƠ CHỤP ẢNH TRÍCH XUẤT VÀ XỬ LÝ ĐỘ TƯƠNG PHẢN THỜI GIAN THỰC
-       ========================================================================== */
-    function setupRealtimeVideoListeners() {
-        const video = document.getElementById('videoPlayer');
+    // Tải danh sách giọng nói có sẵn trên điện thoại của bạn
+    function populateVoiceList() {
+        voices = synth.getVoices();
+        voiceSelect.innerHTML = '';
         
-        // Sự kiện timeupdate kích hoạt liên tục khi video đang phát
-        video.addEventListener('timeupdate', () => {
-            const nowMs = Date.now();
-            // KHỐNG CHẾ TẦN SUẤT: Chỉ cho phép chụp quét ảnh cách nhau ít nhất 500ms (0.5 giây) để tránh đơ máy
-            if (nowMs - lastOcrExecutionTime > 500) {
-                lastOcrExecutionTime = nowMs;
-                captureAndProcessOcrFrame(video);
+        let hasVietnamese = false;
+
+        voices.forEach((voice) => {
+            // Lọc ra các giọng Tiếng Việt và Tiếng Anh phổ biến để dễ chọn
+            if(voice.lang.includes('vi') || voice.lang.includes('en')) {
+                let option = document.createElement('option');
+                option.textContent = `${voice.name} (${voice.lang})`;
+                option.setAttribute('data-lang', voice.lang);
+                option.setAttribute('data-name', voice.name);
+                voiceSelect.appendChild(option);
+                
+                if(voice.lang.includes('vi')) hasVietnamese = true;
             }
         });
 
-        // Xóa sạch phụ đề cũ khi người dùng tua phim (Seeking)
-        video.addEventListener('seeking', () => {
-            document.getElementById('subOverlay').style.display = 'none';
-            lastRecognizedChineseText = "";
-            window.speechSynthesis.cancel();
-        });
-    }
-
-    async function captureAndProcessOcrFrame(videoElement) {
-        // KIỂM TRA KHÓA CHỐNG SẬP: Nếu tiến trình cũ chưa chạy xong, hủy lệnh chụp ảnh mới ngay lập tức
-        if (!tesseractWorker || isOcrProcessing || isTranslationApiUrlCalling) return;
-
-        const canvas = document.getElementById('ocrCanvas');
-        const ctx = canvas.getContext('2d');
-
-        // Gán kích thước chuẩn theo độ phân giải gốc của video
-        canvas.width = videoElement.videoWidth;
-        canvas.height = videoElement.videoHeight;
-
-        if (canvas.width === 0 || canvas.height === 0) return;
-
-        // BẬT KHÓA BAO VỆ
-        isOcrProcessing = true;
-
-        const cropTopPercent = parseInt(document.getElementById('cropTop').value) / 100;
-        const cropHeightPercent = parseInt(document.getElementById('cropHeight').value) / 100;
-
-        // Tính toán tọa độ hộp bao vùng chữ phụ đề cứng
-        const sourceX = 0;
-        const sourceY = canvas.height * cropTopPercent;
-        const sourceWidth = canvas.width;
-        const sourceHeight = canvas.height * cropHeightPercent;
-
-        // Vẽ luồng video hiện tại lên khung Canvas ẩn
-        ctx.drawImage(videoElement, sourceX, sourceY, sourceWidth, sourceHeight, 0, 0, sourceWidth, sourceHeight);
-
-        // THUẬT TOÁN TĂNG TƯƠNG PHẢN: Đưa ảnh về màu nhị phân Trắng - Đen để Tesseract đọc chuẩn nhất
-        const imgData = ctx.getImageData(0, 0, sourceWidth, sourceHeight);
-        const data = imgData.data;
-        for (let i = 0; i < data.length; i += 4) {
-            let brightness = 0.34 * data[i] + 0.5 * data[i + 1] + 0.16 * data[i + 2];
-            // Nếu độ sáng lớn hơn ngưỡng 130 thì chuyển thành trắng, ngược lại hóa đen đặc
-            let binaryColor = brightness > 130 ? 255 : 0;
-            data[i] = binaryColor;     
-            data[i + 1] = binaryColor; 
-            data[i + 2] = binaryColor; 
-        }
-        ctx.putImageData(imgData, 0, 0);
-
-        try {
-            // Chạy lệnh nhận diện chữ trên khung ảnh vừa xử lý tương phản
-            const { data: { text } } = await tesseractWorker.recognize(canvas);
-            const cleanedChineseText = text.replace(/\s+/g, '').trim();
-
-            // Nếu vùng quét trống rỗng, ẩn ngay lớp phủ phụ đề Việt
-            if (cleanedChineseText.length <= 1) {
-                document.getElementById('subOverlay').style.display = 'none';
-                return; 
-            }
-
-            // CƠ CHẾ CHỐNG TRÙNG LẶP: Nếu chữ giống hệt câu trước, giữ nguyên phụ đề Việt hiện tại, không gọi API
-            if (cleanedChineseText === lastRecognizedChineseText) {
-                return; 
-            }
-
-            lastRecognizedChineseText = cleanedChineseText;
-            pushLog(`📸 Chụp được chữ Trung mới: ${cleanedChineseText}`, 'info');
-            
-            // Đẩy sang hệ thống Llama 3.3 dịch thuật tức thì
-            executeLlamaTranslation(cleanedChineseText);
-
-        } catch (ocrError) {
-            pushLog(`⚠️ Bỏ qua 1 khung hình lỗi: ${ocrError.message}`, 'warn');
-        } finally {
-            // LUÔN MỞ KHÓA BẢO VỆ TRONG MỌI TRƯỜNG HỢP THÀNH CÔNG HAY THẤT BẠI CHỐNG TREO WEB
-            isOcrProcessing = false;
+        if(!hasVietnamese) {
+            let option = document.createElement('option');
+            option.textContent = "Không tìm thấy giọng Tiếng Việt, dùng giọng mặc định";
+            voiceSelect.appendChild(option);
         }
     }
 
-    /* ==========================================================================
-       6. ĐỘNG CƠ DỊCH THUẬT VÀ LỚP PHỦ CHE KHÍT CHỮ TRUNG QUỐC GỐC
-       ========================================================================== */
-    async function executeLlamaTranslation(chineseString) {
-        isTranslationApiUrlCalling = true;
-
-        const payloadStructure = {
-            model: "llama-3.3-70b-versatile",
-            messages: [
-                { 
-                    role: "system", 
-                    content: "You are a cinema subtitle translator. Translate the given Chinese movie subtitle text into natural, accurate Vietnamese. " +
-                             "CRITICAL: Output ONLY the raw translated Vietnamese text string. Do not include markdown blocks, quotes, explanations, or notes." 
-                },
-                { role: "user", content: chineseString }
-            ],
-            temperature: 0.1
-        };
-
-        try {
-            const apiResult = await requestGroqTranslation(payloadStructure);
-            const translatedVietnameseText = apiResult.choices[0].message.content.trim().replace(/^["']|["']$/g, '');
-
-            if (translatedVietnameseText) {
-                const subOverlay = document.getElementById('subOverlay');
-                const subText = document.getElementById('subText');
-                
-                // Nạp chữ Việt vào thẻ kết cấu nền đen dày 96% đè kín hoàn toàn chữ gốc bên dưới
-                subText.innerText = translatedVietnameseText;
-                subOverlay.style.display = 'block';
-
-                pushLog(`🚀 Đã dịch đè chữ: ${translatedVietnameseText}`, 'success');
-                
-                // Gọi bộ tổng hợp thuyết minh âm thanh
-                speakVoiceover(translatedVietnameseText);
-            }
-        } catch (apiError) {
-            pushLog(`❌ Lỗi kết nối dịch thuật: ${apiError.message}`, 'error');
-        } finally {
-            isTranslationApiUrlCalling = false;
-        }
+    // Một số thiết bị cần thời gian để tải giọng nói
+    populateVoiceList();
+    if (speechSynthesis.onvoiceschanged !== undefined) {
+        speechSynthesis.onvoiceschanged = populateVoiceList;
     }
 
-    /* ==========================================================================
-       7. ĐỘNG CƠ TỔNG HỢP GIỌNG ĐỌC THUYẾT MINH AI PHẦN CỨNG
-       ========================================================================== */
-    function toggleVoiceEngine() {
-        const isEnabled = document.getElementById('enableTTS').checked;
-        document.getElementById('voiceSelect').disabled = !isEnabled;
-        if (isEnabled) {
-            populateSystemVoices();
+    // Hàm đọc văn bản
+    function speakText() {
+        if (synth.speaking) {
+            console.error('Đang nói rồi...');
+            return;
+        }
+        let textInput = document.getElementById('textInput').value;
+        if (textInput !== '') {
+            let utterThis = new SpeechSynthesisUtterance(textInput);
+            let selectedOption = voiceSelect.selectedOptions[0].getAttribute('data-name');
+            for (let i = 0; i < voices.length; i++) {
+                if (voices[i].name === selectedOption) {
+                    utterThis.voice = voices[i];
+                    break;
+                }
+            }
+            // Tốc độ và cao độ (có thể chỉnh)
+            utterThis.pitch = 1;
+            utterThis.rate = 1;
+            synth.speak(utterThis);
         } else {
-            window.speechSynthesis.cancel();
+            alert("Vui lòng nhập văn bản!");
         }
-    }
-
-    function populateSystemVoices() {
-        const select = document.getElementById('voiceSelect');
-        select.innerHTML = '';
-        
-        const voices = window.speechSynthesis.getVoices();
-        let vietnameseVoiceCount = 0;
-
-        voices.forEach(v => {
-            // Lọc toàn bộ các giọng đọc tiếng Việt có sẵn trên thiết bị (Apple, Google, Microsoft)
-            if (v.lang.toLowerCase().includes('vi')) {
-                const option = document.createElement('option');
-                option.value = v.name;
-                
-                let genderTag = "Nữ (Hệ thống)";
-                if (v.name.toLowerCase().includes('an') || v.name.toLowerCase().includes('nam') || v.name.toLowerCase().includes('male')) {
-                    genderTag = "Nam (Hệ thống)";
-                }
-                
-                option.innerText = `🔊 Giọng ${genderTag} - ${v.name}`;
-                select.appendChild(option);
-                vietnameseVoiceCount++;
-            }
-        });
-
-        // Nếu thiết bị không cài sẵn gói ngôn ngữ tiếng Việt, nạp cấu trúc dự phòng quốc tế
-        if (vietnameseVoiceCount === 0) {
-            voices.slice(0, 10).forEach((v, idx) => {
-                const option = document.createElement('option');
-                option.value = v.name;
-                let fallbackGender = (idx % 2 === 0) ? "Nữ (Quốc tế)" : "Nam (Quốc tế)";
-                option.innerText = `🔊 Giọng ${fallbackGender} Dự Phòng - ${v.name} (${v.lang})`;
-                select.appendChild(option);
-            });
-        }
-        pushLog("Đã kết nối và đồng bộ danh sách giọng thuyết minh.");
-    }
-
-    function speakVoiceover(targetText) {
-        if (!document.getElementById('enableTTS').checked) return;
-
-        // Ngắt ngay lập tức câu thoại cũ đang đọc dở để tránh hiện tượng chồng tiếng khi lời thoại chạy nhanh
-        window.speechSynthesis.cancel();
-
-        const speechUtterance = new SpeechSynthesisUtterance(targetText);
-        const chosenVoiceName = document.getElementById('voiceSelect').value;
-        const systemVoices = window.speechSynthesis.getVoices();
-        const targetedVoice = systemVoices.find(v => v.name === chosenVoiceName);
-
-        if (targetedVoice) {
-            speechUtterance.voice = targetedVoice;
-        }
-
-        // Cấu hình tần số chuẩn cho âm sắc thuyết minh điện ảnh
-        speechUtterance.rate = 1.05; // Đọc nhanh hơn 5% để bắt kịp nhịp phim
-        speechUtterance.pitch = 1.0; // Cao độ tiêu chuẩn tự nhiên
-        
-        window.speechSynthesis.speak(speechUtterance);
-    }
-
-    // Đảm bảo cập nhật danh sách giọng nói ngay khi hệ thống phần cứng sẵn sàng dữ liệu
-    if (typeof window !== 'undefined' && window.speechSynthesis) {
-        window.speechSynthesis.onvoiceschanged = populateSystemVoices;
     }
 </script>
 
