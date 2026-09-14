@@ -412,6 +412,771 @@
   const modalSkipBtn = document.getElementById('modalSkipBtn');
 
   // ⚠️ Dán Groq API key của bạn vào đây
+  const GROQ_API_KEY = "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";
+
+  let history = []; 
+  let isSending = false;
+  let activeAudio = null;
+  const CODE_PREFIX = 'SKB1-';
+
+  // ================= GOOGLE TTS (GIỌNG CHỊ GOOGLE & NGẮT GIỌNG CŨ) =================
+  window.stopSpeaking = function() {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+    }
+    if (activeAudio) {
+      activeAudio.pause();
+      activeAudio.currentTime = 0;
+      activeAudio = null;
+    }
+  };
+
+  window.speakText = function(rawText) {
+    window.stopSpeaking(); // Ngừng đọc văn bản cũ lập tức!
+
+    // Lọc bỏ mã code để không bị đọc các cú pháp lập trình dài dòng
+    let cleanText = rawText.replace(/```[\s\S]*?```/g, ' [Có một đoạn mã code] ').replace(/`([^`]+)`/g, '$1').trim();
+    if (!cleanText) return;
+
+    if ('speechSynthesis' in window) {
+      const utterance = new SpeechSynthesisUtterance(cleanText);
+      utterance.lang = 'vi-VN';
+      utterance.rate = 1.0;
+
+      const voices = window.speechSynthesis.getVoices();
+      const googleViVoice = voices.find(v => v.lang.includes('vi') && (v.name.includes('Google') || v.name.includes('Vietnamese')));
+      if (googleViVoice) {
+        utterance.voice = googleViVoice;
+      }
+      window.speechSynthesis.speak(utterance);
+    } else {
+      // Fallback Google Translate Voice
+      const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(cleanText.substring(0, 200))}&tl=vi&client=tw-ob`;
+      activeAudio = new Audio(url);
+      activeAudio.play().catch(e => console.log("Lỗi phát audio:", e));
+    }
+  };
+
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.getVoices(); };
+  }
+
+  // ================= PARSE MARKDOWN & SAO CHÉP CODE =================
+  function escapeHtml(str) {
+    return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+  }
+
+  window.copyCode = function(btn) {
+    const codeBlock = btn.closest('.code-block').querySelector('code');
+    const text = codeBlock.innerText || codeBlock.textContent;
+    navigator.clipboard.writeText(text).then(() => {
+      const originalText = btn.textContent;
+      btn.textContent = '✓ Đã chép!';
+      btn.style.color = 'var(--neon-green)';
+      setTimeout(() => {
+        btn.textContent = originalText;
+        btn.style.color = '';
+      }, 2000);
+    }).catch(err => {
+      alert('Không thể sao chép: ' + err);
+    });
+  };
+
+  function renderMarkdown(text) {
+    let escaped = escapeHtml(text);
+    let codeBlocks = [];
+
+    // Xử lý khối code ```lang ... ```
+    escaped = escaped.replace(/```(\w*)\n([\s\S]*?)```/g, (match, lang, code) => {
+      const idx = codeBlocks.length;
+      const language = lang.trim() || 'code';
+      codeBlocks.push(`
+        <div class="code-block">
+          <div class="code-header">
+            <span>${language}</span>
+            <button class="copy-btn" onclick="window.copyCode(this)">📋 Sao chép</button>
+          </div>
+          <pre><code>${code.trim()}</code></pre>
+        </div>
+      `);
+      return `___CODE_BLOCK_${idx}___`;
+    });
+
+    // In đậm **text**
+    escaped = escaped.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
+    // Code inline `code`
+    escaped = escaped.replace(/`([^`]+)`/g, '<code class="inline-code">$1</code>');
+
+    // Dòng mới
+    escaped = escaped.replace(/\n/g, '<br>');
+
+    // Trả lại các khối code
+    codeBlocks.forEach((blockHtml, idx) => {
+      escaped = escaped.replace(`___CODE_BLOCK_${idx}___`, blockHtml);
+    });
+
+    return escaped;
+  }
+
+  // ================= RECOVERY CODE =================
+  function utf8ToB64(str){ return btoa(unescape(encodeURIComponent(str))); }
+  function b64ToUtf8(str){ return decodeURIComponent(escape(atob(str))); }
+
+  function buildRecoveryCode(){
+    try{
+      if(!history.length) return '';
+      const payload = { v: 1, h: history, m: modelEl.value, s: sysPromptEl.value, t: Date.now() };
+      return CODE_PREFIX + utf8ToB64(JSON.stringify(payload));
+    }catch(e){ return ''; }
+  }
+
+  function refreshRecoveryCode(){
+    recoveryCodeOut.value = buildRecoveryCode();
+  }
+
+  function parseRecoveryCode(raw){
+    const code = (raw || '').trim();
+    if(!code) throw new Error('Mã khôi phục trống.');
+    if(!code.startsWith(CODE_PREFIX)) throw new Error('Mã khôi phục không đúng định dạng.');
+    const b64 = code.slice(CODE_PREFIX.length);
+    let payload = JSON.parse(b64ToUtf8(b64));
+    if(!payload || !Array.isArray(payload.h)) throw new Error('Mã khôi phục thiếu dữ liệu hội thoại.');
+    return payload;
+  }
+
+  function applyRestoredPayload(payload){
+    chatEl.innerHTML = '';
+    history = [];
+    payload.h.forEach(function(m){
+      if(m && (m.role === 'user' || m.role === 'assistant') && typeof m.content === 'string'){
+        addMessage(m.role === 'user' ? 'user' : 'ai', m.content, false);
+        history.push({ role: m.role, content: m.content });
+      }
+    });
+    if(payload.m && modelEl.querySelector('option[value="' + CSS.escape(payload.m) + '"]')) modelEl.value = payload.m;
+    if(typeof payload.s === 'string' && payload.s) sysPromptEl.value = payload.s;
+    refreshRecoveryCode();
+  }
+
+  // ================= SETTINGS & EVENTS =================
+  gearBtn.addEventListener('click', () => { settingsEl.classList.toggle('open'); });
+
+  function updateStatus(){
+    const key = GROQ_API_KEY.trim();
+    if(key.length > 10 && key !== "PASTE_YOUR_GROQ_API_KEY_HERE"){
+      statusDot.className = 'status-dot ready';
+      statusText.textContent = 'Sẵn sàng';
+    } else {
+      statusDot.className = 'status-dot error';
+      statusText.textContent = 'Chưa cấu hình API key trong code';
+    }
+  }
+
+  copyCodeBtn.addEventListener('click', async () => {
+    refreshRecoveryCode();
+    const code = recoveryCodeOut.value;
+    if(!code){
+      copyMsg.className = 'recovery-msg err';
+      copyMsg.textContent = 'Chưa có tin nhắn nào để tạo mã.';
+      return;
+    }
+    try{
+      await navigator.clipboard.writeText(code);
+      copyMsg.className = 'recovery-msg ok';
+      copyMsg.textContent = 'Đã sao chép! Lưu mã này ở nơi an toàn.';
+    }catch(e){
+      recoveryCodeOut.select();
+      copyMsg.className = 'recovery-msg err';
+      copyMsg.textContent = 'Hãy nhấn Ctrl+C để sao chép.';
+    }
+    setTimeout(() => { copyMsg.textContent = ''; }, 4000);
+  });
+
+  restoreFromSettingsBtn.addEventListener('click', () => {
+    try{
+      const payload = parseRecoveryCode(recoveryCodeIn.value);
+      applyRestoredPayload(payload);
+      restoreMsg.className = 'recovery-msg ok';
+      restoreMsg.textContent = 'Đã khôi phục ' + payload.h.length + ' tin nhắn.';
+      recoveryCodeIn.value = '';
+    }catch(err){
+      restoreMsg.className = 'recovery-msg err';
+      restoreMsg.textContent = err.message || 'Không khôi phục được.';
+    }
+  });
+
+  clearChatBtn.addEventListener('click', () => {
+    if(!history.length) return;
+    if(!confirm('Xoá toàn bộ cuộc trò chuyện hiện tại?')) return;
+    window.stopSpeaking();
+    history = [];
+    chatEl.innerHTML = '<div class="empty-state" id="emptyState"><div class="logo">SkibidiGBT</div><p>Bắt đầu nhắn tin với SkibidiGBT.</p></div>';
+    refreshRecoveryCode();
+  });
+
+  modalRestoreBtn.addEventListener('click', () => {
+    try{
+      const payload = parseRecoveryCode(recoveryCodeModalIn.value);
+      applyRestoredPayload(payload);
+      recoveryOverlay.classList.add('hidden');
+    }catch(err){
+      modalMsg.className = 'recovery-msg err';
+      modalMsg.textContent = err.message || 'Không khôi phục được.';
+    }
+  });
+  modalSkipBtn.addEventListener('click', () => { recoveryOverlay.classList.add('hidden'); });
+
+  window.addEventListener('DOMContentLoaded', () => { recoveryOverlay.classList.remove('hidden'); });
+
+  // ================= CHAT LOGIC =================
+  function autoGrow(){
+    inputEl.style.height = 'auto';
+    inputEl.style.height = Math.min(inputEl.scrollHeight, 120) + 'px';
+  }
+  inputEl.addEventListener('input', autoGrow);
+
+  inputEl.addEventListener('keydown', (e) => {
+    if(e.key === 'Enter' && !e.shiftKey){
+      e.preventDefault();
+      handleSend();
+    }
+  });
+  sendBtn.addEventListener('click', handleSend);
+
+  function addMessage(role, text, shouldSpeak = false){
+    const es = document.getElementById('emptyState');
+    if(es) es.remove();
+
+    const wrap = document.createElement('div');
+    wrap.className = 'msg ' + (role === 'user' ? 'user' : role === 'error' ? 'error' : 'ai');
+
+    const whoWrap = document.createElement('div');
+    whoWrap.className = 'who-wrap';
+
+    const who = document.createElement('div');
+    who.className = 'who';
+    who.textContent = role === 'user' ? 'Bạn' : role === 'error' ? 'Lỗi' : 'SkibidiGBT';
+    whoWrap.appendChild(who);
+
+    if (role === 'ai') {
+      const speakBtn = document.createElement('button');
+      speakBtn.className = 'speak-btn';
+      speakBtn.innerHTML = '🔊 Đọc lại';
+      speakBtn.onclick = () => window.speakText(text);
+      whoWrap.appendChild(speakBtn);
+    }
+
+    const bubble = document.createElement('div');
+    bubble.className = 'bubble';
+
+    if (role === 'user' || role === 'error') {
+      bubble.textContent = text;
+    } else {
+      bubble.innerHTML = renderMarkdown(text);
+    }
+
+    wrap.appendChild(whoWrap);
+    wrap.appendChild(bubble);
+    chatEl.appendChild(wrap);
+    chatEl.scrollTop = chatEl.scrollHeight;
+
+    if (shouldSpeak && role === 'ai') {
+      window.speakText(text);
+    }
+
+    return bubble;
+  }
+
+  function addTyping(){
+    const es = document.getElementById('emptyState');
+    if(es) es.remove();
+    const wrap = document.createElement('div');
+    wrap.className = 'msg ai';
+    wrap.id = 'typingIndicator';
+    wrap.innerHTML = '<div class="who">SkibidiGBT</div><div class="bubble"><div class="typing"><span></span><span></span><span></span></div></div>';
+    chatEl.appendChild(wrap);
+    chatEl.scrollTop = chatEl.scrollHeight;
+  }
+
+  function removeTyping(){
+    const t = document.getElementById('typingIndicator');
+    if(t) t.remove();
+  }
+
+  async function handleSend(){
+    if(isSending) return;
+    const text = inputEl.value.trim();
+    if(!text) return;
+
+    window.stopSpeaking();
+
+    const key = GROQ_API_KEY.trim();
+    if(!key || key === "PASTE_YOUR_GROQ_API_KEY_HERE"){
+      addMessage('error', 'Chưa cấu hình Groq API key trong code. Mở file, tìm biến GROQ_API_KEY và dán key của bạn vào đó.');
+      return;
+    }
+
+    addMessage('user', text);
+    history.push({role:'user', content:text});
+    inputEl.value = '';
+    autoGrow();
+
+    isSending = true;
+    sendBtn.disabled = true;
+    addTyping();
+
+    try{
+      const reply = await callGroq(key, history);
+      removeTyping();
+      addMessage('ai', reply, true);
+      history.push({role:'assistant', content:reply});
+      if(history.length > 20) history = history.slice(-20);
+    }catch(err){
+      removeTyping();
+      addMessage('error', friendlyError(err));
+    }finally{
+      isSending = false;
+      sendBtn.disabled = false;
+      refreshRecoveryCode();
+    }
+  }
+
+  function friendlyError(err){
+    const msg = (err && err.message) ? err.message : String(err);
+    if(msg.includes('401') || msg.toLowerCase().includes('invalid api key')){
+      return 'API key không đúng hoặc đã hết hạn. Kiểm tra lại cài đặt.';
+    }
+    if(msg.includes('429')){
+      return 'Bị giới hạn tốc độ (rate limit). Đợi vài giây rồi thử lại.';
+    }
+    return 'Có lỗi xảy ra: ' + msg;
+  }
+
+  async function callGroq(apiKey, historyMessages){
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 30000);
+
+    let response;
+    try{
+      response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + apiKey
+        },
+        body: JSON.stringify({
+          model: modelEl.value,
+          messages: [
+            { role: 'system', content: sysPromptEl.value || 'Bạn là một trợ lý AI hữu ích.' },
+            ...historyMessages
+          ],
+          temperature: 0.7,
+          max_tokens: 1024
+        }),
+        signal: controller.signal
+      });
+    }catch(networkErr){
+      throw new Error('Kết nối thất bại: ' + networkErr.message);
+    }finally{
+      clearTimeout(timeout);
+    }
+
+    let data = await response.json();
+    if(!response.ok){
+      const apiMsg = (data && data.error && data.error.message) ? data.error.message : ('HTTP ' + response.status);
+      throw new Error(apiMsg);
+    }
+
+    const content = data?.choices?.[0]?.message?.content;
+    if(!content) throw new Error('Không nhận được nội dung từ AI.');
+    return content.trim();
+  }
+
+  updateStatus();
+})();
+</script>
+
+</body>
+</html>
+    -ms-user-select: none;
+    user-select: none;
+  }
+
+  /* Cho phép chọn văn bản trong ô nhập và đoạn chat */
+  input, textarea, .bubble, code, pre {
+    -webkit-user-select: text !important;
+    -ms-user-select: text !important;
+    user-select: text !important;
+  }
+
+  #app{
+    display:flex; flex-direction:column;
+    height:100dvh; max-width:720px; margin:0 auto;
+    border-left:1px solid var(--border); border-right:1px solid var(--border);
+    position:relative;
+  }
+
+  /* ---------- HEADER ---------- */
+  header{
+    padding:14px 16px 12px;
+    border-bottom:1px solid var(--border);
+    background:linear-gradient(180deg, rgba(124,255,107,0.04), transparent);
+    display:flex; align-items:center; justify-content:space-between;
+    flex-shrink:0;
+  }
+  .logo-wrap{ display:flex; flex-direction:column; gap:2px; }
+  .logo{
+    font-family:var(--font-display);
+    font-size:22px; font-weight:700; letter-spacing:0.5px;
+    background:linear-gradient(90deg, var(--neon-green), var(--neon-cyan) 55%, var(--neon-magenta));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+    position:relative; display:inline-block;
+    animation:flicker 6s infinite;
+  }
+  @keyframes flicker{
+    0%,93%,100%{ filter:none; opacity:1; }
+    94%{ opacity:0.6; filter:blur(0.3px) translateX(1px); }
+    95%{ opacity:1; }
+    96%{ opacity:0.7; filter:blur(0.4px) translateX(-1px); }
+    97%{ opacity:1; }
+  }
+  .tagline{ font-size:11px; color:var(--muted); letter-spacing:1px; text-transform:uppercase; }
+  .status-dot{
+    width:8px; height:8px; border-radius:50%; background:var(--muted);
+    display:inline-block; margin-right:6px; transition:background .3s;
+  }
+  .status-dot.ready{ background:var(--neon-green); box-shadow:0 0 8px var(--neon-green); }
+  .status-dot.error{ background:var(--danger); box-shadow:0 0 8px var(--danger); }
+  #gear{
+    background:none; border:1px solid var(--border); color:var(--muted);
+    width:36px; height:36px; border-radius:10px; font-size:16px; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; transition:.2s;
+  }
+  #gear:hover{ border-color:var(--neon-cyan); color:var(--neon-cyan); }
+
+  /* ---------- SETTINGS PANEL ---------- */
+  #settings{
+    background:var(--bg-panel); border-bottom:1px solid var(--border);
+    padding:0 16px; max-height:0; overflow:hidden; transition:max-height .25s ease, padding .25s ease;
+    flex-shrink:0;
+  }
+  #settings.open{ max-height:600px; padding:14px 16px; overflow-y:auto; }
+  .field{ margin-bottom:10px; }
+  .field label{ font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; display:block; margin-bottom:4px; }
+  .field input, .field select, .field textarea{
+    width:100%; padding:9px 10px; border-radius:8px; border:1px solid var(--border);
+    background:#0d1117; color:var(--text); font-size:13px; font-family:var(--font-body);
+  }
+  .field input:focus, .field select:focus, .field textarea:focus{ outline:none; border-color:var(--neon-green); }
+  .hint{ font-size:11px; color:var(--muted); line-height:1.5; margin-top:6px; }
+  .hint a{ color:var(--neon-cyan); }
+  .section-title{
+    font-family:var(--font-display); font-size:12px; letter-spacing:.5px; text-transform:uppercase;
+    color:var(--neon-cyan); margin:16px 0 8px; padding-top:12px; border-top:1px solid var(--border);
+  }
+  .section-title:first-child{ margin-top:0; padding-top:0; border-top:none; }
+  .btn-row{ display:flex; gap:8px; margin-top:6px; }
+  .btn-small{
+    flex:1; padding:9px 10px; border-radius:8px; border:1px solid var(--border);
+    background:#0d1117; color:var(--text); font-size:12.5px; cursor:pointer; transition:.2s;
+    font-family:var(--font-body);
+  }
+  .btn-small:hover{ border-color:var(--neon-green); color:var(--neon-green); }
+  .btn-small.primary{
+    background:linear-gradient(135deg, var(--neon-green), var(--neon-cyan));
+    color:#06120b; border:none; font-weight:600;
+  }
+  .btn-small.primary:hover{ opacity:.9; color:#06120b; }
+  #recoveryCodeOut{ resize:vertical; min-height:60px; font-family:monospace; font-size:11px; }
+
+  /* ---------- CHAT ---------- */
+  #chat{
+    flex:1; overflow-y:auto; padding:16px; display:flex; flex-direction:column; gap:12px;
+    scroll-behavior:smooth;
+  }
+  #chat::-webkit-scrollbar{ width:6px; }
+  #chat::-webkit-scrollbar-thumb{ background:var(--border); border-radius:3px; }
+
+  .msg{ display:flex; flex-direction:column; max-width:85%; animation:pop .18s ease; }
+  @keyframes pop{ from{ opacity:0; transform:translateY(6px); } to{ opacity:1; transform:translateY(0); } }
+  .msg.ai{ align-self:flex-start; }
+  .msg.user{ align-self:flex-end; }
+
+  .bubble{
+    padding:10px 13px; border-radius:14px; font-size:14.5px; line-height:1.5;
+    word-break:break-word; position:relative;
+  }
+  .msg.ai .bubble{
+    background:var(--bg-bubble-ai); border:1px solid var(--border);
+    border-top-left-radius:4px;
+  }
+  .msg.user .bubble{
+    background:var(--bg-bubble-user); border:1px solid rgba(124,255,107,0.25);
+    border-top-right-radius:4px;
+    white-space:pre-wrap;
+  }
+  .msg.error .bubble{
+    background:rgba(255,92,92,0.08); border:1px solid rgba(255,92,92,0.35); color:#ffb3b3;
+  }
+  .who-wrap{ display:flex; align-items:center; justify-content:space-between; margin-bottom:4px; }
+  .who{ font-family:var(--font-display); font-size:10px; letter-spacing:1px; text-transform:uppercase; color:var(--muted); }
+  .msg.ai .who{ color:var(--neon-green); }
+  .msg.user .who{ color:var(--neon-cyan); text-align:right; width: 100%; }
+
+  .speak-btn {
+    background: none; border: none; color: var(--muted); cursor: pointer; font-size: 13px; padding: 0 4px;
+  }
+  .speak-btn:hover { color: var(--neon-cyan); }
+
+  /* CODE BOX & COPY BUTTON */
+  .code-block {
+    background: #0d1117;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin: 8px 0;
+    overflow: hidden;
+  }
+  .code-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 10px;
+    background: #161b22;
+    border-bottom: 1px solid var(--border);
+    font-size: 11px;
+    color: var(--muted);
+    font-family: monospace;
+  }
+  .copy-btn {
+    background: #21262d;
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 4px;
+    padding: 3px 8px;
+    font-size: 11px;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+  .copy-btn:hover {
+    border-color: var(--neon-green);
+    color: var(--neon-green);
+  }
+  .code-block pre {
+    margin: 0;
+    padding: 10px;
+    overflow-x: auto;
+    font-family: 'Consolas', 'Fira Code', monospace;
+    font-size: 13px;
+    line-height: 1.4;
+    color: #e6edf3;
+  }
+  .inline-code {
+    background: rgba(255,255,255,0.1);
+    padding: 2px 5px;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 13px;
+  }
+
+  .typing{ display:flex; gap:4px; padding:4px 0; }
+  .typing span{
+    width:6px; height:6px; border-radius:50%; background:var(--neon-green);
+    animation:bounce 1.2s infinite ease-in-out;
+  }
+  .typing span:nth-child(2){ animation-delay:.15s; }
+  .typing span:nth-child(3){ animation-delay:.3s; }
+  @keyframes bounce{ 0%,60%,100%{ transform:translateY(0); opacity:.5; } 30%{ transform:translateY(-5px); opacity:1; } }
+
+  /* ---------- INPUT BAR ---------- */
+  #inputbar{
+    display:flex; gap:8px; padding:12px; border-top:1px solid var(--border);
+    background:var(--bg-panel); flex-shrink:0;
+  }
+  #textInput{
+    flex:1; resize:none; max-height:120px; padding:11px 14px; border-radius:14px;
+    border:1px solid var(--border); background:#0d1117; color:var(--text);
+    font-family:var(--font-body); font-size:14.5px; line-height:1.4;
+  }
+  #textInput:focus{ outline:none; border-color:var(--neon-green); }
+  #sendBtn{
+    width:46px; height:46px; border-radius:14px; border:none; cursor:pointer; flex-shrink:0;
+    background:linear-gradient(135deg, var(--neon-green), var(--neon-cyan));
+    color:#06120b; font-size:18px; font-weight:bold; display:flex; align-items:center; justify-content:center;
+    transition:transform .12s, opacity .2s;
+  }
+  #sendBtn:active{ transform:scale(0.92); }
+  #sendBtn:disabled{ opacity:.4; cursor:not-allowed; }
+
+  .empty-state{
+    margin:auto; text-align:center; color:var(--muted); padding:30px 20px;
+  }
+  .empty-state .logo{ font-size:30px; margin-bottom:8px; }
+  .empty-state p{ font-size:13px; line-height:1.6; max-width:320px; margin:0 auto; }
+
+  /* ---------- RECOVERY MODAL ---------- */
+  #recoveryOverlay{
+    position:absolute; inset:0; background:rgba(6,8,12,0.88); backdrop-filter:blur(2px);
+    display:flex; align-items:center; justify-content:center; z-index:50; padding:20px;
+  }
+  #recoveryOverlay.hidden{ display:none; }
+  .recovery-card{
+    background:var(--bg-panel); border:1px solid var(--border); border-radius:16px;
+    padding:20px; max-width:380px; width:100%;
+  }
+  .recovery-card h3{
+    font-family:var(--font-display); margin:0 0 8px; font-size:16px; color:var(--neon-green);
+  }
+  .recovery-card p{ font-size:12.5px; color:var(--muted); line-height:1.5; margin:0 0 12px; }
+  .recovery-card textarea{
+    width:100%; min-height:70px; padding:9px 10px; border-radius:8px; border:1px solid var(--border);
+    background:#0d1117; color:var(--text); font-size:12px; font-family:monospace; resize:vertical;
+  }
+  .recovery-card textarea:focus{ outline:none; border-color:var(--neon-green); }
+  .recovery-msg{ font-size:11.5px; margin-top:6px; min-height:14px; }
+  .recovery-msg.err{ color:var(--danger); }
+  .recovery-msg.ok{ color:var(--neon-green); }
+</style>
+</head>
+<body>
+
+<div id="app">
+  <header>
+    <div class="logo-wrap">
+      <span class="logo">SkibidiGBT</span>
+      <span class="tagline"><span class="status-dot" id="statusDot"></span><span id="statusText">Chưa kết nối API</span></span>
+    </div>
+    <button id="gear" title="Cài đặt">⚙</button>
+  </header>
+
+  <div id="settings">
+    <div class="section-title">Model</div>
+    <div class="field">
+      <label>Model</label>
+      <select id="model">
+        <option value="openai/gpt-oss-120b">SkibidiGBT Flash Lite (khuyên dùng, mạnh)</option>
+        <option value="openai/gpt-oss-20b">SkibidiGBT Nano (nhẹ, nhanh)</option>
+        <option value="qwen/qwen3.6-27b">SkibidiGBT Multi (đa ngôn ngữ)</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>System Prompt (tính cách AI)</label>
+      <input type="text" id="sysPrompt" value="Bạn là SkibidiGBT, một trợ lý AI thông minh, thân thiện, trả lời tự nhiên bằng tiếng Việt. Trả lời đúng trọng tâm câu hỏi của người dùng. CHỈ viết code hoặc script khi người dùng yêu cầu trực tiếp. Không tự ý chèn code vào các câu trò chuyện thông thường. Tránh lặp đi lặp lại các câu cảnh báo không cần thiết.">
+    </div>
+    <div class="hint">
+      API key đã được cấu hình sẵn trong file (xem đầu thẻ &lt;script&gt;, biến <code>GROQ_API_KEY</code>) — không cần nhập lại mỗi lần vào web.
+    </div>
+
+    <div class="section-title">Sao lưu & Khôi phục</div>
+    <div class="field">
+      <label>Mã khôi phục hiện tại (tự cập nhật sau mỗi tin nhắn)</label>
+      <textarea id="recoveryCodeOut" readonly placeholder="Chat gì đó để tạo mã khôi phục..."></textarea>
+      <div class="btn-row">
+        <button class="btn-small primary" id="copyCodeBtn" type="button">📋 Sao chép mã</button>
+      </div>
+      <div class="recovery-msg" id="copyMsg"></div>
+    </div>
+    <div class="field">
+      <label>Dán mã khôi phục để khôi phục cuộc trò chuyện cũ</label>
+      <textarea id="recoveryCodeIn" placeholder="Dán mã khôi phục vào đây..."></textarea>
+      <div class="btn-row">
+        <button class="btn-small" id="restoreFromSettingsBtn" type="button">Khôi phục</button>
+        <button class="btn-small" id="clearChatBtn" type="button">Xoá chat, bắt đầu mới</button>
+      </div>
+      <div class="recovery-msg" id="restoreMsg"></div>
+    </div>
+  </div>
+
+  <div id="chat">
+    <div class="empty-state" id="emptyState">
+      <div class="logo">SkibidiGBT</div>
+      <p>Bắt đầu nhắn tin với SkibidiGBT. Tốc độ phản hồi cực nhanh trên Groq LPU!</p>
+    </div>
+  </div>
+
+  <div id="inputbar">
+    <textarea id="textInput" rows="1" placeholder="Nhắn gì đó cho SkibidiGBT..."></textarea>
+    <button id="sendBtn">➤</button>
+  </div>
+
+  <div id="recoveryOverlay" class="hidden">
+    <div class="recovery-card">
+      <h3>Chào mừng trở lại 👋</h3>
+      <p>Nếu bạn có mã khôi phục từ lần trước, dán vào đây để tiếp tục cuộc trò chuyện cũ. Không có thì bấm "Bắt đầu mới".</p>
+      <textarea id="recoveryCodeModalIn" placeholder="Dán mã khôi phục vào đây..."></textarea>
+      <div class="recovery-msg" id="modalMsg"></div>
+      <div class="btn-row">
+        <button class="btn-small primary" id="modalRestoreBtn" type="button">Khôi phục</button>
+        <button class="btn-small" id="modalSkipBtn" type="button">Bắt đầu mới</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  // ================= BẢO VỆ CHỐNG F12 & CHUỘT PHẢI =================
+  document.addEventListener('keydown', function (e) {
+    // Chặn F12
+    if (e.key === 'F12' || e.keyCode === 123) {
+      e.preventDefault();
+      return false;
+    }
+    // Chặn Ctrl+Shift+I, J, C (Inspect/Console/Element)
+    if (e.ctrlKey && e.shiftKey && ['I','i','J','j','C','c'].includes(e.key)) {
+      e.preventDefault();
+      return false;
+    }
+    // Chặn Ctrl+U (View Source) & Ctrl+S (Save Page)
+    if (e.ctrlKey && ['U','u','S','s'].includes(e.key)) {
+      e.preventDefault();
+      return false;
+    }
+  });
+
+  // Chặn Click chuột phải trên toàn trang
+  document.addEventListener('contextmenu', function (e) {
+    e.preventDefault();
+    return false;
+  });
+
+  // Bẫy Debugger chống cố tình mở DevTools
+  setInterval(function() {
+    const startTime = performance.now();
+    debugger;
+    if (performance.now() - startTime > 100) {
+      document.body.innerHTML = '<div style="color:red;text-align:center;padding-top:50px;font-family:sans-serif;"><h1>⚠️ BẢO MẬT: Phát hiện mở Developer Tools!</h1><p>Vui lòng tắt F12 / Inspect để tiếp tục sử dụng web.</p></div>';
+    }
+  }, 1000);
+
+  // ================= CÁC TÍNH NĂNG CHÍNH CỦA SKIBIDIGBT =================
+  const chatEl = document.getElementById('chat');
+  const inputEl = document.getElementById('textInput');
+  const sendBtn = document.getElementById('sendBtn');
+  const gearBtn = document.getElementById('gear');
+  const settingsEl = document.getElementById('settings');
+  const modelEl = document.getElementById('model');
+  const sysPromptEl = document.getElementById('sysPrompt');
+  const statusDot = document.getElementById('statusDot');
+  const statusText = document.getElementById('statusText');
+
+  const recoveryCodeOut = document.getElementById('recoveryCodeOut');
+  const copyCodeBtn = document.getElementById('copyCodeBtn');
+  const copyMsg = document.getElementById('copyMsg');
+  const recoveryCodeIn = document.getElementById('recoveryCodeIn');
+  const restoreFromSettingsBtn = document.getElementById('restoreFromSettingsBtn');
+  const restoreMsg = document.getElementById('restoreMsg');
+  const clearChatBtn = document.getElementById('clearChatBtn');
+
+  const recoveryOverlay = document.getElementById('recoveryOverlay');
+  const recoveryCodeModalIn = document.getElementById('recoveryCodeModalIn');
+  const modalMsg = document.getElementById('modalMsg');
+  const modalRestoreBtn = document.getElementById('modalRestoreBtn');
+  const modalSkipBtn = document.getElementById('modalSkipBtn');
+
+  // ⚠️ Dán Groq API key của bạn vào đây
   const GROQ_API_KEY = "PASTE_YOUR_GROQ_API_KEY_HERE";
 
   let history = []; 
